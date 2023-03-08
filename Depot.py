@@ -204,21 +204,25 @@ class ParseDepotOverlay(GlobalSelection):
             self.finishParsing()
             return
 
-        nextMaterial = self.parser.parseNext()
-        while nextMaterial is not None and self.parsing:
-            if isinstance(nextMaterial, str):
-                self.changeStatus(nextMaterial)
+        try:
+            nextMaterial = self.parser.parseNext()
+            while nextMaterial is not None and self.parsing:
+                if isinstance(nextMaterial, str):
+                    self.changeStatus(nextMaterial)
+                    self.update()
+                    nextMaterial = self.parser.parseNext()
+                    continue
+                else:
+                    self.changeStatus("Scanning...")
+
+                self.setMaterial(nextMaterial[0], nextMaterial[1])
                 self.update()
                 nextMaterial = self.parser.parseNext()
-                continue
-            else:
-                self.changeStatus("Scanning...")
 
-            self.setMaterial(nextMaterial[0], nextMaterial[1])
-            self.update()
-            nextMaterial = self.parser.parseNext()
+            self.changeStatus("Done scanning, either confirm or discard the new materials with the buttons on the left")
+        except Exception as e:
+            self.changeStatus("Error encountered during scanning of depot: " + str(e))
 
-        self.changeStatus("Done scanning, either confirm or discard the new materials with the buttons on the left")
         self.finishParsing()
 
     def setMaterial(self, material, amount):
