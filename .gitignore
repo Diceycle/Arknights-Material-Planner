@@ -1,0 +1,5 @@
+__pycache__
+img/tests*
+img/processed
+data/upgradeCosts
+*.materials
