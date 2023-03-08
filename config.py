@@ -15,6 +15,7 @@ class Config:
                  arknightsWindowName ="BlueStacks",
                  arknightsInputWindowClass ="plrNativeInputWindowClass",
                  arknightsWindowBorder = (1, 33, 33, 1),
+                 colorLeniency = 3,
                  tesseractExeLocation = None,
                  **kwargs):
 
@@ -31,6 +32,7 @@ class Config:
         self.arknightsWindowName = arknightsWindowName
         self.arknightsInputWindowClass = arknightsInputWindowClass
         self.arknightsWindowBorder = arknightsWindowBorder
+        self.colorLeniency = colorLeniency
         self.tesseractExeLocation = tesseractExeLocation
 
         if len(kwargs) > 0:

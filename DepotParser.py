@@ -41,7 +41,7 @@ SCROLL_LINE_END = (25, 360)
 AMOUNT_CROP_BOX = (118, 157, 181, 192)
 AMOUNT_CROP_BOX_SLIM = (123, 163, 176, 188)
 
-def matchesColor(c1, c2, leniency = 3):
+def matchesColor(c1, c2, leniency = CONFIG.colorLeniency):
     return (abs(c1[0] - c2[0]) <= leniency and
             abs(c1[1] - c2[1]) <= leniency and
             abs(c1[2] - c2[2]) <= leniency)
