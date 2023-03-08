@@ -19,7 +19,7 @@ DEPOT_FILTER_CHECKS = [
     ((1425, 40), (255, 255, 255)),
     ((1420, 55), (255, 255, 255)),
     ((1440, 55), (255, 255, 255)),
-    ((1433, 47), (49, 49, 49))
+    ((1433, 47), None)
 ]
 
 MAIN_MENU_CHECKS = [
@@ -40,6 +40,11 @@ SCROLL_LINE_END = (25, 360)
 
 AMOUNT_CROP_BOX = (118, 157, 181, 192)
 AMOUNT_CROP_BOX_SLIM = (123, 163, 176, 188)
+
+def matchesColor(c1, c2, leniency = 3):
+    return (abs(c1[0] - c2[0]) <= leniency and
+            abs(c1[1] - c2[1]) <= leniency and
+            abs(c1[2] - c2[2]) <= leniency)
 
 def resizeArknights(windowHandler):
     windowHandler.resize((SCREENSHOT_SIZE[0] + WINDOW_BORDER[0] + WINDOW_BORDER[2],
@@ -85,7 +90,7 @@ def validateMenu(handler):
 
     mainMenu = True
     for p in MAIN_MENU_CHECKS:
-        if image.getpixel(p[0]) != p[1]:
+        if not matchesColor(image.getpixel(p[0]), p[1]):
             mainMenu = False
             break
 
@@ -96,7 +101,8 @@ def validateMenu(handler):
 
     filterPreselected = True
     for p in DEPOT_FILTER_CHECKS:
-        if image.getpixel(p[0]) != p[1]:
+        if (p[1] is not None and not matchesColor(image.getpixel(p[0]), p[1]) or
+            p[1] is None and matchesColor(image.getpixel(p[0]), DEPOT_FILTER_CHECKS[0][1])):
             filterPreselected = False
             break
 
@@ -107,7 +113,8 @@ def validateMenu(handler):
 
     inDepot = True
     for p in DEPOT_CHECKS:
-        if image.getpixel(p[0]) != p[1] and p[1] is not None or p[1] is None and image.getpixel(p[0]) == DEPOT_CHECKS[0][1]:
+        if (p[1] is not None and not matchesColor(image.getpixel(p[0]), p[1]) or
+            p[1] is None and matchesColor(image.getpixel(p[0]), DEPOT_CHECKS[0][1])):
             inDepot = False
             break
 
