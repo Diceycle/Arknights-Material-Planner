@@ -1,5 +1,6 @@
 {
   "uiScale" : 100,
+  "scrollSpeed" : 30,
   "saveFile" : "default.materials",
   "backgroundImage" : null,
   "backgroundImageOffset" : 0,

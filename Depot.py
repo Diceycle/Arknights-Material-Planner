@@ -35,7 +35,7 @@ class Depot(LockableCanvas):
         controlCanvasHeight = self.scale // 2 * 2
         if CONFIG.depotParsingEnabled:
             controlCanvasHeight += self.scale // 2
-        self.controlCanvas = LockableCanvas(self.controlCanvasParent, highlightthickness=0, bg=CONFIG.colorDark, width=scale // 2, height=controlCanvasHeight)
+        self.controlCanvas = LockableCanvas(self.controlCanvasParent, highlightthickness=0, bg=CONFIG.backgroundColor, width=scale // 2, height=controlCanvasHeight)
         self.contentCanvas = LockableCanvas(self, highlightthickness=0, bg=CONFIG.color, width=self.width, height=self.pageHeight)
         self.contentCanvas.place(x = 0, y = 0)
         self.addChildCanvas(self.contentCanvas)

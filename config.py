@@ -3,6 +3,7 @@ import json
 class Config:
     def __init__(self,
                  uiScale = 100,
+                 scrollSpeed = 30,
                  saveFile = "default.materials",
                  backgroundImage = None,
                  backgroundImageOffset = 0,
@@ -20,6 +21,7 @@ class Config:
                  **kwargs):
 
         self.uiScale = uiScale
+        self.scrollSpeed = scrollSpeed
         self.saveFile = saveFile
         self.backgroundImage = backgroundImage
         self.backgroundImageOffset = backgroundImageOffset

@@ -28,7 +28,7 @@ class ItemSetDisplay(LockableCanvas):
         self.addSetButton = self.create_image(0, 0, image=UI_ELEMENTS["add-set"].getPhotoImage(self.scale, transparency=0.75), anchor = NW)
         self.tag_bind(self.addSetButton, "<Button-1>", lambda e: self.addSet(OPERATORS["Amiya"], UPGRADES["E1"], {}))
 
-        self.scrollbarCanvas = LockableCanvas(self, height = self.height, width=self.scrollbarWidth, highlightthickness=0, bg=CONFIG.color)
+        self.scrollbarCanvas = LockableCanvas(self, height = self.height, width=self.scrollbarWidth, highlightthickness=0, bg=CONFIG.colorDark)
         self.scrollbarCanvas.place(relx = 1, y = 0, anchor=NE)
         self.addChildCanvas(self.scrollbarCanvas)
         self.scrollbar = self.scrollbarCanvas.create_rectangle(0, 0, 0, 0, fill=CONFIG.color, outline=CONFIG.highlightColor, width=1)

@@ -35,6 +35,7 @@ class GUI:
         ParseDepotOverlay(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
 
         self.setCanvas = ItemSetDisplay(self.window, self.scale, self.height, self.scale // 10,
+                                        scrollSpeed=int(CONFIG.scrollSpeed / 100 * self.scale),
                                         totalsUpdateCallback=self.updateItemTotals)
         self.setCanvas.pack(side=LEFT)
 
