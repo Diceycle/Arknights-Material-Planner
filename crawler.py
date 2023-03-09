@@ -4,7 +4,7 @@ import urllib.request
 import urllib.error
 import re
 
-from config import CONFIG
+from config import CONFIG, LOGGER
 from database import *
 
 CACHE_PATH = "data/upgradeCosts/"
@@ -40,16 +40,16 @@ def getMaterial(canonicalName):
     for m in MATERIALS.values():
         if m.canonicalName == canonicalName:
             return m
-    print("Unrecognized Material:", canonicalName)
+    LOGGER.warning("Unrecognized Material: %s", canonicalName)
 
 def getRequest(url):
     try:
         return urllib.request.urlopen(urllib.request.Request(url, None, headers))
     except urllib.error.HTTPError as response:
-        print("Error reading url", response.code)
+        LOGGER.error("Error reading url: %s", response.code)
         for line in response.readlines():
             line = line.decode("utf-8")
-            print(line)
+            LOGGER.debug(line)
 
 def downloadCosts(operator):
     if os.path.isfile(getFileName(operator)):

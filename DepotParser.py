@@ -1,6 +1,7 @@
 import os
 
 from WindowHandler import WindowHandler
+from config import LOGGER
 from database import *
 from imageRecognizing import matchMasked
 from ocr import readImage, prepareImage
@@ -180,6 +181,7 @@ class DepotParser:
             try:
                 amount = int(amount)
             except Exception as e:
+                LOGGER.debug("Could not read amount. Was '%s'", amount)
                 amount = None
 
         self.materialIndex += 1

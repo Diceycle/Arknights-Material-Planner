@@ -7,6 +7,9 @@ from PIL import Image
 
 import time
 
+from config import LOGGER
+
+
 class WindowHandler:
     def __init__(self, windowName, childClassName = None, captureBorder=False):
         self.windowName = windowName
@@ -23,11 +26,11 @@ class WindowHandler:
 
         self.initializeContext()
 
-        print("HWND", self.hwnd)
-        print("HWND_EX", self.hwndInput)
-        print("HWND_DC", self.hwndDC)
-        print("MFC_DC", self.mfcDC)
-        print("SAVE_DC", self.saveDC)
+        LOGGER.debug("HWND: %s", self.hwnd)
+        LOGGER.debug("HWND_INPUT: %s", self.hwndInput)
+        LOGGER.debug("HWND_DC: %s", self.hwndDC)
+        LOGGER.debug("MFC_DC: %s", self.mfcDC)
+        LOGGER.debug("SAVE_DC: %s", self.saveDC)
 
     def initializeContext(self):
         try:
@@ -36,7 +39,7 @@ class WindowHandler:
             self.updateBitmapBuffer()
             self.ready = True
         except Exception as err:
-            print("Failed to initialize Context:", err)
+            LOGGER.error("Failed to initialize Context: %s", err)
             self.cleanup()
             self.ready = False
 

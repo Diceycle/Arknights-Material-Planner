@@ -5,7 +5,7 @@ from tkinter import *
 from widgets import CanvasLabel, LockableCanvas, ImageCheckbutton
 from GlobalOverlays import OVERLAYS, GlobalSelection
 from WindowHandler import WindowHandler
-from config import CONFIG
+from config import CONFIG, LOGGER
 from database import *
 from ItemIndicator import ItemIndicator
 from DepotParser import DepotParser
@@ -222,6 +222,7 @@ class ParseDepotOverlay(GlobalSelection):
             self.changeStatus("Done scanning, either confirm or discard the new materials with the buttons on the right")
         except Exception as e:
             self.changeStatus("Error encountered during scanning of depot: " + str(e))
+            LOGGER.error("Scanning Error: %s", repr(e))
 
         self.finishParsing()
 

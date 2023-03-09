@@ -1,4 +1,14 @@
 import json
+import logging
+import sys
+
+LOGGER = logging.getLogger("ArknightsMaterials")
+LOGGER.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler = logging.FileHandler("arknightsMaterials.log")
+handler.setFormatter(formatter)
+LOGGER.addHandler(handler)
+LOGGER.addHandler(logging.StreamHandler(sys.stdout))
 
 class Config:
     def __init__(self,
@@ -38,7 +48,6 @@ class Config:
         self.tesseractExeLocation = tesseractExeLocation
 
         if len(kwargs) > 0:
-            print("Unrecognized Config Parameters:", kwargs)
+            LOGGER.warning("Unrecognized Config Parameters: %s", kwargs)
 
-jsonConfig = json.load(open("config.json", "r"))
-CONFIG = Config(**jsonConfig)
+CONFIG = Config(**(json.load(open("config.json", "r"))))

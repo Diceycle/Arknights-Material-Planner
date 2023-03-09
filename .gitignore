@@ -4,3 +4,4 @@ img/processed
 img/masks
 data/upgradeCosts
 *.materials
+*.log
