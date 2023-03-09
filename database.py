@@ -37,10 +37,10 @@ UI_ELEMENTS = {}
 UPGRADES = {}
 OPERATORS = {}
 class ScalableImage:
-    def __init__(self, name, collection, imagePath, image, unlimitedWidth = False):
+    def __init__(self, name, collection, imagePath, image, mainDimension = 1):
         self.name = name
         self.image = loadImage(imagePath, image)
-        self.unlimitedWidth = unlimitedWidth
+        self.mainDimension = mainDimension
 
         self.imageReferences = {}
 
@@ -52,10 +52,10 @@ class ScalableImage:
             im = self.renderImage()
             if transparency < 1:
                 im.putalpha(Image.eval(im.getchannel("A"), lambda v: min(v, int(255 * transparency))))
-            if self.unlimitedWidth:
-                im.thumbnail(size=(sys.maxsize, size))
-            else:
-                im.thumbnail(size=(size, size))
+
+            factor = size / im.size[self.mainDimension]
+            im = im.resize((int(im.width * factor), int(im.height * factor)))
+
             self.imageReferences[key] = ImageTk.PhotoImage(im)
 
         return self.imageReferences[key]
@@ -64,8 +64,8 @@ class ScalableImage:
         return self.image.copy()
 
 class UIElement(ScalableImage):
-    def __init__(self, name, image):
-        super().__init__(name, UI_ELEMENTS, "img/ui", image, unlimitedWidth=name == "add-set")
+    def __init__(self, name, image, **kwargs):
+        super().__init__(name, UI_ELEMENTS, "img/ui", image, **kwargs)
 
     def renderImage(self):
         if CONFIG.highlightColor == "#FFFFFF":
@@ -85,8 +85,8 @@ class UIElement(ScalableImage):
         return im
 
 class Upgrade(ScalableImage):
-    def __init__(self, name, canonicalName, image, skill = None):
-        super().__init__(name, UPGRADES, "img/misc", image)
+    def __init__(self, name, canonicalName, image, skill = None, **kwargs):
+        super().__init__(name, UPGRADES, "img/misc", image, **kwargs)
         self.canonicalName = canonicalName
         self.skill = skill
 
@@ -186,18 +186,18 @@ UIElement("research-button", "research-button.png")
 UIElement("craft-arrow", "craft-arrow.png")
 UIElement("add-set", "add-set.png")
 
-Upgrade("E1", "Elite 1", "1.png")
-Upgrade("E2", "Elite 2", "2.png")
-Upgrade("SK7", "Skill rank 7", "7.png")
-Upgrade("S1M1", "Skill 1 Mastery 1", "m-1.png", skill = 1)
-Upgrade("S1M2", "Skill 1 Mastery 2", "m-2.png", skill = 1)
-Upgrade("S1M3", "Skill 1 Mastery 3", "m-3.png", skill = 1)
-Upgrade("S2M1", "Skill 2 Mastery 1", "m-1.png", skill = 2)
-Upgrade("S2M2", "Skill 2 Mastery 2", "m-2.png", skill = 2)
-Upgrade("S2M3", "Skill 2 Mastery 3", "m-3.png", skill = 2)
-Upgrade("S3M1", "Skill 3 Mastery 1", "m-1.png", skill = 3)
-Upgrade("S3M2", "Skill 3 Mastery 2", "m-2.png", skill = 3)
-Upgrade("S3M3", "Skill 3 Mastery 3", "m-3.png", skill = 3)
+Upgrade("E1", "Elite 1", "1.png", mainDimension=0)
+Upgrade("E2", "Elite 2", "2.png", mainDimension=0)
+Upgrade("SK7", "Skill rank 7", "7.png", mainDimension=0)
+Upgrade("S1M1", "Skill 1 Mastery 1", "m-1.png", skill = 1, mainDimension=0)
+Upgrade("S1M2", "Skill 1 Mastery 2", "m-2.png", skill = 1, mainDimension=0)
+Upgrade("S1M3", "Skill 1 Mastery 3", "m-3.png", skill = 1, mainDimension=0)
+Upgrade("S2M1", "Skill 2 Mastery 1", "m-1.png", skill = 2, mainDimension=0)
+Upgrade("S2M2", "Skill 2 Mastery 2", "m-2.png", skill = 2, mainDimension=0)
+Upgrade("S2M3", "Skill 2 Mastery 3", "m-3.png", skill = 2, mainDimension=0)
+Upgrade("S3M1", "Skill 3 Mastery 1", "m-1.png", skill = 3, mainDimension=0)
+Upgrade("S3M2", "Skill 3 Mastery 2", "m-2.png", skill = 3, mainDimension=0)
+Upgrade("S3M3", "Skill 3 Mastery 3", "m-3.png", skill = 3, mainDimension=0)
 
 Material("keton-1", "Diketon", 1, "keton-1.png")
 Material("keton-2", "Polyketon", 2, "keton-2.png", recipe={"keton-1": 3})
