@@ -188,7 +188,7 @@ class ParseDepotOverlay(GlobalSelection):
         self.indicators[material] = i
 
     def registerCallback(self, callback):
-        super().registerCallback(self.parent, 0, 0, callback)
+        super().registerCallback(self.parent, 0, 0, callback, centered=True)
         self.changeStatus("Setting up...")
         self.parsing = True
         self.currentMaterials = {}

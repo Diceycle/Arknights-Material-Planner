@@ -21,7 +21,7 @@ class GlobalSelection(Canvas):
         OVERLAYS[name] = self
         self.bind("<Button-3>", lambda e: self.cancelCallback())
 
-    def registerCallback(self, parent, posX, posY, callback):
+    def registerCallback(self, parent, posX, posY, callback, centered = False):
         cancelCallbacks()
         if self.disableCallback is not None:
             self.callDisableCallback()
@@ -37,8 +37,11 @@ class GlobalSelection(Canvas):
             width = self.winfo_width()
             height = self.winfo_height()
 
-        self.place(x = min(windowWidth - width, parent.winfo_x() + posX),
-                   y = min(windowHeight - height, parent.winfo_y() + posY))
+        if centered:
+            self.place(x = windowWidth // 2, y = windowHeight // 2, anchor=CENTER)
+        else:
+            self.place(x = min(windowWidth - width, parent.winfo_x() + posX),
+                       y = min(windowHeight - height, parent.winfo_y() + posY))
         self.tk.call('raise', self._w)
         self.callback = callback
 
