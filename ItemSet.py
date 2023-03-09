@@ -42,9 +42,9 @@ class ItemSet(LockableCanvas):
             self.addMaterialInternal(m, a)
 
         if editable:
-            self.addButton = self.create_image(0, 0, image=UI_ELEMENTS["add"].getPhotoImage(self.scale), anchor=NW)
+            self.addButton = self.create_image(0, 0, image=UI_ELEMENTS["add"].getPhotoImage(self.scale, transparency=0.75), anchor=NW)
             self.tag_bind(self.addButton, "<Button-1>", lambda e: self.addMaterialTrigger())
-            self.researchButton = self.create_image(0, 0, image=UI_ELEMENTS["research"].getPhotoImage(self.scale), anchor=NW)
+            self.researchButton = self.create_image(0, 0, image=UI_ELEMENTS["research"].getPhotoImage(self.scale, transparency=0.75), anchor=NW)
             self.tag_bind(self.researchButton, "<Button-1>", lambda e: self.researchMaterials())
 
         if toggleable:
