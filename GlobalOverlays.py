@@ -63,22 +63,24 @@ class GlobalSelection(Canvas):
 
 class UpgradeSelection(GlobalSelection):
     def __init__(self, parent, scale, **kwargs):
-        super().__init__(parent, "UpgradeSelection", width=3*scale, height=4*scale, **kwargs)
+        super().__init__(parent, "UpgradeSelection", width=3*scale, height=5*scale, **kwargs)
 
         self.scale = scale
 
         self.placeImage(0, 0, UPGRADES["E1"])
         self.placeImage(1, 0, UPGRADES["E2"])
-        self.placeImage(2, 0, UPGRADES["SK7"])
-        self.placeImage(0, 1, UPGRADES["S1M1"])
-        self.placeImage(1, 1, UPGRADES["S1M2"])
-        self.placeImage(2, 1, UPGRADES["S1M3"])
-        self.placeImage(0, 2, UPGRADES["S2M1"])
-        self.placeImage(1, 2, UPGRADES["S2M2"])
-        self.placeImage(2, 2, UPGRADES["S2M3"])
-        self.placeImage(0, 3, UPGRADES["S3M1"])
-        self.placeImage(1, 3, UPGRADES["S3M2"])
-        self.placeImage(2, 3, UPGRADES["S3M3"])
+
+        self.placeImage(0, 1, UPGRADES["SK7"])
+
+        self.placeImage(0, 2, UPGRADES["S1M1"])
+        self.placeImage(1, 2, UPGRADES["S1M2"])
+        self.placeImage(2, 2, UPGRADES["S1M3"])
+        self.placeImage(0, 3, UPGRADES["S2M1"])
+        self.placeImage(1, 3, UPGRADES["S2M2"])
+        self.placeImage(2, 3, UPGRADES["S2M3"])
+        self.placeImage(0, 4, UPGRADES["S3M1"])
+        self.placeImage(1, 4, UPGRADES["S3M2"])
+        self.placeImage(2, 4, UPGRADES["S3M3"])
 
     def placeImage(self, x, y, upgrade):
         up = self.create_image(x*self.scale + self.scale // 2,
