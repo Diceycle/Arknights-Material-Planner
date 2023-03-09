@@ -222,7 +222,7 @@ class ParseDepotOverlay(GlobalSelection):
             self.changeStatus("Done scanning, either confirm or discard the new materials with the buttons on the right")
         except Exception as e:
             self.changeStatus("Error encountered during scanning of depot: " + str(e))
-            LOGGER.error("Scanning Error: %s", repr(e))
+            LOGGER.exception("Scanning Error: %s", e)
 
         self.finishParsing()
 

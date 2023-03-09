@@ -1,3 +1,4 @@
+import os
 import sys
 
 from PIL import Image, ImageTk, ImageColor
@@ -5,6 +6,19 @@ from PIL import Image, ImageTk, ImageColor
 from config import CONFIG
 
 UPGRADE_SCALE = 0.75
+
+def createDirsIfNeeded(filename):
+    dirname = os.path.dirname(filename)
+    if len(dirname) > 0:
+        os.makedirs(dirname, exist_ok=True)
+
+def safeOpen(filename):
+    createDirsIfNeeded(filename)
+    return open(filename, "w+")
+
+def safeSave(image, filename):
+    createDirsIfNeeded(filename)
+    image.save(filename)
 
 def hasExtension(filename, extensions):
     return filename.lower().endswith(extensions)

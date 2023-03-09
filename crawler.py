@@ -112,5 +112,5 @@ def downloadCosts(operator):
                 if not currentMaterial.startswith("LMD") and not "chip" in currentMaterial.lower():
                     costs[UPGRADES[indexToElite(eliteTableRow)]][getMaterial(currentMaterial)] = int(parseQuantity(line))
 
-    json.dump(toExternal(costs, recurse=toExternal), open(getFileName(operator), "w"))
+    json.dump(toExternal(costs, recurse=toExternal), safeOpen(getFileName(operator)))
     return costs

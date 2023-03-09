@@ -5,7 +5,7 @@ from PIL import Image
 import numpy as np
 import cv2
 
-from database import MATERIALS
+from database import MATERIALS, safeSave
 
 
 def findMatches(image, template, mask=None, threshold=None):
@@ -31,7 +31,7 @@ def matchMasked(targetRGB, material, savePath=None, threshold=None, debug=False)
 
     alpha = pilToMask(mask)
     if debug:
-        mask.save("img/masks/" + material.name + ".png")
+        safeSave(mask, "img/masks/" + material.name + ".png")
 
     matchImage, confidence = findMatches(targetImage, pilConversion(templateImage.convert("RGB")), mask=alpha, threshold=threshold)
     if debug:

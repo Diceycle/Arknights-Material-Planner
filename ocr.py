@@ -4,6 +4,7 @@ import pytesseract
 from PIL import ImageOps, Image
 
 from config import CONFIG
+from database import safeSave
 
 pytesseract.pytesseract.tesseract_cmd = CONFIG.tesseractExeLocation
 
@@ -130,7 +131,7 @@ if __name__ == "__main__":
             print("Failed {}: {} != {}".format(f, expectedResult, result))
             fails += 1
         c += 1
-        inputImage.save("img/processed/" + f)
+        safeSave(inputImage, "img/processed/" + f)
     print("Error Rate: {}/{} = {:.2f}%".format(fails, c, fails/c * 100))
     print("Took:", time.time() - start)
 

@@ -80,10 +80,10 @@ def splitScreenshot(screenshot):
 def readAmount(box, debug = False, fileName = None):
     crop = box.crop(AMOUNT_CROP_BOX)
     if debug:
-        crop.save("img/tests/{}.png".format(fileName))
+        safeSave(crop, "tests/tests/{}.png".format(fileName))
     ocrCrop = prepareImage(crop)
     if debug:
-        ocrCrop.save("img/processed/{}.png".format(fileName))
+        safeSave(ocrCrop, "tests/processed/{}.png".format(fileName))
     return readImage(ocrCrop)
 
 def validateMenu(handler):

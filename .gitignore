@@ -1,7 +1,8 @@
 __pycache__
-img/tests*
-img/processed
-img/masks
-data/upgradeCosts
+tests*
+data/upgradeCosts/
 *.materials
 *.log
+
+_build
+_dist
