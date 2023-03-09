@@ -11,6 +11,7 @@ workFolder = "_build/"
 
 command = ['ArknightsMaterials.py',
            '--name', name,
+           '--icon', '../rock.ico',
            '--distpath', distFolder,
            '--workpath', workFolder,
            '--add-data', '../img;img',
@@ -42,5 +43,5 @@ doNotMove = [
 
 for f in os.listdir(distFolderFull):
     if os.path.isfile(distFolderFull + f):
-        if f not in doNotMove:
+        if f not in doNotMove and not f.startswith("libopenblas"):
             shutil.move(distFolderFull + f, libFolder + f)
