@@ -139,32 +139,32 @@ class Material(ScalableImage):
 
     def getPosition(self):
         x = 5 - self.tier
-        if self.name.startswith("fluid") or self.name.startswith("kohl") or \
+        if self.name.startswith("fluid") or self.name.startswith("gel") or \
             self.name.startswith("solvent") or self.name.startswith("manganese") or \
-            self.name.startswith("incandescent"):
+            self.name.startswith("grindstone"):
             x += 2
 
-        if self.name.startswith("rock") or self.name.startswith("steel"):
+        if self.name.startswith("keton") or self.name.startswith("polymer"):
             return x, 0
-        elif self.name.startswith("keton") or self.name.startswith("polymer"):
+        elif self.name.startswith("oriron"):
             return x, 1
-        elif self.name.startswith("device") or self.name.startswith("nanoflake"):
+        elif self.name.startswith("rock"):
             return x, 2
         elif self.name.startswith("plastic"):
             return x, 3
         elif self.name.startswith("sugar"):
             return x, 4
-        elif self.name.startswith("oriron"):
+        elif self.name.startswith("device") or self.name.startswith("nanoflake"):
             return x, 5
-        elif self.name.startswith("grindstone") or self.name.startswith("manganese"):
+        elif self.name.startswith("kohl") or self.name.startswith("grindstone"):
             return x, 6
-        elif self.name.startswith("rma") or self.name.startswith("kohl"):
+        elif self.name.startswith("rma") or self.name.startswith("manganese") or self.name.startswith("steel"):
             return x, 7
-        elif self.name.startswith("crystal") or self.name.startswith("fluid"):
+        elif self.name.startswith("crystal") or self.name.startswith("gel"):
             return x, 8
-        elif self.name.startswith("salt") or self.name.startswith("solvent"):
+        elif self.name.startswith("incandescent") or self.name.startswith("solvent"):
             return x, 9
-        elif self.name.startswith("gel") or self.name.startswith("incandescent"):
+        elif self.name.startswith("salt") or self.name.startswith("fluid"):
             return x, 10
         elif self.name.startswith("exp"):
             return x+1, 11
