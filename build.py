@@ -16,7 +16,7 @@ mainCommand = ['ArknightsMaterials.py',
                '--distpath', distFolder,
                '--workpath', workFolder,
                '--add-data', '../img;img',
-               '--add-data', '../config.json;.',
+               '--add-data', '../config-defaults.json;.',
                '--add-data', '../rock.ico;.',
                '--runtime-hook', 'addLib.py',
                '--specpath', workFolder,
@@ -48,7 +48,7 @@ doNotMove = [
     "python310.dll",
 
     "rock.ico",
-    "config.json"
+    "config-defaults.json"
 ]
 
 for f in os.listdir(distFolderFull):

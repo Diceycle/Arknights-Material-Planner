@@ -9,5 +9,5 @@
   "highlightColor" : "#FFFFFF",
   "backgroundColor": "#444444",
   "depotParsingEnabled" : true,
-  "tesseractExeLocation" : "tesseract.exe"
+  "tesseractExeLocation" : null
 }

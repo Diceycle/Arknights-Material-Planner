@@ -1,5 +1,6 @@
 import json
 import logging
+import os.path
 import sys
 
 LOGGER = logging.getLogger("ArknightsMaterials")
@@ -50,4 +51,7 @@ class Config:
         if len(kwargs) > 0:
             LOGGER.warning("Unrecognized Config Parameters: %s", kwargs)
 
+
+if not os.path.isfile("config.json"):
+    json.dump({}, open("config.json", "w+"))
 CONFIG = Config(**(json.load(open("config.json", "r"))))
