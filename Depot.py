@@ -193,6 +193,7 @@ class ParseDepotOverlay(GlobalSelection):
         super().registerCallback(self.parent, 0, 0, callback, centered=True)
         self.changeStatus("Setting up...")
         self.parsing = True
+        self.interrupted = False
         self.currentMaterials = {}
 
         self.update()
@@ -221,7 +222,8 @@ class ParseDepotOverlay(GlobalSelection):
                 self.update()
                 nextMaterial = self.parser.parseNext()
 
-            self.changeStatus("Done scanning, either confirm or discard the new materials with the buttons on the right")
+            if not self.interrupted:
+                self.changeStatus("Done scanning, either confirm or discard the new materials with the buttons on the right")
         except Exception as e:
             self.changeStatus("Error encountered during scanning of depot: " + str(e))
             LOGGER.exception("Scanning Error: %s", e)
@@ -247,6 +249,7 @@ class ParseDepotOverlay(GlobalSelection):
             self.notifyObserver(self.currentMaterials)
         elif self.parsing and not confirmed:
             self.changeStatus("Interrupted, either confirm or discard the new materials with the buttons on the right")
+            self.interrupted = True
             self.finishParsing()
         else:
             self.cancelCallback()
