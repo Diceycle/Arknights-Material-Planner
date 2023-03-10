@@ -7,8 +7,22 @@ from PIL import Image
 
 import time
 
-from config import LOGGER, CONFIG
+from config import LOGGER
 
+def resolveHandler(windowName, childClass, resolutionMode):
+    handler = WindowHandler(windowName)
+    children = listChildWindows(handler.hwnd)
+    if resolutionMode == "BlueStacks":
+        for child in children.values():
+            # HINT, BlueStacks usually has one enabled child window that takes input for the app
+            if child[1]:
+                handler.hwndInput = child[0]
+    elif resolutionMode == "genericWindow":
+        for className, child in children.items():
+            if className == childClass:
+                handler.hwndInput = child[0]
+
+    return handler
 
 class WindowHandler:
     def __init__(self, windowName, childClassName = None, captureBorder=False):
@@ -217,6 +231,7 @@ def click(hwnd, position):
     win32gui.PostMessage(hwnd, win32con.WM_LBUTTONUP, None, coords)
 
 if __name__ == "__main__":
+    from config import CONFIG
     s = WindowHandler(CONFIG.arknightsWindowName, captureBorder=False)
     if not s.ready:
         LOGGER.debug("Could not find Window with title '%s'", CONFIG.arknightsWindowName)

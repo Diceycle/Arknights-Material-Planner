@@ -1,7 +1,7 @@
 import os
 import time
 
-from WindowHandler import WindowHandler
+from WindowHandler import WindowHandler, resolveHandler
 from config import LOGGER
 from database import *
 from imageRecognizing import matchMasked
@@ -148,7 +148,9 @@ def validateMenu(handler):
 class DepotParser:
     def __init__(self, image = None, expectedResult = None, confidenceThreshold = 0.95, debug = False):
         if not image:
-            self.handler = WindowHandler(CONFIG.arknightsWindowName, childClassName=CONFIG.arknightsInputWindowClass, captureBorder=False)
+            self.handler = resolveHandler(CONFIG.arknightsWindowName,
+                                          childClass=CONFIG.arknightsInputWindowClass,
+                                          resolutionMode=CONFIG.arknightsContainer)
             self.image = None
         else:
             self.handler = None
@@ -253,11 +255,3 @@ class DepotParser:
     def destroy(self):
         if self.handler is not None:
             self.handler.cleanup()
-
-if __name__ == "__main__":
-    handler = WindowHandler("Bluestacks", childClassName="plrNativeInputWindowClass", captureBorder=False)
-    personalDepotResult = ['74', '1282', '2473', '2327', '44', '102', '144', '69', '109', '370', '3', '1', '1', 0, '21', '3', '77', 0, '45', '1', '66', 0, '10', '424',
-                           '83', '1', '3', '21', '28', '4', '5', '71', '98', '2', '14', '25', '90', '1', '17', '15', '95', 0, '2', '22', '70', '10',
-                           '58', '3', '42', '5', '7', '29', '28', '77', '23', '71']
-    # parseDepot(handler, expectedResult=personalDepotResult)
-    # parseDepot(image="img/image.png")

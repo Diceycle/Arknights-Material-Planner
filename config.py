@@ -32,8 +32,9 @@ class Config:
                  depotColorInsufficientFont ="white",
                  gamepressUrl ="https://gamepress.gg/arknights/operator/",
                  depotParsingEnabled = True,
+                 arknightsContainer = "BlueStacks",
                  arknightsWindowName ="BlueStacks",
-                 arknightsInputWindowClass ="plrNativeInputWindowClass",
+                 arknightsInputWindowClass = None,
                  arknightsWindowBorder = (1, 33, 33, 1),
                  colorLeniency = 3,
                  tesseractExeLocation = None,
@@ -58,6 +59,7 @@ class Config:
         self.depotColorInsufficientFont = depotColorInsufficientFont
         self.gamepressUrl = gamepressUrl
         self.depotParsingEnabled = depotParsingEnabled
+        self.arknightsContainer = arknightsContainer
         self.arknightsWindowName = arknightsWindowName
         self.arknightsInputWindowClass = arknightsInputWindowClass
         self.arknightsWindowBorder = arknightsWindowBorder
