@@ -1,9 +1,9 @@
-from widgets import LockableCanvas
 
 from tkinter import *
 import os
 import json
 
+from widgets import LockableCanvas
 from ItemSetDisplay import ItemSetDisplay
 from config import CONFIG
 from database import *
@@ -39,7 +39,7 @@ class GUI:
 
         saveData = self.load()
 
-        self.background = LockableCanvas(self.window, bg=CONFIG.backgroundColor, highlightthickness=0, width=self.height, height=self.height, state="disabled")
+        self.background = LockableCanvas(self.window, bg=CONFIG.backgroundColor, highlightthickness=0, width=self.height, height=self.height)
 
         if CONFIG.backgroundImage is not None:
             image = Image.open(CONFIG.backgroundImage)

@@ -23,6 +23,7 @@ class ItemSetDisplay(LockableCanvas):
         self.scrollSpeed = scrollSpeed
         self.totalsUpdateCallback = totalsUpdateCallback
 
+        self.currentSet = None
         self.currentSetWidget = None
 
         self.addSetButton = self.create_image(0, 0, image=UI_ELEMENTS["add-set"].getPhotoImage(self.scale, transparency=0.75), anchor = NW)
@@ -88,6 +89,7 @@ class ItemSetDisplay(LockableCanvas):
         self.updateViewbox()
 
     def pickUpSet(self, e, itemSet, widget):
+        self.currentSet = itemSet
         self.currentSetWidget = widget
         self.setTime = time.time()
         self.winfo_toplevel().call('raise', itemSet, None)
@@ -104,6 +106,8 @@ class ItemSetDisplay(LockableCanvas):
 
     def dropInPosition(self, e):
         row = (e.y + int(self.coords(self.currentSetWidget)[1])) // (self.scale + self.spacing)
+        self.itemSets.remove(self.currentSet)
+        self.itemSets.insert(row, self.currentSet)
         self.itemSetWidgets.remove(self.currentSetWidget)
         self.itemSetWidgets.insert(row, self.currentSetWidget)
         self.draw()
