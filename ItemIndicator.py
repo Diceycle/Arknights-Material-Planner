@@ -1,5 +1,6 @@
 from tkinter import *
 
+from config import CONFIG
 from widgets import CanvasLabel
 
 
@@ -19,15 +20,15 @@ class ItemIndicator:
 
         self.image = self.parent.create_image(self.x, self.y, image=self.material.getPhotoImage(self.scale), anchor=NW)
         self.amountLabel = CanvasLabel(self.parent, self.x + self.scale - self.scale // 20, self.y + self.scale - self.scale // 20, labelHeight,
-                                       anchor=SE, var=self.amount, backgroundColor="black")
+                                       anchor=SE, var=self.amount, backgroundColor=CONFIG.amountColor, textColor=CONFIG.amountColorFont)
 
         if editable:
             self.incrementLabel = CanvasLabel(self.parent, self.x + self.scale, self.y, labelHeight,
-                                              anchor = NE, backgroundColor="black", text = "+", textColor="white")
+                                              anchor = NE, backgroundColor=CONFIG.amountColor, text = "+", textColor=CONFIG.amountColorFont)
             self.incrementLabel.bind("<Button-1>", lambda e: self.incrementAmount())
 
             self.decrementLabel = CanvasLabel(self.parent, self.x, self.y, labelHeight,
-                                              anchor = NW, backgroundColor="black", text = "-", textColor="white")
+                                              anchor = NW, backgroundColor=CONFIG.amountColor, text = "-", textColor=CONFIG.amountColorFont)
             self.decrementLabel.bind("<Button-1>", lambda e: self.decrementAmount())
 
             self.bind("<Enter>", lambda e: self.showIncrementors())

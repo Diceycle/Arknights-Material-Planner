@@ -3,7 +3,7 @@ import sys
 
 from PIL import Image, ImageTk, ImageColor
 
-from config import CONFIG
+from config import CONFIG, Config
 
 UPGRADE_SCALE = 0.75
 
@@ -82,7 +82,7 @@ class UIElement(ScalableImage):
         super().__init__(name, UI_ELEMENTS, "img/ui", image, **kwargs)
 
     def renderImage(self):
-        if CONFIG.highlightColor == "#FFFFFF":
+        if CONFIG.highlightColor == Config().highlightColor:
             return self.image.copy()
 
         im = self.image.copy()

@@ -41,7 +41,7 @@ class LockableCanvas(Canvas):
 class CanvasLabel:
     def __init__(self, parent, x, y, height, anchor = NW,
                  var = None, text = None,
-                 textColor = "white", backgroundColor = None,
+                 textColor = "black", backgroundColor = "",
                  fontFamily ="Arial"):
         self.parent = parent
 
@@ -51,7 +51,6 @@ class CanvasLabel:
 
         self.x = x
         self.y = y
-        self.backgroundColor = backgroundColor
         self.fontSize = int(height / 3 * 2)
         self.padding = height // 6
 
@@ -69,48 +68,46 @@ class CanvasLabel:
         elif "w" in anchor:
             self.x += self.padding
 
+        self.background = self.parent.create_rectangle(0, 0, 0, 0, fill=backgroundColor, outline="")
         self.text = self.parent.create_text(self.x, self.y,
                                             anchor=anchor, fill=textColor,
                                             font=(fontFamily, self.fontSize), justify="center")
-
-        if backgroundColor is not None:
-            self.background = self.parent.create_rectangle(0, 0, 0, 0, fill=backgroundColor, outline="")
-            self.parent.tag_raise(self.text)
         self.var.trace("w", lambda *args: self.updateText())
+
         self.updateText()
 
     def updateText(self):
         self.parent.itemconfigure(self.text, text = self.var.get())
         bbox = self.parent.bbox(self.text)
 
-        if self.backgroundColor and bbox is not None:
+        if bbox is not None:
             self.parent.coords(self.background,
                                bbox[0] - self.padding, bbox[1] - self.padding,
                                bbox[2] + self.padding, bbox[3] + self.padding)
 
-    def updateBackgroundColor(self, color):
-        self.parent.itemconfigure(self.background, fill = color)
+    def changeColor(self, color=None, fontColor=None):
+        if color is not None:
+            self.parent.itemconfigure(self.background, fill = color)
+        if fontColor is not None:
+            self.parent.itemconfigure(self.text, fill = fontColor)
+
 
     def hide(self):
         self.parent.itemconfigure(self.text, state="hidden")
-        if self.backgroundColor is not None:
-            self.parent.itemconfigure(self.background, state="hidden")
+        self.parent.itemconfigure(self.background, state="hidden")
 
     def show(self):
         self.parent.itemconfigure(self.text, state="normal")
-        if self.backgroundColor is not None:
-            self.parent.itemconfigure(self.background, state="normal")
+        self.parent.itemconfigure(self.background, state="normal")
         self.updateText()
 
     def bind(self, trigger, command):
         self.parent.tag_bind(self.text, trigger, command, add="+")
-        if self.backgroundColor is not None:
-            self.parent.tag_bind(self.background, trigger, command, add="+")
+        self.parent.tag_bind(self.background, trigger, command, add="+")
 
     def delete(self):
         self.parent.delete(self.text)
-        if self.backgroundColor is not None:
-            self.parent.delete(self.background)
+        self.parent.delete(self.background)
 
 class ImageCheckbutton:
     def __init__(self, parent, x, y, images, callback, anchor = NW):

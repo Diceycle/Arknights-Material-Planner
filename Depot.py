@@ -28,6 +28,7 @@ class Depot(LockableCanvas):
         self.contents = {}
         self.trueRequirements = {}
         self.craftingRequirements = {}
+        self.craftable = []
         self.requirementLabels = {}
 
         self.indicators = {}
@@ -77,8 +78,8 @@ class Depot(LockableCanvas):
 
         self.requirementLabels[material] = CanvasLabel(self.contentCanvas,
                                                        (x+1)*self.scale - self.scale // 20,
-                                                       (y+1)*self.scale - self.scale // 4 - self.scale // 20, backgroundColor="gray",
-                                                       var=self.craftingRequirements[material], textColor="white",
+                                                       (y+1)*self.scale - self.scale // 4 - self.scale // 20, backgroundColor=CONFIG.depotColorSufficient,
+                                                       var=self.craftingRequirements[material], textColor=CONFIG.depotColorSufficientFont,
                                                        height=self.scale // 5, anchor=SE)
 
     def updateItemRequirements(self, requirements):
@@ -88,19 +89,35 @@ class Depot(LockableCanvas):
     def updateItemRequirementsInternal(self):
         requirements = self.trueRequirements.copy()
 
-        tier = 5
-        while tier > 0:
+        for tier in range(5, 0, -1):
             for m in list(requirements.keys()):
                 if m.tier == tier and m.isCraftable():
                     c = Counter(m.getIngredients())
                     requirements += multiplyCounter(c, (max(0, requirements[m] - self.contents[m].get())))
-            tier -= 1
 
         for m in self.craftingRequirements.keys():
             if m in requirements:
                 self.craftingRequirements[m].set(requirements[m])
             else:
                 self.craftingRequirements[m].set(0)
+
+        self.craftable = []
+        for i in range(5):
+            tier = i + 1
+            for m, a in self.craftingRequirements.items():
+                if m.tier == tier and m.isCraftable():
+                    craftable = True
+                    for ing in m.getIngredients().keys():
+                        if ing not in self.craftable:
+                            craftable = False
+                            break
+                    if craftable:
+                        self.craftable.append(m)
+                elif m.tier == tier and not m.isCraftable():
+                    if self.craftingRequirements[m].get() <= self.contents[m].get():
+                        self.craftable.append(m)
+
+
 
         self.draw()
 
@@ -138,9 +155,12 @@ class Depot(LockableCanvas):
             self.requirementLabels[material].hide()
 
         if self.craftingRequirements[material].get() > self.contents[material].get():
-            self.requirementLabels[material].updateBackgroundColor("red")
+            if not material.isCraftable() or not material in self.craftable:
+                self.requirementLabels[material].changeColor(color=CONFIG.depotColorInsufficient, fontColor=CONFIG.depotColorInsufficientFont)
+            else:
+                self.requirementLabels[material].changeColor(color=CONFIG.depotColorCraftable, fontColor=CONFIG.depotColorCraftableFont)
         else:
-            self.requirementLabels[material].updateBackgroundColor("gray")
+            self.requirementLabels[material].changeColor(color=CONFIG.depotColorSufficient, fontColor=CONFIG.depotColorSufficientFont)
 
     def parseDepot(self):
         OVERLAYS["ParsedDepotContents"].registerCallback(self.updateDepot)
@@ -234,7 +254,7 @@ class ParseDepotOverlay(GlobalSelection):
         i = self.indicators[material]
         if amount is None:
             self.vars[material].set(0)
-            i.amountLabel.updateBackgroundColor("red")
+            i.amountLabel.changeColor(color=CONFIG.depotColorInsufficient, fontColor=CONFIG.depotColorInsufficientFont)
 
         if amount is not None:
             self.vars[material].set(amount)
@@ -262,7 +282,7 @@ class ParseDepotOverlay(GlobalSelection):
         super().cleanup()
         for i in self.indicators.values():
             i.hide()
-            i.amountLabel.updateBackgroundColor("black")
+            i.amountLabel.changeColor(color=CONFIG.amountColor, fontColor=CONFIG.amountColorFont)
 
     def changeStatus(self, text):
         self.itemconfigure(self.statusLabel,text=text)
