@@ -165,6 +165,9 @@ class DepotParser:
         if not self.handler.ready:
             return "Arknights is not running or cannot be found. Check your Arknights Window configuration."
 
+        if CONFIG.tesseractExeLocation is None:
+            return "Tesseract Exe needs to be configured"
+
         self.materialIndex = 0
         self.finalPage = False
 
