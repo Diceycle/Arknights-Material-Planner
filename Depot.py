@@ -22,6 +22,7 @@ class Depot(LockableCanvas):
             self.controlCanvasParent = parent
         super().__init__(parent, highlightthickness=0, bg=CONFIG.color, width=self.width, height=self.totalHeight)
 
+        self.updatesEnabled = True
 
         self.scale = scale
         self.amountLabelHeight = self.scale // 5
@@ -87,6 +88,9 @@ class Depot(LockableCanvas):
         self.updateItemRequirementsInternal()
 
     def updateItemRequirementsInternal(self):
+        if not self.updatesEnabled:
+            return
+
         requirements = self.trueRequirements.copy()
 
         for tier in range(5, 0, -1):
@@ -116,8 +120,6 @@ class Depot(LockableCanvas):
                 elif m.tier == tier and not m.isCraftable():
                     if self.craftingRequirements[m].get() <= self.contents[m].get():
                         self.craftable.append(m)
-
-
 
         self.draw()
 
@@ -166,8 +168,11 @@ class Depot(LockableCanvas):
         OVERLAYS["ParsedDepotContents"].registerCallback(self.updateDepot)
 
     def updateDepot(self, materials):
+        self.updatesEnabled = False
         for m, v in materials.items():
             self.contents[m].set(v)
+        self.updatesEnabled = True
+        self.updateItemRequirementsInternal()
 
     def displayRecipe(self, material, x, y):
         OVERLAYS["RecipeDisplay"].displayRecipe(self, material, (x-1)*self.scale, ((y+1)*self.scale - 1) % self.pageHeight)
@@ -177,8 +182,8 @@ class Depot(LockableCanvas):
 
 class ParseDepotOverlay(GlobalSelection):
     def __init__(self, parent, scale, **kwargs):
-        width = 14 * scale
-        height = 5 * scale + scale // 2
+        width = 11 * scale
+        height = 10 * scale
         super().__init__(parent, "ParsedDepotContents", width=width, height=height, **kwargs)
 
         self.parent = parent
@@ -203,8 +208,12 @@ class ParseDepotOverlay(GlobalSelection):
 
     def placeIndicator(self, material):
         y, x = material.getPosition()
+        if x > 10:
+            x -= 11
+            y = (4-y) + 5
+        y += 1
         self.vars[material] = IntVar(value=0)
-        i = ItemIndicator(self, self.scale, material, x * self.scale, y * self.scale + self.scale // 2, self.scale // 5, self.vars[material], editable=False)
+        i = ItemIndicator(self, self.scale, material, x * self.scale, y * self.scale, self.scale // 5, self.vars[material], editable=False)
         i.hide()
 
         self.indicators[material] = i

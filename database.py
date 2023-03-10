@@ -172,6 +172,24 @@ class Material(ScalableImage):
             return x+1, 12
         elif self.name.startswith("module"):
             return 5-int(self.name[self.name.find("-")+1:]), 13
+        elif self.name.startswith("chip-catalyst"):
+            return 1, 13
+        elif self.name.startswith("chip-vanguard"):
+            return x+2, 14
+        elif self.name.startswith("chip-guard"):
+            return x+2, 15
+        elif self.name.startswith("chip-defender"):
+            return x+2, 16
+        elif self.name.startswith("chip-caster"):
+            return x+2, 17
+        elif self.name.startswith("chip-sniper"):
+            return x+2, 18
+        elif self.name.startswith("chip-healer"):
+            return x+2, 19
+        elif self.name.startswith("chip-supporter"):
+            return x+2, 20
+        elif self.name.startswith("chip-specialist"):
+            return x+2, 21
 
     def renderImage(self):
         border = loadImage("img/border", "T" + str(self.tier) + ".png")
@@ -292,6 +310,42 @@ Material("module-1", "Module Data Block", 5, "module-1.png")
 Material("module-2", "Data Supplement Stick", 4, "module-2.png")
 Material("module-3", "Data Supplement Instrument", 5, "module-3.png")
 
+Material("chip-catalyst", "Chip Catalyst", 4, "chip-catalyst.png")
+
+Material("chip-vanguard-1", "Vanguard Chip", 3, "chip-vanguard-1.png")
+Material("chip-vanguard-2", "Vanguard Chip Pack", 4, "chip-vanguard-2.png")
+Material("chip-vanguard-3", "Vanguard Dualchip", 5, "chip-vanguard-3.png", recipe={"chip-vanguard-2": 2, "chip-catalyst": 1})
+
+Material("chip-guard-1", "Guard Chip", 3, "chip-guard-1.png")
+Material("chip-guard-2", "Guard Chip Pack", 4, "chip-guard-2.png")
+Material("chip-guard-3", "Guard Dualchip", 5, "chip-guard-3.png", recipe={"chip-guard-2": 2, "chip-catalyst": 1})
+
+Material("chip-caster-1", "Caster Chip", 3, "chip-caster-1.png")
+Material("chip-caster-2", "Caster Chip Pack", 4, "chip-caster-2.png")
+Material("chip-caster-3", "Caster Dualchip", 5, "chip-caster-3.png", recipe={"chip-caster-2": 2, "chip-catalyst": 1})
+
+Material("chip-sniper-1", "Sniper Chip", 3, "chip-sniper-1.png")
+Material("chip-sniper-2", "Sniper Chip Pack", 4, "chip-sniper-2.png")
+Material("chip-sniper-3", "Sniper Dualchip", 5, "chip-sniper-3.png", recipe={"chip-sniper-2": 2, "chip-catalyst": 1})
+
+Material("chip-defender-1", "Defender Chip", 3, "chip-defender-1.png")
+Material("chip-defender-2", "Defender Chip Pack", 4, "chip-defender-2.png")
+Material("chip-defender-3", "Defender Dualchip", 5, "chip-defender-3.png", recipe={"chip-defender-2": 2, "chip-catalyst": 1})
+
+Material("chip-healer-1", "Healer Chip", 3, "chip-healer-1.png")
+Material("chip-healer-2", "Healer Chip Pack", 4, "chip-healer-2.png")
+Material("chip-healer-3", "Healer Dualchip", 5, "chip-healer-3.png", recipe={"chip-healer-2": 2, "chip-catalyst": 1})
+
+Material("chip-supporter-1", "Supporter Chip", 3, "chip-supporter-1.png")
+Material("chip-supporter-2", "Supporter Chip Pack", 4, "chip-supporter-2.png")
+Material("chip-supporter-3", "Supporter Dualchip", 5, "chip-supporter-3.png", recipe={"chip-supporter-2": 2, "chip-catalyst": 1})
+
+Material("chip-specialist-1", "Specialist Chip", 3, "chip-specialist-1.png")
+Material("chip-specialist-2", "Specialist Chip Pack", 4, "chip-specialist-2.png")
+Material("chip-specialist-3", "Specialist Dualchip", 5, "chip-specialist-3.png", recipe={"chip-specialist-2": 2, "chip-catalyst": 1})
+
+
+
 DEPOT_ORDER = ["exp-4", "exp-3", "exp-2", "exp-1", "skill-3", "skill-2", "skill-1", "module-1", "module-3", "module-2",
                "steel-5", "nanoflake-5", "polymer-5",
                "kohl-4", "kohl-3", "manganese-4", "manganese-3", "grindstone-4", "grindstone-3", "rma-4", "rma-3",
@@ -299,7 +353,12 @@ DEPOT_ORDER = ["exp-4", "exp-3", "exp-2", "exp-1", "skill-3", "skill-2", "skill-
                "plastic-4", "plastic-3", "plastic-2", "plastic-1", "sugar-4", "sugar-3", "sugar-2", "sugar-1",
                "oriron-4", "oriron-3", "oriron-2", "oriron-1", "keton-4", "keton-3", "keton-2", "keton-1",
                "gel-4", "gel-3", "incandescent-4", "incandescent-3", "crystal-5", "crystal-4", "crystal-3",
-               "solvent-4", "solvent-3", "fluid-4", "fluid-3"]
+               "solvent-4", "solvent-3", "fluid-4", "fluid-3",
+               "chip-catalyst",
+               "chip-vanguard-3", "chip-guard-3", "chip-defender-3", "chip-caster-3", "chip-sniper-3", "chip-healer-3", "chip-supporter-3", "chip-specialist-3",
+               "chip-vanguard-2", "chip-guard-2", "chip-defender-2", "chip-caster-2", "chip-sniper-2", "chip-healer-2", "chip-supporter-2", "chip-specialist-2",
+               "chip-vanguard-1", "chip-guard-1", "chip-defender-1", "chip-caster-1", "chip-sniper-1", "chip-healer-1", "chip-supporter-1", "chip-specialist-1",
+]
 
 Operator("Amiya", "char_002_amiya.png")
 Operator("Kal'tsit", "char_003_kalts.png", externalName="kaltsit")

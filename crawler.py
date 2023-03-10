@@ -109,7 +109,7 @@ def downloadCosts(operator):
             if materialCell in line:
                 currentMaterial = parseMaterial(line)
             if materialQuantityTag in line:
-                if not currentMaterial.startswith("LMD") and not "chip" in currentMaterial.lower():
+                if not currentMaterial.startswith("LMD"):
                     costs[UPGRADES[indexToElite(eliteTableRow)]][getMaterial(currentMaterial)] = int(parseQuantity(line))
 
     json.dump(toExternal(costs, recurse=toExternal), safeOpen(getFileName(operator)))
