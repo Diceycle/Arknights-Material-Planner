@@ -7,7 +7,7 @@ from PIL import Image
 
 import time
 
-from config import LOGGER
+from config import LOGGER, CONFIG
 
 
 class WindowHandler:
@@ -191,7 +191,7 @@ def listWindows():
         return True
 
     EnumWindows(EnumWindowsProc(foreach_window), 0)
-    print(titles)
+    LOGGER.debug("Available Window Titles: %s", titles)
 
 def listChildWindows(hwnd):
     childHandles = {}
@@ -217,12 +217,11 @@ def click(hwnd, position):
     win32gui.PostMessage(hwnd, win32con.WM_LBUTTONUP, None, coords)
 
 if __name__ == "__main__":
-    # listWindows()
-    s = WindowHandler("BlueStacks", childClassName="plrNativeInputWindowClass", captureBorder=True)
-
-    s.takeScreenshot().show()
-    # lineStart = (1450, 360)
-    # lineEnd = (25, 360)
-    #
-    # s.dragLine(lineStart, lineEnd)
-    # s.click(matButton)
+    s = WindowHandler(CONFIG.arknightsWindowName, captureBorder=False)
+    if not s.ready:
+        LOGGER.debug("Could not find Window with title '%s'", CONFIG.arknightsWindowName)
+        listWindows()
+    else:
+        for k, v in listChildWindows(s.hwnd).items():
+            LOGGER.debug("Child: %s, %s", k, v)
+    input("Press Enter to close...")

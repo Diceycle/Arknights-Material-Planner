@@ -5,26 +5,36 @@ import PyInstaller.__main__
 
 console = False
 name = "ArknightsMaterials"
+windowHandlerName = "FindArknightsWindow"
 
 distFolder = "_dist/"
 workFolder = "_build/"
 
-command = ['ArknightsMaterials.py',
-           '--name', name,
-           '--icon', '../rock.ico',
-           '--distpath', distFolder,
-           '--workpath', workFolder,
-           '--add-data', '../img;img',
-           '--add-data', '../config.json;.',
-           '--add-data', '../rock.ico;.',
-           '--runtime-hook', 'addLib.py',
-           '--specpath', workFolder,
-           '--noconfirm']
+mainCommand = ['ArknightsMaterials.py',
+               '--name', name,
+               '--icon', '../rock.ico',
+               '--distpath', distFolder,
+               '--workpath', workFolder,
+               '--add-data', '../img;img',
+               '--add-data', '../config.json;.',
+               '--add-data', '../rock.ico;.',
+               '--runtime-hook', 'addLib.py',
+               '--specpath', workFolder,
+               '--noconfirm']
 
 if not console:
-    command.append('--noconsole')
+    mainCommand.append('--noconsole')
 
-PyInstaller.__main__.run(command)
+windowHandlerCommand = ['WindowHandler.py',
+                        '--name', windowHandlerName,
+                        '--distpath', distFolder,
+                        '--workpath', workFolder,
+                        '--specpath', workFolder,
+                        '--noconfirm',
+                        '--onefile']
+
+PyInstaller.__main__.run(mainCommand)
+PyInstaller.__main__.run(windowHandlerCommand)
 
 distFolderFull = distFolder + name + "/"
 libFolder = distFolderFull + "lib/"
@@ -45,3 +55,5 @@ for f in os.listdir(distFolderFull):
     if os.path.isfile(distFolderFull + f):
         if f not in doNotMove and not f.startswith("libopenblas"):
             shutil.move(distFolderFull + f, libFolder + f)
+
+shutil.move(distFolder + windowHandlerName + ".exe", distFolderFull + windowHandlerName + ".exe")
