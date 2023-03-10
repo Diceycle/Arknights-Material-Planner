@@ -64,6 +64,8 @@ class Depot(LockableCanvas):
 
         self.separator = self.contentCanvas.create_line(0, 0, 0, self.totalHeight, fill=CONFIG.highlightColor, width=1)
 
+        self.draw()
+
     def placeItemIndicator(self, material, x, y, initialAmount = 0):
         self.contents[material] = IntVar(value = initialAmount)
         self.contents[material].trace("w", lambda *args: self.updateItemRequirementsInternal())
