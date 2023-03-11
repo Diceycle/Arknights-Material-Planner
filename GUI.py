@@ -50,11 +50,15 @@ class GUI:
         self.background.pack(side=RIGHT)
         self.depot.controlCanvas.place(relx=1, y=0, anchor=NE)
 
+        self.initialising = True
         for savedSet in saveData["sets"]:
             self.setCanvas.addSet(savedSet["operator"], savedSet["upgrade"], savedSet["materials"], savedSet["enabled"])
+        self.initialising = False
+        self.updateItemTotals(self.setCanvas.getItemTotals())
 
     def updateItemTotals(self, totals):
-        self.depot.updateItemRequirements(totals)
+        if not self.initialising:
+            self.depot.updateItemRequirements(totals)
 
     def disable(self, notifyCallback = None):
         self.depot.disable(notifyCallback)

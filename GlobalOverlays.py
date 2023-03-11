@@ -124,9 +124,6 @@ class OperatorSelection(GlobalSelection):
         self.entry.place(x=10, y = scale // 4, anchor=W)
         self.entryOffset = self.scale // 2
 
-        for op in sorted(OPERATORS.keys()):
-            self.ops[op] = self.createImage(OPERATORS[op])
-
         self.draw()
 
     def callDisableCallback(self):
@@ -145,9 +142,11 @@ class OperatorSelection(GlobalSelection):
         for op in self.ops.keys():
             self.itemconfigure(self.ops[op], state="hidden")
 
-        matches = self.findMatches(self.query.get(), self.ops.keys(), self.rows * self.columns)
+        matches = self.findMatches(self.query.get(), OPERATORS.keys(), self.rows * self.columns)
         for c in range(len(matches)):
             op = matches[c]
+            if not op in self.ops:
+                self.ops[op] = self.createImage(OPERATORS[op])
             self.itemconfigure(self.ops[op], state="normal")
             self.coords(self.ops[op], self.scale*(c%self.columns), self.entryOffset + self.scale*(c // self.columns))
 
