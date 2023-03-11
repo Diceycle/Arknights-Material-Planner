@@ -151,8 +151,9 @@ class OperatorSelection(GlobalSelection):
             self.coords(self.ops[op], self.scale*(c%self.columns), self.entryOffset + self.scale*(c // self.columns))
 
     def findMatches(self, query, values, results):
+        values = sorted(values)
         if self.query.get() == "":
-            return list(values)[:results]
+            return values[:results]
 
         query = query.lower()
 
