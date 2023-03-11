@@ -145,8 +145,6 @@ class Material(ScalableImage):
             return toMaterials(self.recipe)
 
     def getPosition(self):
-        if self.name.startswith("money"):
-            return -1, -1
 
         x = 5 - self.tier
         if self.name.startswith("fluid") or self.name.startswith("gel") or \
@@ -180,6 +178,8 @@ class Material(ScalableImage):
             return x+1, 11
         elif self.name.startswith("skill"):
             return x+1, 12
+        elif self.name.startswith("money"):
+            return 1, 12
         elif self.name.startswith("module"):
             return 5-int(self.name[self.name.find("-")+1:]), 13
         elif self.name.startswith("chip-catalyst"):

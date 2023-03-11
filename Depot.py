@@ -69,8 +69,14 @@ class Depot(LockableCanvas):
     def placeItemIndicator(self, material, x, y, initialAmount = 0):
         self.contents[material] = IntVar(value = initialAmount)
         self.contents[material].trace("w", lambda *args: self.updateItemRequirementsInternal())
+
+        multiplier = 1
+        if material.name == "money":
+            multiplier = 10000
+
         self.craftingRequirements[material] = IntVar()
-        i = ItemIndicator(self.contentCanvas, self.scale, material, x * self.scale, y * self.scale, self.amountLabelHeight, self.contents[material], scrollable=True)
+        i = ItemIndicator(self.contentCanvas, self.scale, material, x * self.scale, y * self.scale, self.amountLabelHeight,
+                          self.contents[material], scrollable=True, incrementMultiplier=multiplier)
         i.bind("<Button-1>", lambda e: self.displayRecipe(material, x, y), incrementors=False)
 
         self.indicators[material] = i

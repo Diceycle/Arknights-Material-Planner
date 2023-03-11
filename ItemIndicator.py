@@ -5,7 +5,7 @@ from widgets import CanvasLabel
 
 
 class ItemIndicator:
-    def __init__(self, parent, scale, material, x, y, labelHeight, var, editable = True, scrollable = False):
+    def __init__(self, parent, scale, material, x, y, labelHeight, var, editable = True, scrollable = False, incrementMultiplier = 1):
 
         self.parent = parent
         self.material = material
@@ -14,6 +14,7 @@ class ItemIndicator:
         self.y = y
         self.labelHeight = labelHeight
         self.amount = var
+        self.incrementMultiplier = incrementMultiplier
 
         self.editable = editable
         self.hidden = True
@@ -52,12 +53,12 @@ class ItemIndicator:
 
     def incrementAmount(self):
         if not self.hidden:
-            self.amount.set(self.amount.get() + 1)
+            self.amount.set(self.amount.get() + 1 * self.incrementMultiplier)
 
     def decrementAmount(self):
         if not self.hidden:
             if self.amount.get() > 0:
-                self.amount.set(self.amount.get() - 1)
+                self.amount.set(self.amount.get() - 1 * self.incrementMultiplier)
 
     def activateMouseWheelBinding(self):
         if not self.hidden:
