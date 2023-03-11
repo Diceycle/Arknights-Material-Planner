@@ -62,7 +62,7 @@ class GlobalSelection(Canvas):
 
 class UpgradeSelection(GlobalSelection):
     def __init__(self, parent, scale, **kwargs):
-        super().__init__(parent, "UpgradeSelection", width=3*scale, height=5*scale, **kwargs)
+        super().__init__(parent, "UpgradeSelection", width=3*scale, height=7*scale, **kwargs)
 
         self.scale = scale
 
@@ -80,6 +80,14 @@ class UpgradeSelection(GlobalSelection):
         self.placeImage(0, 4, UPGRADES["S3M1"])
         self.placeImage(1, 4, UPGRADES["S3M2"])
         self.placeImage(2, 4, UPGRADES["S3M3"])
+
+        self.placeImage(0, 5, UPGRADES["MOD-X-1"])
+        self.placeImage(1, 5, UPGRADES["MOD-X-2"])
+        self.placeImage(2, 5, UPGRADES["MOD-X-3"])
+
+        self.placeImage(0, 6, UPGRADES["MOD-Y-1"])
+        self.placeImage(1, 6, UPGRADES["MOD-Y-2"])
+        self.placeImage(2, 6, UPGRADES["MOD-Y-3"])
 
     def placeImage(self, x, y, upgrade):
         up = self.create_image(x*self.scale + self.scale // 2,

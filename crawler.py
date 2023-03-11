@@ -17,6 +17,7 @@ gamepressUrl = CONFIG.gamepressUrl
 skillTableStart = "class=\"skill-material-cost17"
 masteryTableStart = "class=\"skill-material-cost810"
 eliteTableStart = "class=\"table-3"
+moduleTableStart = "class=\"main-title\">Modules"
 materialCell = "class=\"material-cell"
 materialQuantityTag = "class=\"material-quantity"
 
@@ -29,17 +30,43 @@ def indexToMastery(index):
 def indexToElite(index):
     return "E" + str(index+1)
 
+def valuesToModuleUpgrade(moduleType, moduleLevel):
+    return "MOD-{}-{}".format(moduleType, moduleLevel).upper()
+
 def parseMaterial(line):
     return re.search(".*data-item=\"([^\"]*)\"", line).group(1)
 
+def parseMaterialFileName(line):
+    return re.search(".*item-image\".*(?=/[^/\.]*\.png)/(.+)\.png", line).group(1)
+
 def parseQuantity(line):
     return re.search(".*material-quantity\">x(\d+)", line).group(1)
+
+def parseModuleType(line):
+    match = re.search(".*img src.*(?=/[^/\.]*\.png)/[\w\-]+([xyz])\.png", line)
+    if match is not None:
+        return match.group(1)
+
+    return None
+
+def parseModuleLevel(line):
+    match = re.search(".*module-equip-level\">Lvl\. (\d)", line)
+    if match is not None:
+        return match.group(1)
+
+    return None
 
 def getMaterial(canonicalName):
     for m in MATERIALS.values():
         if m.canonicalName == canonicalName:
             return m
     LOGGER.warning("Unrecognized Material: %s", canonicalName)
+
+def getMaterialFromFileName(fileName):
+    for m in MATERIALS.values():
+        if m.externalFileName == fileName:
+            return m
+    LOGGER.warning("Unrecognized Material: %s", fileName)
 
 def getRequest(url):
     try:
@@ -58,6 +85,9 @@ def downloadCosts(operator):
     skillTableRow = None
     masteryTableRow = None
     eliteTableRow = None
+    moduleParsing = False
+    currentModuleType = None
+    currentModule = None
     currentMaterial = None
 
     costs = {}
@@ -110,6 +140,31 @@ def downloadCosts(operator):
             if materialQuantityTag in line:
                 if not currentMaterial.startswith("LMD"):
                     costs[UPGRADES[indexToElite(eliteTableRow)]][getMaterial(currentMaterial)] = int(parseQuantity(line))
+
+
+        if moduleTableStart in line:
+            moduleParsing = True
+
+        if moduleParsing:
+            if "module-type-image" in line:
+                currentModuleType = "next"
+            if "img src" in line and currentModuleType == "next":
+                currentModuleType = parseModuleType(line)
+            if "module-equip-level" in line:
+                currentModuleLevel = parseModuleLevel(line)
+                if currentModuleType is not None and currentModuleLevel is not None:
+                    currentModule = valuesToModuleUpgrade(currentModuleType, currentModuleLevel)
+                    costs[UPGRADES[currentModule]] = {}
+
+            if currentModule is not None and "class=\"item-image" in line:
+                currentMaterial = parseMaterialFileName(line)
+            if currentModule is not None and materialQuantityTag in line:
+                if not currentMaterial.startswith("GOLD"):
+                    costs[UPGRADES[currentModule]][getMaterialFromFileName(currentMaterial)] = parseQuantity(line)
+
+            if "</article>" in line:
+                currentModule = None
+
 
     json.dump(toExternal(costs, recurse=toExternal), safeOpen(getFileName(operator)))
     return costs

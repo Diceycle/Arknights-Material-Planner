@@ -78,12 +78,6 @@ There is a bit of unused space between your upgrades and your depot. Why not dis
 Set `backgroundImage` to any image on your hard drive to get it displayed there. Use `backgroundImageOffset` to adjust
 the position if necessary. The color behind the image can also be separately controlled by `backgroundColor`.
 
-### Missing Features
-
-* Module Costs can currently not be configured or downloaded from Gamepress. Gamepress unfortunately does not present
-  them in a machine friendly way.
-* Class Chips cannot be scanned for or configured as costs.
-
 ## Configuration Reference
 
 Configuration is read from a file called `config.json` and is a single JSON-Object with the following possible values.
