@@ -31,8 +31,10 @@ class ItemSetDisplay(LockableCanvas):
         self.scrollbarCanvas = LockableCanvas(self, height = self.height, width=self.scrollbarWidth, highlightthickness=0, bg=CONFIG.colorDark)
         self.scrollbarCanvas.place(relx = 1, y = 0, anchor=NE)
         self.addChildCanvas(self.scrollbarCanvas)
+        self.separatorRight = self.scrollbarCanvas.create_line(self.scrollbarWidth -1, 0, self.scrollbarWidth -1, self.height, fill=CONFIG.color)
         self.scrollbar = self.scrollbarCanvas.create_rectangle(0, 0, 0, 0, fill=CONFIG.color, outline=CONFIG.highlightColor, width=1)
         self.bind("<MouseWheel>", self.scrollWheel)
+        self.scrollbarCanvas.bind("<MouseWheel>", self.scrollWheel)
         self.scrollbarCanvas.tag_bind(self.scrollbar, "<Button-1>", self.startScroll)
         self.scrollbarCanvas.tag_bind(self.scrollbar, "<B1-Motion>", self.scrollDrag)
         self.scrollbarCanvas.tag_bind(self.scrollbar, "<ButtonRelease-1>", lambda e: self.stopScroll())
@@ -156,4 +158,4 @@ class ItemSetDisplay(LockableCanvas):
         self.scrolling = False
 
     def getTotalHeight(self):
-        return len(self.itemSets) * (self.scale + self.spacing) + self.scale
+        return (len(self.itemSets) + 1) * (self.scale + self.spacing)
