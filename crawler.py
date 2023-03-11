@@ -74,7 +74,7 @@ def downloadCosts(operator):
 
         if skillTableStart in line:
             skillTableRow = -2
-            costs[UPGRADES["SK7"]] = {}
+            costs[UPGRADES["SK7"]] = {MATERIALS["skill-3"]: 0}
 
         if skillTableRow is not None:
             if materialCell in line:
