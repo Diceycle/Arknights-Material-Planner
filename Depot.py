@@ -36,7 +36,7 @@ class Depot(LockableCanvas):
         if CONFIG.depotParsingEnabled:
             controlCanvasHeight += self.scale // 2
         self.controlCanvas = LockableCanvas(self.controlCanvasParent, highlightthickness=0, bg=CONFIG.backgroundColor, width=scale // 2, height=controlCanvasHeight)
-        self.contentCanvas = LockableCanvas(self, highlightthickness=0, bg=CONFIG.color, width=self.width, height=self.pageHeight)
+        self.contentCanvas = LockableCanvas(self, highlightthickness=0, bg=CONFIG.color, width=self.width, height=self.totalHeight)
         self.contentCanvas.place(x = 0, y = 0)
         self.addChildCanvas(self.contentCanvas)
         self.addChildCanvas(self.controlCanvas)
@@ -132,7 +132,7 @@ class Depot(LockableCanvas):
         else:
             offset = 0
 
-        self.contentCanvas.config(scrollregion=(0, offset, self.width, offset + self.pageHeight))
+        self.contentCanvas.config(scrollregion=(0, offset, self.width, offset + self.totalHeight))
 
     def toggleVisibility(self, state):
         self.renderIndicatorVisibility(state)
