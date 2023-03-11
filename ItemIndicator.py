@@ -5,7 +5,8 @@ from widgets import CanvasLabel
 
 
 class ItemIndicator:
-    def __init__(self, parent, scale, material, x, y, labelHeight, var, editable = True, scrollable = False, incrementMultiplier = 1):
+    def __init__(self, parent, scale, material, x, y, labelHeight, var, editable = True, scrollable = False,
+                 incrementMultiplier = 1, additionalLabels = []):
 
         self.parent = parent
         self.material = material
@@ -15,6 +16,7 @@ class ItemIndicator:
         self.labelHeight = labelHeight
         self.amount = var
         self.incrementMultiplier = incrementMultiplier
+        self.additionalLabels = additionalLabels
 
         self.editable = editable
         self.hidden = True
@@ -95,6 +97,8 @@ class ItemIndicator:
     def bind(self, trigger, command, incrementors=True):
         self.parent.tag_bind(self.image, trigger, command, add="+")
         self.amountLabel.bind(trigger, command)
+        for label in self.additionalLabels:
+            label.bind(trigger, command)
         if self.editable and incrementors:
             self.incrementLabel.bind(trigger, command)
             self.decrementLabel.bind(trigger, command)

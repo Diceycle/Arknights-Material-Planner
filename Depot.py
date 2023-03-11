@@ -70,22 +70,24 @@ class Depot(LockableCanvas):
         self.contents[material] = IntVar(value = initialAmount)
         self.contents[material].trace("w", lambda *args: self.updateItemRequirementsInternal())
 
+        self.craftingRequirements[material] = IntVar()
+        self.requirementLabels[material] = CanvasLabel(self.contentCanvas,
+                                                       (x + 1) * self.scale - self.scale // 20,
+                                                       (y + 1) * self.scale - self.scale // 4 - self.scale // 20,
+                                                       var=self.craftingRequirements[material],
+                                                       height=self.scale // 5, anchor=SE)
+
         multiplier = 1
         if material.name == "money":
             multiplier = 10000
 
-        self.craftingRequirements[material] = IntVar()
         i = ItemIndicator(self.contentCanvas, self.scale, material, x * self.scale, y * self.scale, self.amountLabelHeight,
-                          self.contents[material], scrollable=True, incrementMultiplier=multiplier)
+                          self.contents[material], scrollable=True, incrementMultiplier=multiplier,
+                          additionalLabels=[self.requirementLabels[material]])
         i.bind("<Button-1>", lambda e: self.displayRecipe(material, x, y), incrementors=False)
 
+        self.requirementLabels[material].raiseWidgets()
         self.indicators[material] = i
-
-        self.requirementLabels[material] = CanvasLabel(self.contentCanvas,
-                                                       (x+1)*self.scale - self.scale // 20,
-                                                       (y+1)*self.scale - self.scale // 4 - self.scale // 20, backgroundColor=CONFIG.depotColorSufficient,
-                                                       var=self.craftingRequirements[material], textColor=CONFIG.depotColorSufficientFont,
-                                                       height=self.scale // 5, anchor=SE)
 
     def updateItemRequirements(self, requirements):
         self.trueRequirements = Counter(requirements)

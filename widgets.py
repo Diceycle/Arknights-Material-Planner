@@ -102,6 +102,10 @@ class CanvasLabel:
         self.parent.itemconfigure(self.background, state="normal")
         self.updateText()
 
+    def raiseWidgets(self):
+        self.parent.tag_raise(self.background)
+        self.parent.tag_raise(self.text)
+
     def bind(self, trigger, command):
         self.parent.tag_bind(self.text, trigger, command, add="+")
         self.parent.tag_bind(self.background, trigger, command, add="+")
