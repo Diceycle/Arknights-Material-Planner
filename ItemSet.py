@@ -47,12 +47,6 @@ class ItemSet(LockableCanvas):
         if researchOnly:
             self.notAvailable = self.create_image(self.scale * 2 + self.scale // 2, 0, image=UI_ELEMENTS["n-a"].getPhotoImage(self.scale, transparency=0.75), anchor = NW, state="hidden")
 
-        if not self.researchOnly:
-            for m, a in materials.items():
-                self.addMaterialInternal(m, a)
-        else:
-            self.researchMaterials()
-
         if editable and not researchOnly:
             self.addButton = self.create_image(0, 0, image=UI_ELEMENTS["add"].getPhotoImage(self.scale, transparency=0.75), anchor=NW)
             self.tag_bind(self.addButton, "<Button-1>", lambda e: self.addMaterialTrigger())
@@ -68,7 +62,12 @@ class ItemSet(LockableCanvas):
         if deletable:
             self.deleteButton = self.create_image(self.width, 0, image=UI_ELEMENTS["close"].getPhotoImage(self.uiIconScale), anchor=NE)
 
-        self.draw()
+        if not self.researchOnly:
+            for m, a in materials.items():
+                self.addMaterialInternal(m, a)
+            self.draw()
+        else:
+            self.researchMaterials()
 
     def draw(self):
         for i in self.itemIndicators:
