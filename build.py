@@ -17,6 +17,7 @@ mainCommand = ['ArknightsMaterials.py',
                '--workpath', workFolder,
                '--add-data', '../img;img',
                '--add-data', '../config-defaults.json;.',
+               '--add-data', '../operators.json;.',
                '--add-data', '../rock.ico;.',
                '--add-data', '../README.md;.',
                '--runtime-hook', 'addLib.py',
@@ -50,6 +51,7 @@ doNotMove = [
 
     "rock.ico",
     "config-defaults.json",
+    "operators.json",
     "README.md"
 ]
 
