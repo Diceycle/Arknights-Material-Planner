@@ -1,5 +1,6 @@
 import os
 import time
+
 import pytesseract
 from PIL import ImageOps, Image
 

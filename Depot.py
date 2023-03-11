@@ -1,14 +1,12 @@
-import random
 from collections import Counter
 from tkinter import *
 
-from widgets import CanvasLabel, LockableCanvas, ImageCheckbutton
-from GlobalOverlays import OVERLAYS, GlobalSelection
-from WindowHandler import WindowHandler
-from config import CONFIG, LOGGER
-from database import *
-from ItemIndicator import ItemIndicator
 from DepotParser import DepotParser
+from GlobalOverlays import OVERLAYS, GlobalSelection
+from ItemIndicator import ItemIndicator
+from config import LOGGER
+from database import *
+from widgets import CanvasLabel, LockableCanvas, ImageCheckbutton
 
 
 class Depot(LockableCanvas):

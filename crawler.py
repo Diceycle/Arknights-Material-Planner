@@ -1,10 +1,9 @@
 import json
-import os
-import urllib.request
-import urllib.error
 import re
+import urllib.error
+import urllib.request
 
-from config import CONFIG, LOGGER
+from config import LOGGER
 from database import *
 
 CACHE_PATH = "data/upgradeCosts/"

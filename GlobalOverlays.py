@@ -1,6 +1,5 @@
 from tkinter import *
 
-from config import CONFIG
 from database import *
 
 OVERLAYS = {}

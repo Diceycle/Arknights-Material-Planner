@@ -1,11 +1,9 @@
 
 from tkinter import *
-import os
 import json
 
 from widgets import LockableCanvas
 from ItemSetDisplay import ItemSetDisplay
-from config import CONFIG
 from database import *
 from GlobalOverlays import MaterialSelection, OperatorSelection, UpgradeSelection
 from ItemSet import RecipeDisplay

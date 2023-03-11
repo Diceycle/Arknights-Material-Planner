@@ -2,6 +2,7 @@ from tkinter import *
 
 from PIL import Image, ImageTk
 
+
 class LockableCanvas(Canvas):
     def __init__(self, *args, width, height, **kwargs):
         super().__init__(*args, width = width, height = height, **kwargs)

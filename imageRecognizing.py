@@ -1,9 +1,8 @@
 import os
 
-from PIL import Image
-
-import numpy as np
 import cv2
+import numpy as np
+from PIL import Image
 
 from database import MATERIALS, safeSave
 

@@ -1,7 +1,6 @@
-import os
 import time
 
-from WindowHandler import WindowHandler, resolveHandler
+from WindowHandler import resolveHandler
 from config import LOGGER
 from database import *
 from imageRecognizing import matchMasked

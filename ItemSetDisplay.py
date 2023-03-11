@@ -3,7 +3,6 @@ from collections import Counter
 from tkinter import *
 
 from ItemSet import ItemSet
-from config import CONFIG
 from database import *
 from widgets import LockableCanvas
 

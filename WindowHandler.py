@@ -1,13 +1,14 @@
-import win32gui
-import win32ui
+import time
+from ctypes import windll
+
 import win32api
 import win32con
-from ctypes import windll
+import win32gui
+import win32ui
 from PIL import Image
 
-import time
-
 from config import LOGGER
+
 
 def resolveHandler(windowName, childClass, resolutionMode):
     handler = WindowHandler(windowName)

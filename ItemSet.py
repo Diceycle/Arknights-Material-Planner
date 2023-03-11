@@ -1,11 +1,11 @@
 from tkinter import *
 
-from widgets import LockableCanvas, ImageCheckbutton
-from config import CONFIG
-from database import *
-from crawler import downloadCosts
 from GlobalOverlays import OVERLAYS, GlobalSelection
 from ItemIndicator import ItemIndicator
+from crawler import downloadCosts
+from database import *
+from widgets import LockableCanvas, ImageCheckbutton
+
 
 class ItemSet(LockableCanvas):
     def __init__(self, parent, operator, upgrade, materials, scale, updateCallback = None, maxItems = 4,
