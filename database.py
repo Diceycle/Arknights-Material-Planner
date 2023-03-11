@@ -331,9 +331,9 @@ Material("chip-defender-1", "Defender Chip", 3, "chip-defender-1.png")
 Material("chip-defender-2", "Defender Chip Pack", 4, "chip-defender-2.png")
 Material("chip-defender-3", "Defender Dualchip", 5, "chip-defender-3.png", recipe={"chip-defender-2": 2, "chip-catalyst": 1})
 
-Material("chip-healer-1", "Healer Chip", 3, "chip-healer-1.png")
-Material("chip-healer-2", "Healer Chip Pack", 4, "chip-healer-2.png")
-Material("chip-healer-3", "Healer Dualchip", 5, "chip-healer-3.png", recipe={"chip-healer-2": 2, "chip-catalyst": 1})
+Material("chip-healer-1", "Medic Chip", 3, "chip-healer-1.png")
+Material("chip-healer-2", "Medic Chip Pack", 4, "chip-healer-2.png")
+Material("chip-healer-3", "Medic Dualchip", 5, "chip-healer-3.png", recipe={"chip-healer-2": 2, "chip-catalyst": 1})
 
 Material("chip-supporter-1", "Supporter Chip", 3, "chip-supporter-1.png")
 Material("chip-supporter-2", "Supporter Chip Pack", 4, "chip-supporter-2.png")
