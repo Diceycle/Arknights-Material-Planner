@@ -384,9 +384,9 @@ DEPOT_ORDER = ["exp-4", "exp-3", "exp-2", "exp-1", "skill-3", "skill-2", "skill-
                "gel-4", "gel-3", "incandescent-4", "incandescent-3", "crystal-5", "crystal-4", "crystal-3",
                "solvent-4", "solvent-3", "fluid-4", "fluid-3",
                "chip-catalyst",
-               "chip-vanguard-3", "chip-guard-3", "chip-defender-3", "chip-caster-3", "chip-sniper-3", "chip-healer-3", "chip-supporter-3", "chip-specialist-3",
-               "chip-vanguard-2", "chip-guard-2", "chip-defender-2", "chip-caster-2", "chip-sniper-2", "chip-healer-2", "chip-supporter-2", "chip-specialist-2",
-               "chip-vanguard-1", "chip-guard-1", "chip-defender-1", "chip-caster-1", "chip-sniper-1", "chip-healer-1", "chip-supporter-1", "chip-specialist-1",
+               "chip-vanguard-3", "chip-guard-3", "chip-defender-3", "chip-sniper-3", "chip-caster-3", "chip-healer-3", "chip-supporter-3", "chip-specialist-3",
+               "chip-vanguard-2", "chip-guard-2", "chip-defender-2", "chip-sniper-2", "chip-caster-2", "chip-healer-2", "chip-supporter-2", "chip-specialist-2",
+               "chip-vanguard-1", "chip-guard-1", "chip-defender-1", "chip-sniper-1", "chip-caster-1", "chip-healer-1", "chip-supporter-1", "chip-specialist-1",
 ]
 
 rawOperators = json.load(open("operators.json", "r"))
