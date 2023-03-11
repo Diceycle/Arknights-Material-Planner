@@ -141,6 +141,7 @@ class ItemSet(LockableCanvas):
         if self.upgrade in costs:
             self.replaceMaterials(costs[self.upgrade])
         else:
+            self.replaceMaterials({})
             self.updateInternal()
 
     def replaceMaterials(self, materials):
