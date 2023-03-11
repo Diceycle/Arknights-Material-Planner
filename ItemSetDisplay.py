@@ -43,7 +43,7 @@ class ItemSetDisplay(LockableCanvas):
 
     def addSet(self, operator, upgrade, materials, enabled=True):
         itemSet = ItemSet(self, operator, upgrade, materials, self.scale, updateCallback=self.updateItemTotals,
-                          maxItems=self.maxItems, grabbable=True, deletable=True, enabled=enabled)
+                          maxItems=self.maxItems, grabbable=True, deletable=True, enabled=enabled, researchOnly=True)
         itemSetWidget = self.create_window(0, 0, window=itemSet, anchor=NW)
 
         self.itemSets.append(itemSet)

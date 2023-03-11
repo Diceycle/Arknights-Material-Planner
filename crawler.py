@@ -1,4 +1,5 @@
 import json
+import os.path
 import re
 import urllib.error
 import urllib.request
@@ -80,8 +81,11 @@ def getRequest(url):
             line = line.decode("utf-8")
             LOGGER.debug(line)
 
+def hasCache(operator):
+    return os.path.isfile(getFileName(operator))
+
 def downloadCosts(operator):
-    if os.path.isfile(getFileName(operator)):
+    if hasCache(operator):
         data = json.load(open(getFileName(operator), "r"))
         return toUpgrades(data, recurse=toMaterials)
 

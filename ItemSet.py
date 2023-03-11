@@ -1,15 +1,17 @@
+import threading
 from tkinter import *
 
 from GlobalOverlays import OVERLAYS, GlobalSelection
 from ItemIndicator import ItemIndicator
-from crawler import downloadCosts
+from crawler import downloadCosts, hasCache
 from database import *
 from widgets import LockableCanvas, ImageCheckbutton
 
 
 class ItemSet(LockableCanvas):
     def __init__(self, parent, operator, upgrade, materials, scale, updateCallback = None, maxItems = 4,
-                 grabbable = False, editable = True, deletable = False, toggleable = True, enabled = True):
+                 grabbable = False, editable = True, deletable = False, toggleable = True, enabled = True,
+                 researchOnly = False):
 
         self.maxItems = maxItems
         self.width = ItemSet.getWidth(maxItems, scale)
@@ -26,6 +28,9 @@ class ItemSet(LockableCanvas):
 
         self.updateCallback = updateCallback
         self.editable = editable
+        self.researchOnly = researchOnly
+
+        self.researching = False
 
         self.dragOffset = 0
         if grabbable:
@@ -38,10 +43,17 @@ class ItemSet(LockableCanvas):
         if editable:
             self.tag_bind(self.upgradeImage, "<Button-1>", lambda e: self.changeUpgrade())
 
-        for m, a in materials.items():
-            self.addMaterialInternal(m, a)
+        self.loadingImage = self.create_image(self.scale * 2 + self.scale // 2, 0, image=UI_ELEMENTS["loading"].getPhotoImage(self.scale, transparency=0.75), anchor = NW, state="hidden")
+        if researchOnly:
+            self.notAvailable = self.create_image(self.scale * 2 + self.scale // 2, 0, image=UI_ELEMENTS["n-a"].getPhotoImage(self.scale, transparency=0.75), anchor = NW, state="hidden")
 
-        if editable:
+        if not self.researchOnly:
+            for m, a in materials.items():
+                self.addMaterialInternal(m, a)
+        else:
+            self.researchMaterials()
+
+        if editable and not researchOnly:
             self.addButton = self.create_image(0, 0, image=UI_ELEMENTS["add"].getPhotoImage(self.scale, transparency=0.75), anchor=NW)
             self.tag_bind(self.addButton, "<Button-1>", lambda e: self.addMaterialTrigger())
             self.researchButton = self.create_image(0, 0, image=UI_ELEMENTS["research"].getPhotoImage(self.scale, transparency=0.75), anchor=NW)
@@ -69,12 +81,23 @@ class ItemSet(LockableCanvas):
 
         c = 2
         for m in self.materials.keys():
-            self.itemIndicators.append(ItemIndicator(self, self.scale, m, self.dragOffset + c*self.scale, 0, self.scale // 5, self.materials[m], editable=self.editable))
-            if self.editable:
+            self.itemIndicators.append(ItemIndicator(self, self.scale, m, self.dragOffset + c*self.scale, 0, self.scale // 5, self.materials[m], editable=self.editable and not self.researchOnly))
+            if self.editable and not self.researchOnly:
                 self.itemIndicators[-1].bind("<Button-3>", lambda e, mat=m: self.removeMaterial(mat))
             c += 1
 
-        if self.editable:
+        if self.researchOnly:
+            if len(self.materials) == 0 and not self.researching:
+                self.itemconfigure(self.notAvailable, state="normal")
+            else:
+                self.itemconfigure(self.notAvailable, state="hidden")
+
+        if self.researching:
+            self.itemconfigure(self.loadingImage, state="normal")
+        else:
+            self.itemconfigure(self.loadingImage, state="hidden")
+
+        if self.editable and not self.researchOnly:
             if len(self.materials) < self.maxItems:
                 self.coords(self.addButton, self.dragOffset + c*self.scale, 0)
                 self.itemconfigure(self.addButton, state="normal")
@@ -96,22 +119,38 @@ class ItemSet(LockableCanvas):
 
     def addMaterial(self, material):
         self.addMaterialInternal(material, 1)
-        self.update()
+        self.updateInternal()
 
     def removeMaterial(self, material):
         del self.materials[material]
-        self.update()
+        self.updateInternal()
 
     def researchMaterials(self):
-        self.replaceMaterials(downloadCosts(self.operator)[self.upgrade])
+        self.researching = True
+        if hasCache(self.operator):
+            self.researchMaterialsInternal(downloadCosts(self.operator))
+        else:
+            self.replaceMaterials({})
+            threading.Thread(target=self.researchMaterialsAsync).start()
+
+    def researchMaterialsAsync(self):
+        costs = downloadCosts(self.operator)
+        self.after(0, lambda : self.researchMaterialsInternal(costs))
+
+    def researchMaterialsInternal(self, costs):
+        self.researching = False
+        if self.upgrade in costs:
+            self.replaceMaterials(costs[self.upgrade])
+        else:
+            self.updateInternal()
 
     def replaceMaterials(self, materials):
         self.materials = {}
         for m, a in materials.items():
             self.addMaterialInternal(m, a)
-        self.update()
+        self.updateInternal()
 
-    def update(self):
+    def updateInternal(self):
         self.updateAmounts()
         self.draw()
 
@@ -120,6 +159,8 @@ class ItemSet(LockableCanvas):
 
     def changeOperatorInternal(self, operator):
         self.operator = operator
+        if self.researchOnly:
+            self.researchMaterials()
         self.draw()
 
     def changeUpgrade(self):
@@ -127,6 +168,8 @@ class ItemSet(LockableCanvas):
 
     def changeUpgradeInternal(self, upgrade):
         self.upgrade = upgrade
+        if self.researchOnly:
+            self.researchMaterials()
         self.draw()
 
     def toggle(self, state):

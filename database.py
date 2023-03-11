@@ -227,6 +227,8 @@ UIElement("research", "research.png")
 UIElement("research-button", "research-button.png")
 UIElement("craft-arrow", "craft-arrow.png")
 UIElement("add-set", "add-set.png")
+UIElement("n-a", "na.png")
+UIElement("loading", "loading.png")
 
 Upgrade("E1", "Elite 1", "E1.png", mainDimension=0)
 Upgrade("E2", "Elite 2", "E2.png", mainDimension=0)
