@@ -69,7 +69,9 @@ class UpgradeSelection(GlobalSelection):
         self.placeImage(0, 0, UPGRADES["E1"])
         self.placeImage(1, 0, UPGRADES["E2"])
 
-        self.placeImage(0, 1, UPGRADES["SK7"])
+        self.placeImage(0, 1, UPGRADES["SK5"])
+        self.placeImage(1, 1, UPGRADES["SK6"])
+        self.placeImage(2, 1, UPGRADES["SK7"])
 
         self.placeImage(0, 2, UPGRADES["S1M1"])
         self.placeImage(1, 2, UPGRADES["S1M2"])

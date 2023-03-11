@@ -20,7 +20,6 @@ from taking screenshots and analyzing the depot contents ourselves.
 * Set up all the upgrades you are planning. Choose the operator, the Upgrade and the Materials. Include or exclude the
   Materials from the calculated total with the checkbox on the right.
 * Add the materials yourself or automatically download the Material list from Gamepress.
-    * Note: The Skill Rank 7 Upgrade only looks for Tier 3 and higher Materials on Gamepress.
 * Delete or reorder the different upgrades to your liking.
 * You can manually remove materials by right clicking them.
 
@@ -30,18 +29,24 @@ from taking screenshots and analyzing the depot contents ourselves.
 
 * See all of your materials at one glance.
 * Focus on only the materials needed in your selected upgrades or only on those you are still missing.
-* If you do not have enough materials, the tool will also mark the needed crafting ingredients as required.
-
-* A second page is available for skill books, module components and experience cards.
+* See indicators of how many materials you need of each type in
+  * Gray if you have enough of the material,
+  * Green if you can craft enough of the material,
+  * Red if you don't have enough of the material.
+  * The Colors are customizable, see the configuration reference below.
+* A second page is available for skill books, module components and experience cards and chips.
 
 ### Depot Scanning
 
-If you play Arknights on PC you can make use of the inbuilt image- and text recognition to scan your
-depot and import you material list into the tool automatically.
+If you play Arknights on PC you can make use of the image- and text recognition feature to scan your
+depot and import your material list into the tool automatically.
 
 * **This is unfortunately only 99% accurate. It can happen that the tool will miss certain digits or add digits that
   aren't there.** If there are OCR experts I'm more than willing to accept help to reduce the error rate as far as
-  possible
+  possible.
+* **Also Note that this feature will resize your Arknights window and send mouse input to it.** If you want to make sure not
+  to accidentally do that you can turn the feature off entirely by setting the `depotParsingEnabled` configuration
+  parameter to `false`.
 * This requires an installation of [TesseractOCR](https://github.com/tesseract-ocr/tesseract).
     * Prebuilt Binaries for Tesseract are available here: https://github.com/UB-Mannheim/tesseract/wiki
     * After installing add the path to the Tesseract executable as the `tesseractExeLocation` config parameter.
@@ -53,9 +58,6 @@ depot and import you material list into the tool automatically.
       window that does accept input
     * Finally, you might need to adjust the border values in `arknightsWindowBorder` for the screenshots to get cropped
       correctly.
-* **Note that this feature will resize your Arknights window and send mouse input to it.** If you want to make sure not
-  to accidentally do that you can turn the feature off entirely by setting the `depotParsingEnabled` configuration
-  parameter to `false`.
 
 ### Minor Features and UI
 
@@ -105,7 +107,7 @@ Configuration is read from a file called `config.json` and is a single JSON-Obje
 | `depotParsingEnabled`        | Boolean         | `true`                                       | Whether to **enable** the **depot scanning** feature. Disabling this will hide relevant UI-Elements                                                                                                                                                                                                                    |
 | `arknightsContainer`         | String          | `"BlueStacks"`                               | The type of player you run Arknights with. Currently two modes are supported `"BlueStacks"` and `"genericWindow"`.                                                                                                                                                                                                     |
 | `arknightsWindowName`        | String          | `"BlueStacks"`                               | The name of the **window** that **Arknights** is running in. This can either be read from the window title or a list is provided by `FindArknightsWindow.exe` is this value is left empty.                                                                                                                             |
-| `arknightsInputWindowName`   | String          | `"plrNativeInputWindowClass"`                | The name of the **child window class** that accepts input. Only supported for `arknightsContainer` = `"genericWindow"` This is an **expert setting**. `FindArknightsWindow.exe` will list available child windows for the window given in `arknightsContainer`. Can also be set to `null` to use the top-level window. |
+| `arknightsInputWindowName`   | String          | `null`                                       | The name of the **child window class** that accepts input. Only supported for `arknightsContainer` = `"genericWindow"` This is an **expert setting**. `FindArknightsWindow.exe` will list available child windows for the window given in `arknightsContainer`. Can also be set to `null` to use the top-level window. |
 | `arknightsWindowBorder`      | List[Number]    | `[1, 33, 33, 1]`                             | The amount of **pixels to crop away** from Arknights **screenshots** from the Left, Top, Right and Bottom respectively.                                                                                                                                                                                                |
 | `colorLeniency`              | Number          | `3`                                          | How lenient certain pixel reads should be to determine which menu the Arknights app is in. This is a allowed delta in color value(0-255) per band.                                                                                                                                                                     |
 | `tesseractExeLocation`       | String/Filename | `null`                                       | Path to the **Tesseract Exe** to use for Depot Scanning.                                                                                                                                                                                                                                                               |

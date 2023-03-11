@@ -27,6 +27,9 @@ def getFileName(operator):
 def indexToMastery(index):
     return "S" + str(1 + index // 3) + "M" + str(index % 3 + 1)
 
+def indexToSkillLevel(index):
+    return "SK" + str(index + 2)
+
 def indexToElite(index):
     return "E" + str(index+1)
 
@@ -104,15 +107,17 @@ def downloadCosts(operator):
 
         if skillTableStart in line:
             skillTableRow = -2
-            costs[UPGRADES["SK7"]] = {MATERIALS["skill-3"]: 0}
 
         if skillTableRow is not None:
+            if "<tr>" in line:
+                skillTableRow += 1
+                if skillTableRow >= 0:
+                    costs[UPGRADES[indexToSkillLevel(skillTableRow)]] = {}
             if materialCell in line:
                 currentMaterial = parseMaterial(line)
             if materialQuantityTag in line:
                 m = getMaterial(currentMaterial)
-                if m.tier >= 3 and m.name != "skill-2":
-                    costs[UPGRADES["SK7"]][m] = int(parseQuantity(line))
+                costs[UPGRADES[indexToSkillLevel(skillTableRow)]][m] = int(parseQuantity(line))
 
         if masteryTableStart in line:
             masteryTableRow = -2
@@ -138,8 +143,7 @@ def downloadCosts(operator):
             if materialCell in line:
                 currentMaterial = parseMaterial(line)
             if materialQuantityTag in line:
-                if not currentMaterial.startswith("LMD"):
-                    costs[UPGRADES[indexToElite(eliteTableRow)]][getMaterial(currentMaterial)] = int(parseQuantity(line))
+                costs[UPGRADES[indexToElite(eliteTableRow)]][getMaterial(currentMaterial)] = int(parseQuantity(line))
 
 
         if moduleTableStart in line:
@@ -159,12 +163,10 @@ def downloadCosts(operator):
             if currentModule is not None and "class=\"item-image" in line:
                 currentMaterial = parseMaterialFileName(line)
             if currentModule is not None and materialQuantityTag in line:
-                if not currentMaterial.startswith("GOLD"):
-                    costs[UPGRADES[currentModule]][getMaterialFromFileName(currentMaterial)] = parseQuantity(line)
+                costs[UPGRADES[currentModule]][getMaterialFromFileName(currentMaterial)] = parseQuantity(line)
 
             if "</article>" in line:
                 currentModule = None
-
 
     json.dump(toExternal(costs, recurse=toExternal), safeOpen(getFileName(operator)))
     return costs

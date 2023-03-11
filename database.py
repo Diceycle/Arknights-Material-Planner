@@ -114,6 +114,12 @@ class Upgrade(ScalableImage):
 
         return im
 
+    def __str__(self):
+        return self.canonicalName
+
+    def __repr__(self):
+        return self.__str__()
+
 class Operator(ScalableImage):
     def __init__(self, name, image, externalName = None):
         super().__init__(name, OPERATORS, "img/operator", image)
@@ -139,6 +145,9 @@ class Material(ScalableImage):
             return toMaterials(self.recipe)
 
     def getPosition(self):
+        if self.name.startswith("money"):
+            return -1, -1
+
         x = 5 - self.tier
         if self.name.startswith("fluid") or self.name.startswith("gel") or \
             self.name.startswith("solvent") or self.name.startswith("manganese") or \
@@ -219,8 +228,14 @@ UIElement("research-button", "research-button.png")
 UIElement("craft-arrow", "craft-arrow.png")
 UIElement("add-set", "add-set.png")
 
-Upgrade("E1", "Elite 1", "1.png", mainDimension=0)
-Upgrade("E2", "Elite 2", "2.png", mainDimension=0)
+Upgrade("E1", "Elite 1", "E1.png", mainDimension=0)
+Upgrade("E2", "Elite 2", "E2.png", mainDimension=0)
+Upgrade("SK1", "Skill rank 1", "1.png", mainDimension=0)
+Upgrade("SK2", "Skill rank 2", "2.png", mainDimension=0)
+Upgrade("SK3", "Skill rank 3", "3.png", mainDimension=0)
+Upgrade("SK4", "Skill rank 4", "4.png", mainDimension=0)
+Upgrade("SK5", "Skill rank 5", "5.png", mainDimension=0)
+Upgrade("SK6", "Skill rank 6", "6.png", mainDimension=0)
 Upgrade("SK7", "Skill rank 7", "7.png", mainDimension=0)
 Upgrade("S1M1", "Skill 1 Mastery 1", "m-1.png", overlay = "S1", mainDimension=0)
 Upgrade("S1M2", "Skill 1 Mastery 2", "m-2.png", overlay = "S1", mainDimension=0)
@@ -238,6 +253,8 @@ Upgrade("MOD-X-3", "Module X Stage 3", "img_stg3.png", overlay = "mod-x", mainDi
 Upgrade("MOD-Y-1", "Module Y Stage 1", "img_stg1.png", overlay = "mod-y", mainDimension=1)
 Upgrade("MOD-Y-2", "Module Y Stage 2", "img_stg2.png", overlay = "mod-y", mainDimension=1)
 Upgrade("MOD-Y-3", "Module Y Stage 3", "img_stg3.png", overlay = "mod-y", mainDimension=1)
+
+Material("money", "LMD", 4, "lmd.png", externalFileName="GOLD")
 
 Material("keton-1", "Diketon", 1, "keton-1.png")
 Material("keton-2", "Polyketon", 2, "keton-2.png", recipe={"keton-1": 3})
