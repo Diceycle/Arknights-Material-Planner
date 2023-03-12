@@ -1,3 +1,5 @@
+import json
+import pyperclip
 from collections import Counter
 from tkinter import *
 
@@ -31,7 +33,7 @@ class Depot(LockableCanvas):
 
         self.indicators = {}
 
-        controlCanvasHeight = self.scale // 2 * 2
+        controlCanvasHeight = self.scale // 2 * 3
         if CONFIG.depotParsingEnabled:
             controlCanvasHeight += self.scale // 2
         self.controlCanvas = LockableCanvas(self.controlCanvasParent, highlightthickness=0, bg=CONFIG.backgroundColor, width=scale // 2, height=controlCanvasHeight)
@@ -56,9 +58,13 @@ class Depot(LockableCanvas):
             images= (UI_ELEMENTS["arrow-down"].getPhotoImage(self.scale // 2),
                      UI_ELEMENTS["arrow-up"].getPhotoImage(self.scale // 2)))
 
+        self.exportButton = self.controlCanvas.create_image(0 , self.scale // 4 * 5,
+                                                            image=UI_ELEMENTS["export"].getPhotoImage(self.scale // 2), anchor=W)
+        self.controlCanvas.tag_bind(self.exportButton, "<Button-1>", lambda e: self.exportContentsForPenguinStats())
+
         if CONFIG.depotParsingEnabled:
-            self.researchButton = self.controlCanvas.create_image(self.scale // 2, self.scale // 4 * 5,
-                                                                  image=UI_ELEMENTS["research-button"].getPhotoImage(self.scale // 2), anchor=E)
+            self.researchButton = self.controlCanvas.create_image(0, self.scale // 4 * 7,
+                                                                  image=UI_ELEMENTS["research-button"].getPhotoImage(self.scale // 2), anchor=W)
             self.controlCanvas.tag_bind(self.researchButton, "<Button-1>", lambda e: self.parseDepot())
 
         self.separator = self.contentCanvas.create_line(0, 0, 0, self.totalHeight, fill=CONFIG.highlightColor, width=1)
@@ -184,6 +190,17 @@ class Depot(LockableCanvas):
 
     def getContents(self):
         return unpackVar(self.contents)
+
+    def exportContentsForPenguinStats(self):
+        result = {}
+        items = []
+        for m in MATERIALS.values():
+            if m.externalId is not None:
+                items.append({ "id": m.externalId, "have": self.contents[m].get(), "need": self.trueRequirements[m] })
+        result["items"] = items
+        result["@type"] = "@penguin-statistics/planner/config"
+
+        pyperclip.copy(json.dumps(result))
 
 class ParseDepotOverlay(GlobalSelection):
     def __init__(self, parent, scale, **kwargs):
