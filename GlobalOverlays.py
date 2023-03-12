@@ -92,7 +92,7 @@ class UpgradeSelection(GlobalSelection):
             self.placeImage(x, 0, UPGRADES["SK5"])
             self.placeImage(x, 1, UPGRADES["SK6"])
             self.placeImage(x, 2, UPGRADES["SK7"])
-            self.placeImage(x, 3, UPGRADES["SK5-7"])
+            self.placeImage(x, 3, UPGRADES["SK4-7"])
             x += 1
 
         if upgrades is None or UPGRADES["S1M1"] in upgrades:

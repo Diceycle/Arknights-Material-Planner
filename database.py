@@ -255,7 +255,7 @@ Upgrade("SK1-4", "Skill rank 1-4", "1-4.png", mainDimension=0, cumulativeUpgrade
 Upgrade("SK5", "Skill rank 5", "5.png", mainDimension=0)
 Upgrade("SK6", "Skill rank 6", "6.png", mainDimension=0)
 Upgrade("SK7", "Skill rank 7", "7.png", mainDimension=0)
-Upgrade("SK5-7", "Skill rank 5-7", "5-7.png", mainDimension=0, cumulativeUpgrades=["SK5", "SK6", "SK7"])
+Upgrade("SK4-7", "Skill rank 4-7", "4-7.png", mainDimension=0, cumulativeUpgrades=["SK5", "SK6", "SK7"])
 Upgrade("S1M1", "Skill 1 Mastery 1", "m-1.png", overlay = "S1", mainDimension=0)
 Upgrade("S1M2", "Skill 1 Mastery 2", "m-2.png", overlay = "S1", mainDimension=0)
 Upgrade("S1M3", "Skill 1 Mastery 3", "m-3.png", overlay = "S1", mainDimension=0)
