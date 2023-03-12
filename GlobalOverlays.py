@@ -66,54 +66,79 @@ class UpgradeSelection(GlobalSelection):
         super().__init__(parent, "UpgradeSelection", width=width, height=4*scale, **kwargs)
 
         self.scale = scale
+        self.upgrades = []
 
         self.totalSeparator = self.create_line(0, self.scale * 3, width, self.scale*3, fill=CONFIG.color)
 
+        self.draw()
+
+    def draw(self, upgrades = None):
+        for up in self.upgrades:
+            self.delete(up)
+
         x = 0
-        self.placeImage(x, 0, UPGRADES["E1"])
-        self.placeImage(x, 1, UPGRADES["E2"])
-        x += 1
+        if upgrades is None or UPGRADES["E1"] in upgrades:
+            self.placeImage(x, 0, UPGRADES["E1"])
+            if upgrades is None or UPGRADES["E2"] in upgrades:
+                self.placeImage(x, 1, UPGRADES["E2"])
+            x += 1
 
-        self.placeImage(x, 0, UPGRADES["SK2"])
-        self.placeImage(x, 1, UPGRADES["SK3"])
-        self.placeImage(x, 2, UPGRADES["SK4"])
-        self.placeImage(x, 3, UPGRADES["SK1-4"])
-        x += 1
-        self.placeImage(x, 0, UPGRADES["SK5"])
-        self.placeImage(x, 1, UPGRADES["SK6"])
-        self.placeImage(x, 2, UPGRADES["SK7"])
-        self.placeImage(x, 3, UPGRADES["SK5-7"])
-        x += 1
+        if upgrades is None or UPGRADES["SK2"] in upgrades:
+            self.placeImage(x, 0, UPGRADES["SK2"])
+            self.placeImage(x, 1, UPGRADES["SK3"])
+            self.placeImage(x, 2, UPGRADES["SK4"])
+            self.placeImage(x, 3, UPGRADES["SK1-4"])
+            x += 1
+            self.placeImage(x, 0, UPGRADES["SK5"])
+            self.placeImage(x, 1, UPGRADES["SK6"])
+            self.placeImage(x, 2, UPGRADES["SK7"])
+            self.placeImage(x, 3, UPGRADES["SK5-7"])
+            x += 1
 
-        self.placeImage(x, 0, UPGRADES["S1M1"])
-        self.placeImage(x, 1, UPGRADES["S1M2"])
-        self.placeImage(x, 2, UPGRADES["S1M3"])
-        self.placeImage(x, 3, UPGRADES["S1MX"])
-        x += 1
-        self.placeImage(x, 0, UPGRADES["S2M1"])
-        self.placeImage(x, 1, UPGRADES["S2M2"])
-        self.placeImage(x, 2, UPGRADES["S2M3"])
-        self.placeImage(x, 3, UPGRADES["S2MX"])
-        x += 1
-        self.placeImage(x, 0, UPGRADES["S3M1"])
-        self.placeImage(x, 1, UPGRADES["S3M2"])
-        self.placeImage(x, 2, UPGRADES["S3M3"])
-        self.placeImage(x, 3, UPGRADES["S3MX"])
-        x += 1
+        if upgrades is None or UPGRADES["S1M1"] in upgrades:
+            self.placeImage(x, 0, UPGRADES["S1M1"])
+            self.placeImage(x, 1, UPGRADES["S1M2"])
+            self.placeImage(x, 2, UPGRADES["S1M3"])
+            self.placeImage(x, 3, UPGRADES["S1MX"])
+            x += 1
 
-        self.placeImage(x, 0, UPGRADES["MOD-X-1"])
-        self.placeImage(x, 1, UPGRADES["MOD-X-2"])
-        self.placeImage(x, 2, UPGRADES["MOD-X-3"])
-        x += 1
-        self.placeImage(x, 0, UPGRADES["MOD-Y-1"])
-        self.placeImage(x, 1, UPGRADES["MOD-Y-2"])
-        self.placeImage(x, 2, UPGRADES["MOD-Y-3"])
+        if upgrades is None or UPGRADES["S2M1"] in upgrades:
+            self.placeImage(x, 0, UPGRADES["S2M1"])
+            self.placeImage(x, 1, UPGRADES["S2M2"])
+            self.placeImage(x, 2, UPGRADES["S2M3"])
+            self.placeImage(x, 3, UPGRADES["S2MX"])
+            x += 1
+        if upgrades is None or UPGRADES["S3M1"] in upgrades:
+            self.placeImage(x, 0, UPGRADES["S3M1"])
+            self.placeImage(x, 1, UPGRADES["S3M2"])
+            self.placeImage(x, 2, UPGRADES["S3M3"])
+            self.placeImage(x, 3, UPGRADES["S3MX"])
+            x += 1
+
+        if upgrades is None or UPGRADES["MOD-X-1"] in upgrades:
+            self.placeImage(x, 0, UPGRADES["MOD-X-1"])
+            self.placeImage(x, 1, UPGRADES["MOD-X-2"])
+            self.placeImage(x, 2, UPGRADES["MOD-X-3"])
+            x += 1
+
+        if upgrades is None or UPGRADES["MOD-Y-1"] in upgrades:
+            self.placeImage(x, 0, UPGRADES["MOD-Y-1"])
+            self.placeImage(x, 1, UPGRADES["MOD-Y-2"])
+            self.placeImage(x, 2, UPGRADES["MOD-Y-3"])
+            x += 1
+
+        self.config(width = self.scale * x)
 
     def placeImage(self, x, y, upgrade):
         up = self.create_image(x*self.scale + self.scale // 2,
                                y*self.scale + self.scale // 2,
                                image = upgrade.getPhotoImage(self.scale), anchor = CENTER)
+        self.upgrades.append(up)
         self.tag_bind(up, "<Button-1>", lambda e: self.notifyObserver(upgrade))
+
+    def registerCallback(self, parent, posX, posY, callback, upgrades):
+        self.draw(upgrades)
+        super().registerCallback(parent, posX, posY, callback)
 
     def callDisableCallback(self):
         self.disableCallback(self.cancelCallback)

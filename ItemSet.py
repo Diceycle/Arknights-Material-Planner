@@ -168,7 +168,8 @@ class ItemSet(LockableCanvas):
         self.draw()
 
     def changeUpgrade(self):
-        OVERLAYS["UpgradeSelection"].registerCallback(self, posX = self.scale + self.dragOffset, posY = self.scale, callback = lambda op : self.changeUpgradeInternal(op))
+        OVERLAYS["UpgradeSelection"].registerCallback(self, posX = self.scale + self.dragOffset, posY = self.scale,
+                                                      callback = lambda op : self.changeUpgradeInternal(op), upgrades = downloadCosts(self.operator))
 
     def changeUpgradeInternal(self, upgrade):
         self.upgrade = upgrade
