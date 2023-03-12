@@ -38,6 +38,16 @@ class LockableCanvas(Canvas):
         if self.notifyCallback is not None:
             self.notifyCallback()
 
+    def resize(self, width = None, height = None):
+        if width is not None:
+            self.config(width=width)
+        if height is not None:
+            self.config(height=height)
+
+        self.overlayImage = self.overlayImage.resize(size=(self.winfo_width(), self.winfo_height()))
+        self.overlayPhotoImage = ImageTk.PhotoImage(self.overlayImage)
+        self.itemconfigure(self.inputLock, image = self.overlayPhotoImage)
+
 
 class CanvasLabel:
     def __init__(self, parent, x, y, height, anchor = NW,

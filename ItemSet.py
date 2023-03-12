@@ -116,7 +116,7 @@ class ItemSet(LockableCanvas):
                 self.itemconfigure(self.researchButton, state="hidden")
 
         if self.allowMultipleRows:
-            self.config(height=self.getHeight())
+            self.resize(height=self.getHeight())
 
     def addMaterialTrigger(self):
         x, y = self.getMaterialCoords(len(self.materials.keys()))
