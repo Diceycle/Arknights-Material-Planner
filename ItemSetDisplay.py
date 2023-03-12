@@ -96,19 +96,23 @@ class ItemSetDisplay(LockableCanvas):
         self.currentSetWidget = widget
         self.setTime = time.time()
         self.winfo_toplevel().call('raise', itemSet, None)
-        self.initialX = e.x
         self.initialY = e.y
 
     def dragCurrentSet(self, e):
         if self.currentSetWidget is not None and time.time() - self.setTime > 1 / self.scrollFPS:
             self.coords(self.currentSetWidget,
-                        e.x - self.initialX + self.coords(self.currentSetWidget)[0],
-                        e.y - self.initialY + self.coords(self.currentSetWidget)[1])
+                        self.coords(self.currentSetWidget)[0],
+                        min(self.getTotalHeight(), max(0, e.y - self.initialY + self.coords(self.currentSetWidget)[1])))
             self.setTime = time.time()
             self.dropInPosition(e)
 
     def dropInPosition(self, e):
-        row = (e.y + int(self.coords(self.currentSetWidget)[1])) // (self.scale + self.spacing)
+        yPosition = e.y + self.coords(self.currentSetWidget)[1]
+        row = -1
+        while (yPosition > 0 or row < 0) and row < len(self.itemSets):
+            yPosition -= self.itemSets[row].getHeight() + self.spacing
+            row += 1
+
         self.itemSets.remove(self.currentSet)
         self.itemSets.insert(row, self.currentSet)
         self.itemSetWidgets.remove(self.currentSetWidget)
