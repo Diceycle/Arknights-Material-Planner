@@ -108,7 +108,10 @@ class Upgrade(ScalableImage):
 
     def calculateCosts(self, costs):
         if self.cumulativeUpgrades is None:
-            return costs[self]
+            if self in costs:
+                return costs[self]
+            else:
+                return {}
         else:
             result = Counter()
             for up in self.cumulativeUpgrades:

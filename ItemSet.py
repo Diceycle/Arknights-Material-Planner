@@ -200,7 +200,7 @@ class ItemSet(LockableCanvas):
         if not self.researchOnly:
             amountBoxes += 1
 
-        return int(math.ceil(amountBoxes / self.maxItems)) * self.scale
+        return max(int(math.ceil(amountBoxes / self.maxItems)) * self.scale, self.scale)
 
     @staticmethod
     def getWidth(maxItems, scale):
