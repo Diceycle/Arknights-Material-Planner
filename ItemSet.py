@@ -1,3 +1,4 @@
+import math
 import threading
 from tkinter import *
 
@@ -11,7 +12,7 @@ from widgets import LockableCanvas, ImageCheckbutton
 class ItemSet(LockableCanvas):
     def __init__(self, parent, operator, upgrade, materials, scale, updateCallback = None, maxItems = 4,
                  grabbable = False, editable = True, deletable = False, toggleable = True, enabled = True,
-                 researchOnly = False):
+                 researchOnly = False, allowMultipleRows = False):
 
         self.maxItems = maxItems
         self.width = ItemSet.getWidth(maxItems, scale)
@@ -29,12 +30,13 @@ class ItemSet(LockableCanvas):
         self.updateCallback = updateCallback
         self.editable = editable
         self.researchOnly = researchOnly
+        self.allowMultipleRows = allowMultipleRows
 
         self.researching = False
 
         self.dragOffset = 0
         if grabbable:
-            self.dragHandle = self.create_image(0, self.uiIconScale, image=UI_ELEMENTS["drag"].getPhotoImage(self.uiIconScale), anchor=W)
+            self.dragHandle = self.create_image(0, self.scale // 2, image=UI_ELEMENTS["drag"].getPhotoImage(self.uiIconScale), anchor=W)
             self.dragOffset = self.uiIconScale
         self.operatorImage = self.create_image(self.dragOffset, 0, anchor=NW)
         if editable:
@@ -78,9 +80,11 @@ class ItemSet(LockableCanvas):
         self.itemconfigure(self.operatorImage, image=self.operator.getPhotoImage(self.scale))
         self.itemconfigure(self.upgradeImage, image=self.upgrade.getPhotoImage(self.scale))
 
-        c = 2
+        c = 0
         for m in self.materials.keys():
-            self.itemIndicators.append(ItemIndicator(self, self.scale, m, self.dragOffset + c*self.scale, 0, self.scale // 5, self.materials[m], editable=self.editable and not self.researchOnly))
+            x, y = self.getMaterialCoords(c)
+            self.itemIndicators.append(ItemIndicator(self, self.scale, m, x, y, self.scale // 5,
+                                                     self.materials[m], editable=self.editable and not self.researchOnly))
             if self.editable and not self.researchOnly:
                 self.itemIndicators[-1].bind("<Button-3>", lambda e, mat=m: self.removeMaterial(mat))
             c += 1
@@ -97,20 +101,24 @@ class ItemSet(LockableCanvas):
             self.itemconfigure(self.loadingImage, state="hidden")
 
         if self.editable and not self.researchOnly:
-            if len(self.materials) < self.maxItems:
-                self.coords(self.addButton, self.dragOffset + c*self.scale, 0)
+            if len(self.materials) < self.maxItems or self.allowMultipleRows:
+                self.coords(self.addButton, self.getMaterialCoords(c))
                 self.itemconfigure(self.addButton, state="normal")
             else:
                 self.itemconfigure(self.addButton, state="hidden")
 
             if len(self.materials) == 0:
-                self.coords(self.researchButton, self.dragOffset + (c+1)*self.scale, 0)
+                self.coords(self.researchButton, self.getMaterialCoords(0))
                 self.itemconfigure(self.researchButton, state="normal")
             else:
                 self.itemconfigure(self.researchButton, state="hidden")
 
+        if self.allowMultipleRows:
+            self.config(height=self.getHeight())
+
     def addMaterialTrigger(self):
-        OVERLAYS["MaterialSelection"].registerCallback(self, posX = (len(self.materials.keys()) + 2) * self.scale + self.dragOffset, posY = self.scale, callback = lambda mat: self.addMaterial(mat))
+        x, y = self.getMaterialCoords(len(self.materials.keys()))
+        OVERLAYS["MaterialSelection"].registerCallback(self, posX = x, posY = y + self.scale, callback = lambda mat: self.addMaterial(mat))
 
     def addMaterialInternal(self, material, amount):
         self.materials[material] = IntVar(value = amount)
@@ -138,11 +146,7 @@ class ItemSet(LockableCanvas):
 
     def researchMaterialsInternal(self, costs):
         self.researching = False
-        if self.upgrade in costs:
-            self.replaceMaterials(costs[self.upgrade])
-        else:
-            self.replaceMaterials({})
-            self.updateInternal()
+        self.replaceMaterials(self.upgrade.calculateCosts(costs))
 
     def replaceMaterials(self, materials):
         self.materials = {}
@@ -182,6 +186,21 @@ class ItemSet(LockableCanvas):
 
     def getMaterials(self):
         return unpackVar(self.materials)
+
+    def getMaterialCoords(self, c):
+        return (self.dragOffset + self.scale * 2 + (c % self.maxItems) * self.scale,
+                (c // self.maxItems) * self.scale)
+
+    def getHeight(self):
+        if not self.allowMultipleRows:
+            return self.scale
+
+        amountBoxes = len(self.materials)
+
+        if not self.researchOnly:
+            amountBoxes += 1
+
+        return int(math.ceil(amountBoxes / self.maxItems)) * self.scale
 
     @staticmethod
     def getWidth(maxItems, scale):

@@ -45,7 +45,7 @@ class ItemSetDisplay(LockableCanvas):
 
     def addSet(self, operator, upgrade, materials, enabled=True):
         itemSet = ItemSet(self, operator, upgrade, materials, self.scale, updateCallback=self.updateItemTotals,
-                          maxItems=self.maxItems, grabbable=True, deletable=True, enabled=enabled, researchOnly=True)
+                          maxItems=self.maxItems, grabbable=True, deletable=True, enabled=enabled, researchOnly=True, allowMultipleRows=True)
         itemSetWidget = self.create_window(0, 0, window=itemSet, anchor=NW)
 
         self.itemSets.append(itemSet)
@@ -58,7 +58,6 @@ class ItemSetDisplay(LockableCanvas):
         itemSet.tag_bind(itemSet.dragHandle, "<ButtonRelease-1>", lambda e: self.release())
         itemSet.tag_bind(itemSet.deleteButton, "<Button-1>", lambda e: self.removeSet(itemSet, itemSetWidget))
         self.updateItemTotals()
-        self.draw()
 
     def removeSet(self, itemSet, setWidget):
         itemSet.destroy()
@@ -69,11 +68,11 @@ class ItemSetDisplay(LockableCanvas):
         self.itemSetWidgets.remove(setWidget)
 
         self.updateItemTotals()
-        self.draw()
 
     def updateItemTotals(self):
         if self.totalsUpdateCallback is not None:
             self.totalsUpdateCallback(self.getItemTotals())
+        self.draw()
 
     def getItemTotals(self):
         return sum([Counter(s.getMaterials()) for s in self.itemSets if s.enabled], Counter())
@@ -81,12 +80,15 @@ class ItemSetDisplay(LockableCanvas):
 ### UI-Methods ###
 
     def draw(self):
+        currentY = 0
         for c in range(len(self.itemSetWidgets)):
-            s = self.itemSetWidgets[c]
-            if s != self.currentSetWidget:
-                self.coords(s, 0, (self.scale + self.spacing) * c)
+            widget = self.itemSetWidgets[c]
+            set = self.itemSets[c]
+            if widget != self.currentSetWidget:
+                self.coords(widget, 0, currentY)
+            currentY += set.getHeight() + self.spacing
 
-        self.coords(self.addSetButton, 0, (self.scale + self.spacing) * len(self.itemSets))
+        self.coords(self.addSetButton, 0, currentY)
         self.updateViewbox()
 
     def pickUpSet(self, e, itemSet, widget):
@@ -158,4 +160,4 @@ class ItemSetDisplay(LockableCanvas):
         self.scrolling = False
 
     def getTotalHeight(self):
-        return (len(self.itemSets) + 1) * (self.scale + self.spacing)
+        return self.scale + (len(self.itemSets) + 1) * self.spacing + sum([s.getHeight() for s in self.itemSets])

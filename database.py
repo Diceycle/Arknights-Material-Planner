@@ -1,5 +1,6 @@
 import json
 import os
+from collections import Counter
 
 from PIL import Image, ImageTk, ImageColor
 
@@ -99,10 +100,21 @@ class UIElement(ScalableImage):
         return im
 
 class Upgrade(ScalableImage):
-    def __init__(self, name, canonicalName, image, overlay = None, **kwargs):
+    def __init__(self, name, canonicalName, image, overlay = None, cumulativeUpgrades = None, **kwargs):
         super().__init__(name, UPGRADES, "img/misc", image, **kwargs)
         self.canonicalName = canonicalName
         self.overlay = overlay
+        self.cumulativeUpgrades = [UPGRADES[up] for up in cumulativeUpgrades] if cumulativeUpgrades is not None else None
+
+    def calculateCosts(self, costs):
+        if self.cumulativeUpgrades is None:
+            return costs[self]
+        else:
+            result = Counter()
+            for up in self.cumulativeUpgrades:
+                if up in costs:
+                    result += Counter(costs[up])
+            return result
 
     def getPhotoImage(self, size):
         return super().getPhotoImage(size * UPGRADE_SCALE)
@@ -242,12 +254,15 @@ Upgrade("SK7", "Skill rank 7", "7.png", mainDimension=0)
 Upgrade("S1M1", "Skill 1 Mastery 1", "m-1.png", overlay = "S1", mainDimension=0)
 Upgrade("S1M2", "Skill 1 Mastery 2", "m-2.png", overlay = "S1", mainDimension=0)
 Upgrade("S1M3", "Skill 1 Mastery 3", "m-3.png", overlay = "S1", mainDimension=0)
+Upgrade("S1MX", "Skill 1 Full Mastery", "m-x.png", overlay = "S1", mainDimension=0, cumulativeUpgrades=["S1M1", "S1M2", "S1M3"])
 Upgrade("S2M1", "Skill 2 Mastery 1", "m-1.png", overlay = "S2", mainDimension=0)
 Upgrade("S2M2", "Skill 2 Mastery 2", "m-2.png", overlay = "S2", mainDimension=0)
 Upgrade("S2M3", "Skill 2 Mastery 3", "m-3.png", overlay = "S2", mainDimension=0)
+Upgrade("S2MX", "Skill 2 Full Mastery", "m-x.png", overlay = "S2", mainDimension=0, cumulativeUpgrades=["S2M1", "S2M2", "S2M3"])
 Upgrade("S3M1", "Skill 3 Mastery 1", "m-1.png", overlay = "S3", mainDimension=0)
 Upgrade("S3M2", "Skill 3 Mastery 2", "m-2.png", overlay = "S3", mainDimension=0)
 Upgrade("S3M3", "Skill 3 Mastery 3", "m-3.png", overlay = "S3", mainDimension=0)
+Upgrade("S3MX", "Skill 3 Full Mastery", "m-x.png", overlay = "S3", mainDimension=0, cumulativeUpgrades=["S3M1", "S3M2", "S3M3"])
 
 Upgrade("MOD-X-1", "Module X Stage 1", "img_stg1.png", overlay = "mod-x", mainDimension=1)
 Upgrade("MOD-X-2", "Module X Stage 2", "img_stg2.png", overlay = "mod-x", mainDimension=1)
