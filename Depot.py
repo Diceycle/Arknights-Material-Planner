@@ -1,11 +1,10 @@
 from collections import Counter
 from tkinter import *
 
+from utilImport import *
 from DepotParser import DepotParser
 from GlobalOverlays import OVERLAYS, GlobalSelection
 from ItemIndicator import ItemIndicator
-from config import LOGGER
-from database import *
 from widgets import CanvasLabel, LockableCanvas, ImageCheckbutton
 
 

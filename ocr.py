@@ -4,8 +4,7 @@ import time
 import pytesseract
 from PIL import ImageOps, Image
 
-from config import CONFIG
-from database import safeSave
+from utilImport import CONFIG, safeSave
 
 pytesseract.pytesseract.tesseract_cmd = CONFIG.tesseractExeLocation
 

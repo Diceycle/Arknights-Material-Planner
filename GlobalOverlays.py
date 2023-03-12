@@ -1,6 +1,6 @@
 from tkinter import *
 
-from database import *
+from utilImport import *
 
 OVERLAYS = {}
 
@@ -72,9 +72,13 @@ class UpgradeSelection(GlobalSelection):
 
         self.draw()
 
-    def draw(self, upgrades = None):
+    def draw(self, operator = None):
         for up in self.upgrades:
             self.delete(up)
+
+        upgrades = None
+        if operator is not None:
+            upgrades = operator.getCosts()
 
         x = 0
         if upgrades is None or UPGRADES["E1"] in upgrades:
@@ -116,28 +120,28 @@ class UpgradeSelection(GlobalSelection):
             x += 1
 
         if upgrades is None or UPGRADES["MOD-X-1"] in upgrades:
-            self.placeImage(x, 0, UPGRADES["MOD-X-1"])
-            self.placeImage(x, 1, UPGRADES["MOD-X-2"])
-            self.placeImage(x, 2, UPGRADES["MOD-X-3"])
+            self.placeImage(x, 0, UPGRADES["MOD-X-1"], operator)
+            self.placeImage(x, 1, UPGRADES["MOD-X-2"], operator)
+            self.placeImage(x, 2, UPGRADES["MOD-X-3"], operator)
             x += 1
 
         if upgrades is None or UPGRADES["MOD-Y-1"] in upgrades:
-            self.placeImage(x, 0, UPGRADES["MOD-Y-1"])
-            self.placeImage(x, 1, UPGRADES["MOD-Y-2"])
-            self.placeImage(x, 2, UPGRADES["MOD-Y-3"])
+            self.placeImage(x, 0, UPGRADES["MOD-Y-1"], operator)
+            self.placeImage(x, 1, UPGRADES["MOD-Y-2"], operator)
+            self.placeImage(x, 2, UPGRADES["MOD-Y-3"], operator)
             x += 1
 
         self.config(width = self.scale * x)
 
-    def placeImage(self, x, y, upgrade):
+    def placeImage(self, x, y, upgrade, operator = None):
         up = self.create_image(x*self.scale + self.scale // 2,
                                y*self.scale + self.scale // 2,
-                               image = upgrade.getPhotoImage(self.scale), anchor = CENTER)
+                               image = upgrade.getPhotoImage(self.scale, operator = operator), anchor = CENTER)
         self.upgrades.append(up)
         self.tag_bind(up, "<Button-1>", lambda e: self.notifyObserver(upgrade))
 
-    def registerCallback(self, parent, posX, posY, callback, upgrades):
-        self.draw(upgrades)
+    def registerCallback(self, parent, posX, posY, callback, operator):
+        self.draw(operator)
         super().registerCallback(parent, posX, posY, callback)
 
     def callDisableCallback(self):

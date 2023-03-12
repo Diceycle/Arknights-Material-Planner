@@ -1,8 +1,10 @@
 import time
 
+from PIL import Image
+
+from utilImport import *
+from database import DEPOT_ORDER
 from WindowHandler import resolveHandler
-from config import LOGGER
-from database import *
 from imageRecognizing import matchMasked
 from ocr import readImage, prepareImage
 

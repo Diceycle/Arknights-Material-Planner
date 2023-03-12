@@ -1,6 +1,6 @@
 __pycache__
 tests*
-data/upgradeCosts/
+data/
 *.materials
 *.log
 

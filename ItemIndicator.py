@@ -1,6 +1,6 @@
 from tkinter import *
 
-from config import CONFIG
+from utilImport import CONFIG
 from widgets import CanvasLabel
 
 

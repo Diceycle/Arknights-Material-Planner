@@ -7,7 +7,7 @@ import win32gui
 import win32ui
 from PIL import Image
 
-from config import LOGGER
+from utilImport import LOGGER
 
 
 def resolveHandler(windowName, childClass, resolutionMode):

@@ -2,10 +2,9 @@ import math
 import threading
 from tkinter import *
 
+from utilImport import *
 from GlobalOverlays import OVERLAYS, GlobalSelection
 from ItemIndicator import ItemIndicator
-from crawler import downloadCosts, hasCache
-from database import *
 from widgets import LockableCanvas, ImageCheckbutton
 
 
@@ -78,7 +77,10 @@ class ItemSet(LockableCanvas):
         self.itemIndicators = []
 
         self.itemconfigure(self.operatorImage, image=self.operator.getPhotoImage(self.scale))
-        self.itemconfigure(self.upgradeImage, image=self.upgrade.getPhotoImage(self.scale))
+        operator = None
+        if not self.researching:
+            operator = self.operator
+        self.itemconfigure(self.upgradeImage, image=self.upgrade.getPhotoImage(self.scale, operator=operator))
 
         c = 0
         for m in self.materials.keys():
@@ -134,14 +136,14 @@ class ItemSet(LockableCanvas):
 
     def researchMaterials(self):
         self.researching = True
-        if hasCache(self.operator):
-            self.researchMaterialsInternal(downloadCosts(self.operator))
+        if self.operator.hasCache():
+            self.researchMaterialsInternal(self.operator.getCosts())
         else:
             self.replaceMaterials({})
             threading.Thread(target=self.researchMaterialsAsync).start()
 
     def researchMaterialsAsync(self):
-        costs = downloadCosts(self.operator)
+        costs = self.operator.getCosts()
         self.after(0, lambda : self.researchMaterialsInternal(costs))
 
     def researchMaterialsInternal(self, costs):
@@ -169,7 +171,7 @@ class ItemSet(LockableCanvas):
 
     def changeUpgrade(self):
         OVERLAYS["UpgradeSelection"].registerCallback(self, posX = self.scale + self.dragOffset, posY = self.scale,
-                                                      callback = lambda op : self.changeUpgradeInternal(op), upgrades = downloadCosts(self.operator))
+                                                      callback = lambda op : self.changeUpgradeInternal(op), operator = self.operator)
 
     def changeUpgradeInternal(self, upgrade):
         self.upgrade = upgrade

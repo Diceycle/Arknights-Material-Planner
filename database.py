@@ -1,56 +1,14 @@
 import json
-import os
 from collections import Counter
 
 from PIL import Image, ImageTk, ImageColor
 
-from config import CONFIG, Config
+from util import Config
+from utilImport import *
+from crawler import getModuleImagePath, downloadCosts
 
 UPGRADE_SCALE = 0.75
 
-def createDirsIfNeeded(filename):
-    dirname = os.path.dirname(filename)
-    if len(dirname) > 0:
-        os.makedirs(dirname, exist_ok=True)
-
-def safeOpen(filename):
-    createDirsIfNeeded(filename)
-    return open(filename, "w+")
-
-def safeSave(image, filename):
-    createDirsIfNeeded(filename)
-    image.save(filename)
-
-def hasExtension(filename, extensions):
-    return filename.lower().endswith(extensions)
-
-def loadImage(path, name):
-    return Image.open(path + "/" + name).convert("RGBA")
-
-def toUpgrades(d, recurse=lambda v: v):
-    return { UPGRADES[k]: recurse(v) for k, v in d.items() }
-
-def toOperators(d, recurse=lambda v: v):
-    return { OPERATORS[k]: recurse(v) for k, v in d.items() }
-
-def toMaterials(d, recurse=lambda v: v):
-    return { MATERIALS[k]: recurse(v) for k, v in d.items() }
-
-def toExternal(d, recurse=lambda v: v):
-    return { k.name: recurse(v) for k, v in d.items() }
-
-def unpackVar(d):
-    return { k: v.get() for k, v in d.items() }
-
-def multiplyCounter(counter, factor):
-    for k in counter.keys():
-        counter[k] *= factor
-    return counter
-
-MATERIALS = {}
-UI_ELEMENTS = {}
-UPGRADES = {}
-OPERATORS = {}
 class ScalableImage:
     def __init__(self, name, collection, imagePath, image, mainDimension = 1):
         self.name = name
@@ -61,10 +19,12 @@ class ScalableImage:
 
         collection[name] = self
 
-    def getPhotoImage(self, size, transparency = 1):
+    def getPhotoImage(self, size, transparency = 1, operator = None):
         key = str(size) + "+" + str(transparency)
+        if operator is not None:
+            key += "+" + operator.name
         if not key in self.imageReferences:
-            im = self.renderImage()
+            im = self.renderImage(**{"operator": operator})
             if transparency < 1:
                 im.putalpha(Image.eval(im.getchannel("A"), lambda v: min(v, int(255 * transparency))))
 
@@ -75,14 +35,14 @@ class ScalableImage:
 
         return self.imageReferences[key]
 
-    def renderImage(self):
+    def renderImage(self, **flags):
         return self.image.copy()
 
 class UIElement(ScalableImage):
     def __init__(self, name, image, **kwargs):
         super().__init__(name, UI_ELEMENTS, "img/ui", image, **kwargs)
 
-    def renderImage(self):
+    def renderImage(self, **flags):
         if CONFIG.highlightColor == Config().highlightColor:
             return self.image.copy()
 
@@ -100,10 +60,11 @@ class UIElement(ScalableImage):
         return im
 
 class Upgrade(ScalableImage):
-    def __init__(self, name, canonicalName, image, overlay = None, cumulativeUpgrades = None, **kwargs):
+    def __init__(self, name, canonicalName, image, overlay = None, cumulativeUpgrades = None, moduleType = None, **kwargs):
         super().__init__(name, UPGRADES, "img/misc", image, **kwargs)
         self.canonicalName = canonicalName
         self.overlay = overlay
+        self.moduleType = moduleType
         self.cumulativeUpgrades = [UPGRADES[up] for up in cumulativeUpgrades] if cumulativeUpgrades is not None else None
 
     def calculateCosts(self, costs):
@@ -119,12 +80,26 @@ class Upgrade(ScalableImage):
                     result += Counter(costs[up])
             return result
 
-    def getPhotoImage(self, size):
-        return super().getPhotoImage(size * UPGRADE_SCALE)
+    def getPhotoImage(self, size, **renderFlags):
+        return super().getPhotoImage(size * UPGRADE_SCALE, **renderFlags)
 
-    def renderImage(self):
+    def renderImage(self, operator = None, **flags):
         im = self.image.copy()
-        if self.overlay is not None:
+
+        if operator is not None and self.moduleType is not None:
+            moduleImage = Image.open(operator.getModuleImagePath(self.moduleType), "r").convert("RGBA")
+            orig = im
+            im = Image.new("RGBA", (moduleImage.height * 2, moduleImage.height * 2), (0,0,0,0))
+
+            orig.thumbnail(size = (moduleImage.height, moduleImage.height))
+            typeImage = loadImage("img/misc", self.overlay + "-small.png")
+            typeImage.thumbnail(size = (moduleImage.height, moduleImage.height))
+
+            im.alpha_composite(moduleImage, dest=(moduleImage.height - moduleImage.width // 2, 0))
+            im.alpha_composite(orig, dest=(moduleImage.height, moduleImage.height))
+            im.alpha_composite(typeImage, dest=(0, moduleImage.height))
+
+        elif self.overlay is not None:
             im.alpha_composite(loadImage("img/misc", self.overlay + ".png"))
 
         return im
@@ -139,9 +114,29 @@ class Operator(ScalableImage):
     def __init__(self, name, image, externalName = None):
         super().__init__(name, OPERATORS, "img/operator", image)
 
+        self.costs = None
+        self.meta = None
+
         self.externalName = externalName
         if self.externalName is None:
             self.externalName = name.lower().replace(" ", "-")
+
+    def getCosts(self):
+        if self.costs is None:
+            self.downloadData()
+        return self.costs
+
+    def getModuleImagePath(self, moduleType):
+        if self.meta is None:
+            self.downloadData()
+
+        return getModuleImagePath(self.meta, moduleType)
+
+    def hasCache(self):
+        return self.costs is not None
+
+    def downloadData(self):
+        self.costs, self.meta = downloadCosts(self)
 
 class Material(ScalableImage):
     def __init__(self, name, canonicalName, tier, image, externalFileName = None, recipe = None):
@@ -216,7 +211,7 @@ class Material(ScalableImage):
         elif self.name.startswith("chip-specialist"):
             return x+2, 21
 
-    def renderImage(self):
+    def renderImage(self, **flags):
         border = loadImage("img/border", "T" + str(self.tier) + ".png")
         border.alpha_composite(self.image, ((border.width - self.image.width) // 2, (border.height - self.image.height) // 2))
         return border
@@ -269,12 +264,12 @@ Upgrade("S3M2", "Skill 3 Mastery 2", "m-2.png", overlay = "S3", mainDimension=0)
 Upgrade("S3M3", "Skill 3 Mastery 3", "m-3.png", overlay = "S3", mainDimension=0)
 Upgrade("S3MX", "Skill 3 Full Mastery", "m-x.png", overlay = "S3", mainDimension=0, cumulativeUpgrades=["S3M1", "S3M2", "S3M3"])
 
-Upgrade("MOD-X-1", "Module X Stage 1", "img_stg1.png", overlay = "mod-x", mainDimension=1)
-Upgrade("MOD-X-2", "Module X Stage 2", "img_stg2.png", overlay = "mod-x", mainDimension=1)
-Upgrade("MOD-X-3", "Module X Stage 3", "img_stg3.png", overlay = "mod-x", mainDimension=1)
-Upgrade("MOD-Y-1", "Module Y Stage 1", "img_stg1.png", overlay = "mod-y", mainDimension=1)
-Upgrade("MOD-Y-2", "Module Y Stage 2", "img_stg2.png", overlay = "mod-y", mainDimension=1)
-Upgrade("MOD-Y-3", "Module Y Stage 3", "img_stg3.png", overlay = "mod-y", mainDimension=1)
+Upgrade("MOD-X-1", "Module X Stage 1", "img_stg1.png", overlay = "mod-x", mainDimension=1, moduleType="X")
+Upgrade("MOD-X-2", "Module X Stage 2", "img_stg2.png", overlay = "mod-x", mainDimension=1, moduleType="X")
+Upgrade("MOD-X-3", "Module X Stage 3", "img_stg3.png", overlay = "mod-x", mainDimension=1, moduleType="X")
+Upgrade("MOD-Y-1", "Module Y Stage 1", "img_stg1.png", overlay = "mod-y", mainDimension=1, moduleType="Y")
+Upgrade("MOD-Y-2", "Module Y Stage 2", "img_stg2.png", overlay = "mod-y", mainDimension=1, moduleType="Y")
+Upgrade("MOD-Y-3", "Module Y Stage 3", "img_stg3.png", overlay = "mod-y", mainDimension=1, moduleType="Y")
 
 Material("money", "LMD", 4, "lmd.png", externalFileName="GOLD")
 

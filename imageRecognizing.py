@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from PIL import Image
 
-from database import MATERIALS, safeSave
+from utilImport import MATERIALS, safeSave
 
 
 def findMatches(image, template, mask=None, threshold=None):

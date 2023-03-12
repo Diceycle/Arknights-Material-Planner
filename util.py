@@ -3,13 +3,7 @@ import logging
 import os.path
 import sys
 
-LOGGER = logging.getLogger("ArknightsMaterials")
-LOGGER.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-handler = logging.FileHandler("arknightsMaterials.log")
-handler.setFormatter(formatter)
-LOGGER.addHandler(handler)
-LOGGER.addHandler(logging.StreamHandler(sys.stdout))
+from PIL import Image
 
 class Config:
     def __init__(self,
@@ -69,6 +63,59 @@ class Config:
         if len(kwargs) > 0:
             LOGGER.warning("Unrecognized Config Parameters: %s", kwargs)
 
+def createDirsIfNeeded(filename):
+    dirname = os.path.dirname(filename)
+    if len(dirname) > 0:
+        os.makedirs(dirname, exist_ok=True)
+
+def safeOpen(filename, mode = "w+"):
+    createDirsIfNeeded(filename)
+    return open(filename, mode)
+
+def safeSave(image, filename):
+    createDirsIfNeeded(filename)
+    image.save(filename)
+
+def hasExtension(filename, extensions):
+    return filename.lower().endswith(extensions)
+
+def loadImage(path, name):
+    return Image.open(path + "/" + name).convert("RGBA")
+
+def toUpgrades(d, recurse=lambda v: v):
+    return { UPGRADES[k]: recurse(v) for k, v in d.items() }
+
+def toOperators(d, recurse=lambda v: v):
+    return { OPERATORS[k]: recurse(v) for k, v in d.items() }
+
+def toMaterials(d, recurse=lambda v: v):
+    return { MATERIALS[k]: recurse(v) for k, v in d.items() }
+
+def toExternal(d, recurse=lambda v: v):
+    return { k.name: recurse(v) for k, v in d.items() }
+
+def unpackVar(d):
+    return { k: v.get() for k, v in d.items() }
+
+def multiplyCounter(counter, factor):
+    for k in counter.keys():
+        counter[k] *= factor
+    return counter
+
+
+LOGGER = logging.getLogger("ArknightsMaterials")
+LOGGER.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler = logging.FileHandler("arknightsMaterials.log")
+handler.setFormatter(formatter)
+LOGGER.addHandler(handler)
+
+LOGGER.addHandler(logging.StreamHandler(sys.stdout))
+
+MATERIALS = {}
+UI_ELEMENTS = {}
+UPGRADES = {}
+OPERATORS = {}
 
 if not os.path.isfile("config.json"):
     json.dump({}, open("config.json", "w+"))

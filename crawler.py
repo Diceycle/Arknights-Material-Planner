@@ -3,9 +3,12 @@ import os.path
 import re
 import urllib.error
 import urllib.request
+import urllib.parse
 
-from config import LOGGER
-from database import *
+from utilImport import *
+
+MODULE_IMAGE_PATH = "data/moduleImages/"
+MODULE_KEY_BASE = "moduleImage"
 
 CACHE_PATH = "data/upgradeCosts/"
 CACHE_FILETYPE = ".costs"
@@ -24,6 +27,15 @@ materialQuantityTag = "class=\"material-quantity"
 
 def getFileName(operator):
     return CACHE_PATH + operator.externalName + CACHE_FILETYPE
+
+def getModuleKey(moduleType):
+    return MODULE_KEY_BASE + moduleType.upper()
+
+def getModuleImagePath(meta, moduleType):
+    if not getModuleKey(moduleType) in meta:
+        return None
+
+    return MODULE_IMAGE_PATH + meta[getModuleKey(moduleType)]
 
 def indexToMastery(index):
     return "S" + str(1 + index // 3) + "M" + str(index % 3 + 1)
@@ -47,11 +59,15 @@ def parseQuantity(line):
     return re.search(".*material-quantity\">x(\d+)", line).group(1)
 
 def parseModuleType(line):
-    match = re.search(".*img src.*(?=/[^/\.]*\.png)/[\w\-]+([xyz])\.png", line)
+    filePath = re.search(".*img src=\"(.*)\"", line).group(1)
+    fileName = re.search("(?=/[^/\.]*\.png)/(.*\.png)", filePath).group(1)
+    match = re.search(".*([xy])\.png", fileName)
     if match is not None:
-        return match.group(1)
+        moduleType = match.group(1)
+    else:
+        moduleType = None
 
-    return None
+    return filePath, fileName, moduleType
 
 def parseModuleLevel(line):
     match = re.search(".*module-equip-level\">Lvl\. (\d)", line)
@@ -76,7 +92,7 @@ def getRequest(url):
     try:
         return urllib.request.urlopen(urllib.request.Request(url, None, headers))
     except urllib.error.HTTPError as response:
-        LOGGER.error("Error reading url: %s", response.code)
+        LOGGER.error("Error(%s) reading url: %s", response.code, url)
         for line in response.readlines():
             line = line.decode("utf-8")
             LOGGER.debug(line)
@@ -84,10 +100,12 @@ def getRequest(url):
 def hasCache(operator):
     return os.path.isfile(getFileName(operator))
 
+metaKey = "meta"
+costsKey = "costs"
 def downloadCosts(operator):
     if hasCache(operator):
         data = json.load(open(getFileName(operator), "r"))
-        return toUpgrades(data, recurse=toMaterials)
+        return toUpgrades(data[costsKey], recurse=toMaterials), data[metaKey]
 
     skillTableRow = None
     masteryTableRow = None
@@ -98,6 +116,7 @@ def downloadCosts(operator):
     currentMaterial = None
 
     costs = {}
+    meta = {}
 
     response = getRequest(gamepressUrl + operator.externalName)
 
@@ -157,7 +176,11 @@ def downloadCosts(operator):
             if "module-type-image" in line:
                 currentModuleType = "next"
             if "img src" in line and currentModuleType == "next":
-                currentModuleType = parseModuleType(line)
+                filePath, fileName, currentModuleType = parseModuleType(line)
+                if currentModuleType is not None:
+                    f = safeOpen(MODULE_IMAGE_PATH + fileName, mode="wb+")
+                    f.write(getRequest(urllib.parse.urljoin(gamepressUrl, filePath)).read())
+                    meta[getModuleKey(currentModuleType)] = fileName
             if "module-equip-level" in line:
                 currentModuleLevel = parseModuleLevel(line)
                 if currentModuleType is not None and currentModuleLevel is not None:
@@ -172,5 +195,6 @@ def downloadCosts(operator):
             if "</article>" in line:
                 currentModule = None
 
-    json.dump(toExternal(costs, recurse=toExternal), safeOpen(getFileName(operator)))
-    return costs
+    costsExternal = toExternal(costs, recurse=toExternal)
+    json.dump({costsKey: costsExternal, metaKey: meta}, safeOpen(getFileName(operator)))
+    return costs, meta

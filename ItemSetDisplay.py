@@ -2,8 +2,8 @@ import time
 from collections import Counter
 from tkinter import *
 
+from utilImport import *
 from ItemSet import ItemSet
-from database import *
 from widgets import LockableCanvas
 
 
