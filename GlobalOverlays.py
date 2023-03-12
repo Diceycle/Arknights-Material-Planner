@@ -62,37 +62,52 @@ class GlobalSelection(Canvas):
 
 class UpgradeSelection(GlobalSelection):
     def __init__(self, parent, scale, **kwargs):
-        super().__init__(parent, "UpgradeSelection", width=4*scale, height=7*scale, **kwargs)
+        width = 8*scale
+        super().__init__(parent, "UpgradeSelection", width=width, height=4*scale, **kwargs)
 
         self.scale = scale
 
-        self.placeImage(0, 0, UPGRADES["E1"])
-        self.placeImage(1, 0, UPGRADES["E2"])
+        self.totalSeparator = self.create_line(0, self.scale * 3, width, self.scale*3, fill=CONFIG.color)
 
-        self.placeImage(0, 1, UPGRADES["SK5"])
-        self.placeImage(1, 1, UPGRADES["SK6"])
-        self.placeImage(2, 1, UPGRADES["SK7"])
+        x = 0
+        self.placeImage(x, 0, UPGRADES["E1"])
+        self.placeImage(x, 1, UPGRADES["E2"])
+        x += 1
 
-        self.placeImage(0, 2, UPGRADES["S1M1"])
-        self.placeImage(1, 2, UPGRADES["S1M2"])
-        self.placeImage(2, 2, UPGRADES["S1M3"])
-        self.placeImage(3, 2, UPGRADES["S1MX"])
-        self.placeImage(0, 3, UPGRADES["S2M1"])
-        self.placeImage(1, 3, UPGRADES["S2M2"])
-        self.placeImage(2, 3, UPGRADES["S2M3"])
-        self.placeImage(3, 3, UPGRADES["S2MX"])
-        self.placeImage(0, 4, UPGRADES["S3M1"])
-        self.placeImage(1, 4, UPGRADES["S3M2"])
-        self.placeImage(2, 4, UPGRADES["S3M3"])
-        self.placeImage(3, 4, UPGRADES["S3MX"])
+        self.placeImage(x, 0, UPGRADES["SK2"])
+        self.placeImage(x, 1, UPGRADES["SK3"])
+        self.placeImage(x, 2, UPGRADES["SK4"])
+        self.placeImage(x, 3, UPGRADES["SK1-4"])
+        x += 1
+        self.placeImage(x, 0, UPGRADES["SK5"])
+        self.placeImage(x, 1, UPGRADES["SK6"])
+        self.placeImage(x, 2, UPGRADES["SK7"])
+        self.placeImage(x, 3, UPGRADES["SK5-7"])
+        x += 1
 
-        self.placeImage(0, 5, UPGRADES["MOD-X-1"])
-        self.placeImage(1, 5, UPGRADES["MOD-X-2"])
-        self.placeImage(2, 5, UPGRADES["MOD-X-3"])
+        self.placeImage(x, 0, UPGRADES["S1M1"])
+        self.placeImage(x, 1, UPGRADES["S1M2"])
+        self.placeImage(x, 2, UPGRADES["S1M3"])
+        self.placeImage(x, 3, UPGRADES["S1MX"])
+        x += 1
+        self.placeImage(x, 0, UPGRADES["S2M1"])
+        self.placeImage(x, 1, UPGRADES["S2M2"])
+        self.placeImage(x, 2, UPGRADES["S2M3"])
+        self.placeImage(x, 3, UPGRADES["S2MX"])
+        x += 1
+        self.placeImage(x, 0, UPGRADES["S3M1"])
+        self.placeImage(x, 1, UPGRADES["S3M2"])
+        self.placeImage(x, 2, UPGRADES["S3M3"])
+        self.placeImage(x, 3, UPGRADES["S3MX"])
+        x += 1
 
-        self.placeImage(0, 6, UPGRADES["MOD-Y-1"])
-        self.placeImage(1, 6, UPGRADES["MOD-Y-2"])
-        self.placeImage(2, 6, UPGRADES["MOD-Y-3"])
+        self.placeImage(x, 0, UPGRADES["MOD-X-1"])
+        self.placeImage(x, 1, UPGRADES["MOD-X-2"])
+        self.placeImage(x, 2, UPGRADES["MOD-X-3"])
+        x += 1
+        self.placeImage(x, 0, UPGRADES["MOD-Y-1"])
+        self.placeImage(x, 1, UPGRADES["MOD-Y-2"])
+        self.placeImage(x, 2, UPGRADES["MOD-Y-3"])
 
     def placeImage(self, x, y, upgrade):
         up = self.create_image(x*self.scale + self.scale // 2,
