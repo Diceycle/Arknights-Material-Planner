@@ -135,20 +135,15 @@ class ItemSet(LockableCanvas):
         self.updateInternal()
 
     def researchMaterials(self):
-        self.researching = True
         if self.operator.hasCache():
-            self.researchMaterialsInternal(self.operator.getCosts())
+            self.researching = False
+            self.replaceMaterials(self.upgrade.calculateCosts(self.operator.getCosts()))
         else:
-            self.replaceMaterials({})
-            threading.Thread(target=self.researchMaterialsAsync).start()
-
-    def researchMaterialsAsync(self):
-        costs = self.operator.getCosts()
-        self.after(0, lambda : self.researchMaterialsInternal(costs))
-
-    def researchMaterialsInternal(self, costs):
-        self.researching = False
-        self.replaceMaterials(self.upgrade.calculateCosts(costs))
+            if not self.researching:
+                self.researching = True
+                self.replaceMaterials({})
+                threading.Thread(target=self.operator.getCosts).start()
+            self.after(1, self.researchMaterials)
 
     def replaceMaterials(self, materials):
         self.materials = {}
