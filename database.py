@@ -190,9 +190,9 @@ class Material(ScalableImage):
             return x+2, 15
         elif self.name.startswith("chip-defender"):
             return x+2, 16
-        elif self.name.startswith("chip-caster"):
-            return x+2, 17
         elif self.name.startswith("chip-sniper"):
+            return x+2, 17
+        elif self.name.startswith("chip-caster"):
             return x+2, 18
         elif self.name.startswith("chip-healer"):
             return x+2, 19
