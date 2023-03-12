@@ -1,9 +1,9 @@
 import json
+import time
 from collections import Counter
 
 from PIL import Image, ImageTk, ImageColor
 
-from util import Config
 from utilImport import *
 from crawler import getModuleImagePath, downloadCosts
 
@@ -44,21 +44,7 @@ class UIElement(ScalableImage):
         super().__init__(name, UI_ELEMENTS, "img/ui", image, **kwargs)
 
     def renderImage(self, **flags):
-        if CONFIG.highlightColor == Config().highlightColor:
-            return self.image.copy()
-
-        im = self.image.copy()
-        highlightColor = [c / 255 for c in ImageColor.getcolor(CONFIG.highlightColor, "RGB")]
-        for x in range(im.width):
-            for y in range(im.height):
-                pix = im.getpixel((x, y))
-                im.putpixel((x, y),
-                            (int(pix[0] * highlightColor[0]),
-                             int(pix[1] * highlightColor[1]),
-                             int(pix[2] * highlightColor[2]),
-                             pix[3]))
-
-        return im
+        return colorize(self.image.copy(), ImageColor.getcolor(CONFIG.highlightColor, "RGB"))
 
 class Upgrade(ScalableImage):
     def __init__(self, name, canonicalName, image, overlay = None, cumulativeUpgrades = None, moduleType = None, **kwargs):
@@ -105,6 +91,8 @@ class Upgrade(ScalableImage):
         elif self.overlay is not None:
             im.alpha_composite(loadImage("img/misc", self.overlay + ".png"))
 
+        if CONFIG.highlightUpgrades:
+            im = colorize(im, ImageColor.getcolor(CONFIG.highlightColor, "RGB"))
         return im
 
     def centerModuleImage(self, module):

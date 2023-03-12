@@ -16,6 +16,7 @@ class Config:
                  color = "#555555",
                  colorDark = "#444444",
                  highlightColor = "white",
+                 highlightUpgrades = False,
                  amountColor = "black",
                  amountColorFont = "white",
                  depotColorSufficient = "gray",
@@ -45,6 +46,7 @@ class Config:
         self.amountColor = amountColor
         self.amountColorFont = amountColorFont
         self.highlightColor = highlightColor
+        self.highlightUpgrades = highlightUpgrades
         self.depotColorSufficient = depotColorSufficient
         self.depotColorSufficientFont = depotColorSufficientFont
         self.depotColorCraftable = depotColorCraftable
@@ -81,6 +83,15 @@ def hasExtension(filename, extensions):
 
 def loadImage(path, name):
     return Image.open(path + "/" + name).convert("RGBA")
+
+def colorize(image, color):
+    floatColor = [c / 255 for c in color]
+    r, g, b, a = image.split()
+    r = Image.eval(r, lambda v: int(v * floatColor[0]))
+    g = Image.eval(g, lambda v: int(v * floatColor[1]))
+    b = Image.eval(b, lambda v: int(v * floatColor[2]))
+
+    return Image.merge("RGBA", (r, g, b, a))
 
 def toUpgrades(d, recurse=lambda v: v):
     return { UPGRADES[k]: recurse(v) for k, v in d.items() }
