@@ -8,6 +8,7 @@ from utilImport import *
 from crawler import getModuleImagePath, downloadCosts
 
 UPGRADE_SCALE = 0.75
+MAX_MODULE_IMAGE_DIMENSIONS = (70, 60)
 
 class ScalableImage:
     def __init__(self, name, collection, imagePath, image, mainDimension = 1):
@@ -87,22 +88,30 @@ class Upgrade(ScalableImage):
         im = self.image.copy()
 
         if operator is not None and self.moduleType is not None:
-            moduleImage = Image.open(operator.getModuleImagePath(self.moduleType), "r").convert("RGBA")
             orig = im
-            im = Image.new("RGBA", (moduleImage.height * 2, moduleImage.height * 2), (0,0,0,0))
+            moduleImage = self.centerModuleImage(Image.open(operator.getModuleImagePath(self.moduleType), "r").convert("RGBA"))
 
-            orig.thumbnail(size = (moduleImage.height, moduleImage.height))
+            im = Image.new("RGBA", (100, 100), (0,0,0,0))
+
+            orig.thumbnail(size = (im.height - MAX_MODULE_IMAGE_DIMENSIONS[1],
+                                   im.height - MAX_MODULE_IMAGE_DIMENSIONS[1]))
             typeImage = loadImage("img/misc", self.overlay + "-small.png")
-            typeImage.thumbnail(size = (moduleImage.height, moduleImage.height))
+            typeImage.thumbnail(size = (moduleImage.height // 2, moduleImage.height // 2))
 
-            im.alpha_composite(moduleImage, dest=(moduleImage.height - moduleImage.width // 2, 0))
-            im.alpha_composite(orig, dest=(moduleImage.height, moduleImage.height))
-            im.alpha_composite(typeImage, dest=(0, moduleImage.height))
+            im.alpha_composite(orig, dest=(im.width - orig.width, 0))
+            im.alpha_composite(moduleImage, dest=(0, im.height - moduleImage.height))
+            im.alpha_composite(typeImage, dest=(moduleImage.width - typeImage.width // 2, im.height - typeImage.height))
 
         elif self.overlay is not None:
             im.alpha_composite(loadImage("img/misc", self.overlay + ".png"))
 
         return im
+
+    def centerModuleImage(self, module):
+        i = Image.new("RGBA", MAX_MODULE_IMAGE_DIMENSIONS, (0,0,0,0))
+        i.alpha_composite(module, dest=(MAX_MODULE_IMAGE_DIMENSIONS[0] // 2 - module.width // 2,
+                                        MAX_MODULE_IMAGE_DIMENSIONS[1] // 2 - module.height // 2))
+        return i
 
     def __str__(self):
         return self.canonicalName
