@@ -79,8 +79,8 @@ class Upgrade(ScalableImage):
 
             im = Image.new("RGBA", (100, 100), (0,0,0,0))
 
-            orig.thumbnail(size = (im.height - MAX_MODULE_IMAGE_DIMENSIONS[1],
-                                   im.height - MAX_MODULE_IMAGE_DIMENSIONS[1]))
+            orig.thumbnail(size = ((im.height - MAX_MODULE_IMAGE_DIMENSIONS[1]) * 2,
+                                   (im.height - MAX_MODULE_IMAGE_DIMENSIONS[1]) * 2))
             typeImage = loadImage("img/misc", self.overlay + "-small.png")
             typeImage.thumbnail(size = (moduleImage.height // 2, moduleImage.height // 2))
 
@@ -266,9 +266,11 @@ Upgrade("S3MX", "Skill 3 Full Mastery", "m-x.png", overlay = "S3", mainDimension
 Upgrade("MOD-X-1", "Module X Stage 1", "img_stg1.png", overlay = "mod-x", mainDimension=1, moduleType="X")
 Upgrade("MOD-X-2", "Module X Stage 2", "img_stg2.png", overlay = "mod-x", mainDimension=1, moduleType="X")
 Upgrade("MOD-X-3", "Module X Stage 3", "img_stg3.png", overlay = "mod-x", mainDimension=1, moduleType="X")
+Upgrade("MOD-X-X", "Module X Full", "img_stgX.png", overlay = "mod-x", mainDimension=1, moduleType="X", cumulativeUpgrades=["MOD-X-1", "MOD-X-2", "MOD-X-3"])
 Upgrade("MOD-Y-1", "Module Y Stage 1", "img_stg1.png", overlay = "mod-y", mainDimension=1, moduleType="Y")
 Upgrade("MOD-Y-2", "Module Y Stage 2", "img_stg2.png", overlay = "mod-y", mainDimension=1, moduleType="Y")
 Upgrade("MOD-Y-3", "Module Y Stage 3", "img_stg3.png", overlay = "mod-y", mainDimension=1, moduleType="Y")
+Upgrade("MOD-Y-X", "Module Y Full", "img_stgX.png", overlay = "mod-y", mainDimension=1, moduleType="Y", cumulativeUpgrades=["MOD-Y-1", "MOD-Y-2", "MOD-Y-3"])
 
 Material("money", "LMD", 4, "lmd.png", externalFileName="GOLD")
 

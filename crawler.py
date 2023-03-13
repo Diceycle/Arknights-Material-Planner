@@ -190,7 +190,7 @@ def downloadCosts(operator):
             if currentModule is not None and "class=\"item-image" in line:
                 currentMaterial = parseMaterialFileName(line)
             if currentModule is not None and materialQuantityTag in line:
-                costs[UPGRADES[currentModule]][getMaterialFromFileName(currentMaterial)] = parseQuantity(line)
+                costs[UPGRADES[currentModule]][getMaterialFromFileName(currentMaterial)] = int(parseQuantity(line))
 
             if "</article>" in line:
                 currentModule = None
