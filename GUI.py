@@ -24,7 +24,7 @@ class GUI:
         self.window.geometry(str(self.width) + "x" + str(self.height))
         self.window.title("Arknights Materials")
         self.window.protocol("WM_DELETE_WINDOW", self.destroy)
-        self.window.configure(background="light blue")
+        self.window.configure(background=CONFIG.backgroundColor)
         self.window.resizable(width=False, height=False)
 
         MaterialSelection(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
