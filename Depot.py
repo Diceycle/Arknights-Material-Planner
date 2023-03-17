@@ -281,7 +281,7 @@ class ParseDepotOverlay(GlobalSelection):
         self.after(0, self.handleQueue)
 
     def startParsing(self):
-        self.parser = DepotParser()
+        self.parser = DepotParser(confidenceThreshold=CONFIG.imageRecognitionThreshold)
         self.parser.startParsing(self.displayText, self.displayMaterial, self.notifyFinish)
         self.handleQueue()
 

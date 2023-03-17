@@ -32,6 +32,7 @@ class Config:
                  arknightsInputWindowClass = None,
                  arknightsWindowBorder = (1, 33, 33, 1),
                  colorLeniency = 3,
+                 imageRecognitionThreshold = 0.95,
                  tesseractExeLocation = None,
                  **kwargs):
 
@@ -60,6 +61,7 @@ class Config:
         self.arknightsInputWindowClass = arknightsInputWindowClass
         self.arknightsWindowBorder = arknightsWindowBorder
         self.colorLeniency = colorLeniency
+        self.imageRecognitionThreshold = imageRecognitionThreshold
         self.tesseractExeLocation = tesseractExeLocation
 
         if len(kwargs) > 0:

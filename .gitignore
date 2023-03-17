@@ -3,6 +3,7 @@ tests*
 data/
 *.materials
 *.log
+config.json
 
 _build
 _dist
