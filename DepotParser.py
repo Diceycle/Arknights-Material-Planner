@@ -69,9 +69,8 @@ def takeScreenshot(windowHandler):
     screenshot = windowHandler.takeScreenshot().crop((
         WINDOW_BORDER[0],
         WINDOW_BORDER[1],
-        SCREENSHOT_SIZE[0] - WINDOW_BORDER[2],
-        SCREENSHOT_SIZE[1] - WINDOW_BORDER[3]))
-
+        SCREENSHOT_SIZE[0] + WINDOW_BORDER[0],
+        SCREENSHOT_SIZE[1] + WINDOW_BORDER[1]))
     return screenshot.convert("RGB")
 
 def scrollArknights(windowHandler):
