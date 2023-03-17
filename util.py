@@ -10,6 +10,7 @@ class Config:
                  uiScale = 100,
                  scrollSpeed = 30,
                  saveFile = "default.materials",
+                 maintainNaturalOrder = False,
                  backgroundImage = None,
                  backgroundImageOffset = 0,
                  backgroundColor = "#444444",
@@ -39,6 +40,7 @@ class Config:
         self.uiScale = uiScale
         self.scrollSpeed = scrollSpeed
         self.saveFile = saveFile
+        self.maintainNaturalOrder = maintainNaturalOrder
         self.backgroundImage = backgroundImage
         self.backgroundImageOffset = backgroundImageOffset
         self.backgroundColor = backgroundColor

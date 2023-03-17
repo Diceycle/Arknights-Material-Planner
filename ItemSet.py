@@ -11,7 +11,7 @@ from widgets import LockableCanvas, ImageCheckbutton
 class ItemSet(LockableCanvas):
     def __init__(self, parent, operator, upgrade, materials, scale, updateCallback = None, maxItems = 4,
                  grabbable = False, editable = True, deletable = False, toggleable = True, enabled = True,
-                 researchOnly = False, allowMultipleRows = False):
+                 researchOnly = False, allowMultipleRows = False, naturalOrder = True):
 
         self.maxItems = maxItems
         self.width = ItemSet.getWidth(maxItems, scale)
@@ -30,6 +30,7 @@ class ItemSet(LockableCanvas):
         self.editable = editable
         self.researchOnly = researchOnly
         self.allowMultipleRows = allowMultipleRows
+        self.naturalOrder = naturalOrder
 
         self.researching = False
 
@@ -64,9 +65,7 @@ class ItemSet(LockableCanvas):
             self.deleteButton = self.create_image(self.width, 0, image=UI_ELEMENTS["close"].getPhotoImage(self.uiIconScale), anchor=NE)
 
         if not self.researchOnly:
-            for m, a in materials.items():
-                self.addMaterialInternal(m, a)
-            self.draw()
+            self.replaceMaterials(materials)
         else:
             self.researchMaterials()
 
@@ -147,8 +146,11 @@ class ItemSet(LockableCanvas):
 
     def replaceMaterials(self, materials):
         self.materials = {}
-        for m, a in materials.items():
-            self.addMaterialInternal(m, a)
+        order = list(materials.keys())
+        if not self.naturalOrder:
+            order.sort(key = lambda m: m.getSearchKey())
+        for m in order:
+            self.addMaterialInternal(m, materials[m])
         self.updateInternal()
 
     def updateInternal(self):
