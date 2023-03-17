@@ -1,4 +1,6 @@
 import json
+from queue import Queue
+
 import pyperclip
 from collections import Counter
 from tkinter import *
@@ -223,7 +225,7 @@ class ParseDepotOverlay(GlobalSelection):
                                              image=UI_ELEMENTS["close"].getPhotoImage(self.scale // 2), anchor=NE)
         self.tag_bind(self.closeButton, "<Button-1>", lambda e: self.confirmContents(False))
 
-        self.statusLabel = self.create_text(width // 2, self.scale // 4, fill=CONFIG.highlightColor, anchor=CENTER, font = ("Arial", self.scale // 6))
+        self.statusLabel = self.create_text(width // 2, self.scale // 4, fill=CONFIG.highlightColor, anchor=N, font = ("Arial", self.scale // 6), width=width - self.scale)
 
         for m in MATERIALS.values():
             self.placeIndicator(m)
@@ -245,41 +247,43 @@ class ParseDepotOverlay(GlobalSelection):
         self.changeStatus("Setting up...")
         self.parsing = True
         self.interrupted = False
+        self.error = False
         self.currentMaterials = {}
+        self.workQueue = Queue()
 
         self.update()
         self.after(0, self.startParsing)
 
+    def displayMaterial(self, material, amount):
+        self.workQueue.put(["Material", material, amount])
+
+    def displayText(self, text, error = False):
+        if self.error:
+            return
+        if error:
+            self.error = True
+        self.workQueue.put(["Text", text])
+
+    def notifyFinish(self, success):
+        self.workQueue.put(["Finish", success])
+
+    def handleQueue(self):
+        queueItem = self.workQueue.get()
+        if queueItem[0] == "Finish":
+            self.finishParsing(queueItem[1])
+            return
+        elif queueItem[0] == "Text":
+            self.changeStatus(queueItem[1])
+        elif queueItem[0] == "Material":
+            self.setMaterial(queueItem[1], queueItem[2])
+
+        self.update()
+        self.after(0, self.handleQueue)
+
     def startParsing(self):
         self.parser = DepotParser()
-        valid = self.parser.startParsing()
-        if valid is not None:
-            self.changeStatus(valid)
-            self.finishParsing()
-            return
-
-        try:
-            nextMaterial = self.parser.parseNext()
-            while nextMaterial is not None and self.parsing:
-                if isinstance(nextMaterial, str):
-                    self.changeStatus(nextMaterial)
-                    self.update()
-                    nextMaterial = self.parser.parseNext()
-                    continue
-                else:
-                    self.changeStatus("Scanning...")
-
-                self.setMaterial(nextMaterial[0], nextMaterial[1])
-                self.update()
-                nextMaterial = self.parser.parseNext()
-
-            if not self.interrupted:
-                self.changeStatus("Done scanning, either confirm or discard the new materials with the buttons on the right")
-        except Exception as e:
-            self.changeStatus("Error encountered during scanning of depot: " + str(e))
-            LOGGER.exception("Scanning Error: %s", e)
-
-        self.finishParsing()
+        self.parser.startParsing(self.displayText, self.displayMaterial, self.notifyFinish)
+        self.handleQueue()
 
     def setMaterial(self, material, amount):
         i = self.indicators[material]
@@ -299,14 +303,18 @@ class ParseDepotOverlay(GlobalSelection):
         elif not self.parsing and confirmed:
             self.notifyObserver(self.currentMaterials)
         elif self.parsing and not confirmed:
-            self.changeStatus("Interrupted, either confirm or discard the new materials with the buttons on the right")
-            self.interrupted = True
-            self.finishParsing()
+            self.finishParsing(False)
         else:
             self.cancelCallback()
 
-    def finishParsing(self):
+    def finishParsing(self, success):
+        if not self.error:
+            if success:
+                self.changeStatus("Done scanning, either confirm or discard the new materials with the buttons on the right")
+            else:
+                self.changeStatus("Interrupted, either confirm or discard the new materials with the buttons on the right")
         self.parsing = False
+        self.parser.stop()
         self.parser.destroy()
 
     def cleanup(self):

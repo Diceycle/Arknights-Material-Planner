@@ -1,3 +1,4 @@
+import threading
 import time
 
 from PIL import Image
@@ -147,7 +148,7 @@ def validateMenu(handler):
         return None
 
 class DepotParser:
-    def __init__(self, image = None, expectedResult = None, confidenceThreshold = 0.95, debug = False):
+    def __init__(self, image = None, confidenceThreshold = 0.95, debug = False):
         if not image:
             self.handler = resolveHandler(CONFIG.arknightsWindowName,
                                           childClass=CONFIG.arknightsInputWindowClass,
@@ -158,19 +159,24 @@ class DepotParser:
             self.image = image
 
         self.debug = debug
-        self.expectedResult = expectedResult
         self.confidenceThreshold = confidenceThreshold
+        self.scrollThread = None
 
 
-    def startParsing(self):
-        if not self.handler.ready:
-            return "Arknights is not running or cannot be found. Check your Arknights Window configuration."
+    def startParsing(self, statusCallback, materialCallback, finishCallback):
+        if self.image is None and not self.handler.ready:
+            statusCallback("Arknights is not running or cannot be found. Check your Arknights Window configuration.", error = True)
+            finishCallback(False)
+            return
 
         if CONFIG.tesseractExeLocation is None:
-            return "Tesseract Exe needs to be configured"
+            statusCallback("Tesseract Exe needs to be configured", error = True)
+            finishCallback(False)
+            return
 
         self.materialIndex = 0
         self.finalPage = False
+        self.interrupted = False
 
         if self.handler is not None:
             screenshot = validateMenu(self.handler)
@@ -178,14 +184,15 @@ class DepotParser:
             screenshot = Image.open(self.image).convert("RGB")
 
         if screenshot is None:
-            return "Can not scan depot from here, please navigate to the main menu or the depot."
+            statusCallback("Can not scan depot from here, please navigate to the main menu or the depot.", error = True)
+            finishCallback(False)
+            return
 
         self.loadNextPage(screenshot, firstPage=True)
+        threading.Thread(target=lambda : self.parse(statusCallback, materialCallback, finishCallback)).start()
 
-        return None
 
     def loadNextPage(self, screenshot, firstPage = False):
-        self.scrollNotified = False
         if checkEndOfDepot(screenshot):
             self.finalPage = True
             self.boxes = splitScreenshot(screenshot, FIRST_MATERIAL_CENTER_END)
@@ -196,6 +203,8 @@ class DepotParser:
         else:
             self.boxes = splitScreenshot(screenshot, FIRST_MATERIAL_CENTER)
             self.boxIndex = 0
+            self.scrollThread = threading.Thread(target=lambda : scrollArknights(self.handler))
+            self.scrollThread.start()
         self.lastTopRow = [None for i in range(BOXES_ON_SCREEN[0])]
 
     def findFirstUnknownBox(self):
@@ -206,21 +215,57 @@ class DepotParser:
             c += 1
         return 0
 
-    def parseNext(self):
-        if self.boxIndex >= len(self.boxes):
-            if self.handler is not None and self.scrollNotified:
-                scrollArknights(self.handler)
-                self.loadNextPage(takeScreenshot(self.handler))
-            elif self.handler is not None and not self.finalPage:
-                self.scrollNotified = True
-                return "Scrolling..."
-            else:
-                return None
+    def parse(self, statusCallback, materialCallback, finishCallback):
+        threads = []
+        statusCallback("Scanning...")
+        while self.materialIndex < len(DEPOT_ORDER) and not self.interrupted:
+            if self.boxIndex >= len(self.boxes):
+                if self.handler is not None and not self.finalPage:
+                    if self.scrollThread.is_alive():
+                        statusCallback("Waiting for scroll to finish...")
+                    self.scrollThread.join()
+                    statusCallback("Scanning...")
+                    self.loadNextPage(takeScreenshot(self.handler))
 
-        if self.materialIndex >= len(DEPOT_ORDER):
+            thread = self.parseMaterialAmount(materialCallback, statusCallback)
+            if thread is not None:
+                threads.append(thread)
+            self.materialIndex += 1
+
+        for t in threads:
+            t.join()
+
+        finishCallback(self.materialIndex >= len(DEPOT_ORDER))
+
+    def parseMaterialAmount(self, materialCallback, statusCallback):
+        material = MATERIALS[DEPOT_ORDER[self.materialIndex]]
+        box = self.boxes[self.boxIndex]
+
+        confidence = matchMasked(box, material)
+        if confidence > self.confidenceThreshold:
+            if self.boxIndex % BOXES_ON_SCREEN[1] == 0:
+                self.lastTopRow[self.boxIndex // BOXES_ON_SCREEN[1]] = material
+            self.boxIndex += 1
+            return self.readAmountAsync(box, material, materialCallback, statusCallback)
+        else:
+            materialCallback(material, self.convertAmount(None))
             return None
 
-        mat, amount = self.parseMaterialAmount()
+    def readAmountAsync(self, box, material, materialCallback, statusCallback):
+        def readAndNotifyAmount():
+            try:
+                amount = readAmount(box)
+                materialCallback(material, self.convertAmount(amount))
+            except Exception as e:
+                self.interrupted = True
+                statusCallback("Error encountered during scanning of depot: " + str(e), error = True)
+                LOGGER.exception("Scanning Error: ")
+
+        thread = threading.Thread(target=readAndNotifyAmount)
+        thread.start()
+        return thread
+
+    def convertAmount(self, amount):
         if amount is None:
             amount = 0
         else:
@@ -230,31 +275,10 @@ class DepotParser:
                 LOGGER.debug("Could not read amount. Was '%s'", amount)
                 amount = None
 
-        self.materialIndex += 1
+        return amount
 
-        return mat, amount
-
-    def parseMaterialAmount(self):
-        material = MATERIALS[DEPOT_ORDER[self.materialIndex]]
-        box = self.boxes[self.boxIndex]
-
-        confidence = matchMasked(box, material)
-        if confidence > self.confidenceThreshold:
-            amount = readAmount(box, debug=self.debug, fileName=self.materialIndex)
-            if self.boxIndex % BOXES_ON_SCREEN[1] == 0:
-                self.lastTopRow[self.boxIndex // BOXES_ON_SCREEN[1]] = material
-            self.boxIndex += 1
-        else:
-            amount = None
-
-        if self.expectedResult is not None:
-            if self.expectedResult[self.materialIndex] != amount:
-                print("!!! Material at Position {:>2}: {:>16} x{:<4} but should be {}".format(
-                    self.boxIndex, material.name, amount, self.expectedResult[self.materialIndex]))
-            else:
-                print("    Material at Position {:>2}: {:>16} x{:<4}".format(self.boxIndex, material.name, amount))
-
-        return material, amount
+    def stop(self):
+        self.interrupted = True
 
     def destroy(self):
         if self.handler is not None:

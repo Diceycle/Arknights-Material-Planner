@@ -111,10 +111,11 @@ class WindowHandler:
         encodedEnd = win32api.MAKELONG(end[0], end[1])
         win32gui.PostMessage(self.hwndInput, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, encodedStart)
 
-        for i in range(100):
-            time.sleep(.03)
-            pos = (start[0] + int((end[0] - start[0]) / 100 * (i+1)),
-                   start[1] + int((end[1] - start[1]) / 100 * (i+1)))
+        points = 100
+        for i in range(points):
+            time.sleep(.02)
+            pos = (start[0] + int((end[0] - start[0]) / points * (i+1)),
+                   start[1] + int((end[1] - start[1]) / points * (i+1)))
             encodedEnd = win32api.MAKELONG(pos[0], pos[1])
             win32gui.PostMessage(self.hwndInput, win32con.WM_MOUSEMOVE, win32con.MK_LBUTTON, encodedEnd)
         time.sleep(.3)
