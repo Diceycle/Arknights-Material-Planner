@@ -2,6 +2,7 @@ import json
 import logging
 import os.path
 import sys
+from collections import Counter
 
 from PIL import Image
 
@@ -20,10 +21,8 @@ class Config:
                  highlightUpgrades = False,
                  amountColor = "black",
                  amountColorFont = "white",
-                 depotColorSufficient = "gray",
+                 depotColorSufficient = "#00CC00",
                  depotColorSufficientFont = "black",
-                 depotColorCraftable = "#00DD00",
-                 depotColorCraftableFont = "black",
                  depotColorInsufficient = "red",
                  depotColorInsufficientFont ="white",
                  gamepressUrl ="https://gamepress.gg/arknights/operator/",
@@ -52,8 +51,6 @@ class Config:
         self.highlightUpgrades = highlightUpgrades
         self.depotColorSufficient = depotColorSufficient
         self.depotColorSufficientFont = depotColorSufficientFont
-        self.depotColorCraftable = depotColorCraftable
-        self.depotColorCraftableFont = depotColorCraftableFont
         self.depotColorInsufficient = depotColorInsufficient
         self.depotColorInsufficientFont = depotColorInsufficientFont
         self.gamepressUrl = gamepressUrl
@@ -117,6 +114,43 @@ def multiplyCounter(counter, factor):
         counter[k] *= factor
     return counter
 
+def craftPossible(missing, available):
+    for tier in range(5, 0, -1):
+        for m in list(missing.keys()):
+            if m.tier != tier:
+                continue
+
+            while missing[m] > 0:
+                path = findCraftingPath(m, available)
+                if path is None:
+                    break
+                else:
+                    missing[m] -= 1
+                    available -= path
+
+            if m.isCraftable():
+                missing += Counter(multiplyCounter(m.getIngredients(), missing[m]))
+
+def findCraftingPath(material, available):
+    if available[material] > 0:
+        return Counter({ material: 1 })
+    if not material.isCraftable():
+        return None
+
+    path = Counter(material.getIngredients())
+    while True:
+        if path <= available:
+            return path
+        else:
+            for m in list(path.keys()):
+                if available[m] >= path[m]:
+                    continue
+                if not m.isCraftable():
+                    return None
+
+                need = max(0, path[m] - available[m])
+                path += multiplyCounter(Counter(m.getIngredients()), need)
+                path[m] -= need
 
 LOGGER = logging.getLogger("ArknightsMaterials")
 LOGGER.setLevel(logging.DEBUG)

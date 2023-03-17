@@ -30,12 +30,14 @@ class Depot(LockableCanvas):
         self.contents = {}
         self.trueRequirements = {}
         self.craftingRequirements = {}
+        self.missingMaterials = {}
+        self.missingLabels = {}
         self.craftable = []
         self.requirementLabels = {}
 
         self.indicators = {}
 
-        controlCanvasHeight = self.scale // 2 * 3
+        controlCanvasHeight = self.scale // 2 * 4
         if CONFIG.depotParsingEnabled:
             controlCanvasHeight += self.scale // 2
         self.controlCanvas = LockableCanvas(self.controlCanvasParent, highlightthickness=0, bg=CONFIG.backgroundColor, width=scale // 2, height=controlCanvasHeight)
@@ -51,21 +53,25 @@ class Depot(LockableCanvas):
             else:
                 self.placeItemIndicator(m, x, y)
 
-        self.indicatorToggleButton = ImageCheckbutton(self.controlCanvas, 0, 0, callback=self.toggleVisibility,
+        self.indicatorToggleButton = ImageCheckbutton(self.controlCanvas, 0, 0, callback=lambda state: self.draw(),
             images=(UI_ELEMENTS["visibility-full"].getPhotoImage(self.scale // 2),
                     UI_ELEMENTS["visibility-partial"].getPhotoImage(self.scale // 2),
                     UI_ELEMENTS["visibility-low"].getPhotoImage(self.scale // 2)))
 
-        self.pageToggleButton = ImageCheckbutton(self.controlCanvas, 0, self.scale // 2, callback=self.togglePage,
+        self.labelToggleButton = ImageCheckbutton(self.controlCanvas, 0, self.scale // 2, callback=lambda state : self.draw(),
+            images=(UI_ELEMENTS["total"].getPhotoImage(self.scale // 2),
+                    UI_ELEMENTS["missing"].getPhotoImage(self.scale // 2)))
+
+        self.pageToggleButton = ImageCheckbutton(self.controlCanvas, 0, self.scale // 2 * 2, callback=self.togglePage,
             images= (UI_ELEMENTS["arrow-down"].getPhotoImage(self.scale // 2),
                      UI_ELEMENTS["arrow-up"].getPhotoImage(self.scale // 2)))
 
-        self.exportButton = self.controlCanvas.create_image(0 , self.scale // 4 * 5,
+        self.exportButton = self.controlCanvas.create_image(0 , self.scale // 4 * 7,
                                                             image=UI_ELEMENTS["export"].getPhotoImage(self.scale // 2), anchor=W)
         self.controlCanvas.tag_bind(self.exportButton, "<Button-1>", lambda e: self.exportContentsForPenguinStats())
 
         if CONFIG.depotParsingEnabled:
-            self.researchButton = self.controlCanvas.create_image(0, self.scale // 4 * 7,
+            self.researchButton = self.controlCanvas.create_image(0, self.scale // 4 * 9,
                                                                   image=UI_ELEMENTS["research-button"].getPhotoImage(self.scale // 2), anchor=W)
             self.controlCanvas.tag_bind(self.researchButton, "<Button-1>", lambda e: self.parseDepot())
 
@@ -77,12 +83,15 @@ class Depot(LockableCanvas):
         self.contents[material] = IntVar(value = initialAmount)
         self.contents[material].trace("w", lambda *args: self.updateItemRequirementsInternal())
 
+        labelArgs = { "x": (x + 1) * self.scale - self.scale // 20,
+                      "y": (y + 1) * self.scale - self.scale // 4 - self.scale // 20,
+                      "height": self.scale // 5,
+                      "anchor": SE }
+
         self.craftingRequirements[material] = IntVar()
-        self.requirementLabels[material] = CanvasLabel(self.contentCanvas,
-                                                       (x + 1) * self.scale - self.scale // 20,
-                                                       (y + 1) * self.scale - self.scale // 4 - self.scale // 20,
-                                                       var=self.craftingRequirements[material],
-                                                       height=self.scale // 5, anchor=SE)
+        self.requirementLabels[material] = CanvasLabel(self.contentCanvas, var=self.craftingRequirements[material], **labelArgs)
+        self.missingMaterials[material] = IntVar()
+        self.missingLabels[material] = CanvasLabel(self.contentCanvas, var=self.missingMaterials[material], **labelArgs)
 
         multiplier = 1
         if material.name == "money":
@@ -90,10 +99,11 @@ class Depot(LockableCanvas):
 
         i = ItemIndicator(self.contentCanvas, self.scale, material, x * self.scale, y * self.scale, self.amountLabelHeight,
                           self.contents[material], scrollable=True, incrementMultiplier=multiplier,
-                          additionalLabels=[self.requirementLabels[material]])
+                          additionalLabels=[self.requirementLabels[material], self.missingLabels[material]])
         i.bind("<Button-1>", lambda e: self.displayRecipe(material, x, y), incrementors=False)
 
         self.requirementLabels[material].raiseWidgets()
+        self.missingLabels[material].raiseWidgets()
         self.indicators[material] = i
 
     def updateItemRequirements(self, requirements):
@@ -111,12 +121,13 @@ class Depot(LockableCanvas):
                 if m.tier == tier and m.isCraftable():
                     c = Counter(m.getIngredients())
                     requirements += multiplyCounter(c, (max(0, requirements[m] - self.contents[m].get())))
-
         for m in self.craftingRequirements.keys():
-            if m in requirements:
-                self.craftingRequirements[m].set(requirements[m])
-            else:
-                self.craftingRequirements[m].set(0)
+            self.craftingRequirements[m].set(requirements[m])
+
+        missing = self.trueRequirements.copy()
+        craftPossible(missing, Counter(unpackVar(self.contents)))
+        for m in self.missingMaterials.keys():
+            self.missingMaterials[m].set(missing[m])
 
         self.craftable = []
         for i in range(5):
@@ -138,7 +149,7 @@ class Depot(LockableCanvas):
 
     def draw(self):
         for m in self.craftingRequirements.keys():
-            self.drawRequirementLabel(m)
+            self.drawRequirementLabel(m, self.labelToggleButton.state)
         self.renderIndicatorVisibility(self.indicatorToggleButton.state)
 
     def togglePage(self, state):
@@ -149,31 +160,30 @@ class Depot(LockableCanvas):
 
         self.contentCanvas.config(scrollregion=(0, offset, self.width, offset + self.totalHeight))
 
-    def toggleVisibility(self, state):
-        self.renderIndicatorVisibility(state)
-
     def renderIndicatorVisibility(self, state):
         for m in self.indicators.keys():
             if self.craftingRequirements[m].get() == 0 and state > 0:
                 self.indicators[m].hide()
-            elif self.craftingRequirements[m].get() <= self.contents[m].get() and state > 1:
+            elif self.missingMaterials[m].get() == 0 and state > 1:
                 self.indicators[m].hide()
             else:
                 self.indicators[m].show()
 
-    def drawRequirementLabel(self, material):
-        x, y = material.getPosition()
-
+    def drawRequirementLabel(self, material, showMissingAmount):
         if self.craftingRequirements[material].get() > 0:
-            self.requirementLabels[material].show()
+            self.missingLabels[material].setHidden(not showMissingAmount)
+            self.requirementLabels[material].setHidden(showMissingAmount)
         else:
+            self.missingLabels[material].hide()
             self.requirementLabels[material].hide()
 
-        if self.craftingRequirements[material].get() > self.contents[material].get():
-            if not material.isCraftable() or not material in self.craftable:
-                self.requirementLabels[material].changeColor(color=CONFIG.depotColorInsufficient, fontColor=CONFIG.depotColorInsufficientFont)
-            else:
-                self.requirementLabels[material].changeColor(color=CONFIG.depotColorCraftable, fontColor=CONFIG.depotColorCraftableFont)
+        if self.missingMaterials[material].get() > 0:
+            self.missingLabels[material].changeColor(color=CONFIG.depotColorInsufficient, fontColor=CONFIG.depotColorInsufficientFont)
+        else:
+            self.missingLabels[material].changeColor(color=CONFIG.depotColorSufficient, fontColor=CONFIG.depotColorSufficientFont)
+
+        if self.craftingRequirements[material].get() > self.contents[material].get() and (not material.isCraftable or not material in self.craftable):
+            self.requirementLabels[material].changeColor(color=CONFIG.depotColorInsufficient, fontColor=CONFIG.depotColorInsufficientFont)
         else:
             self.requirementLabels[material].changeColor(color=CONFIG.depotColorSufficient, fontColor=CONFIG.depotColorSufficientFont)
 

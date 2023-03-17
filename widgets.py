@@ -104,15 +104,21 @@ class CanvasLabel:
         if fontColor is not None:
             self.parent.itemconfigure(self.text, fill = fontColor)
 
-
     def hide(self):
-        self.parent.itemconfigure(self.text, state="hidden")
-        self.parent.itemconfigure(self.background, state="hidden")
+        self.setHidden(True)
 
     def show(self):
-        self.parent.itemconfigure(self.text, state="normal")
-        self.parent.itemconfigure(self.background, state="normal")
-        self.updateText()
+        self.setHidden(False)
+
+    def setHidden(self, hidden):
+        if hidden:
+            self.parent.itemconfigure(self.text, state="hidden")
+            self.parent.itemconfigure(self.background, state="hidden")
+        else:
+            self.parent.itemconfigure(self.text, state="normal")
+            self.parent.itemconfigure(self.background, state="normal")
+            self.updateText()
+
 
     def raiseWidgets(self):
         self.parent.tag_raise(self.background)
