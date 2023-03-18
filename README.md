@@ -76,11 +76,12 @@ the tool automatically.
 * **Also Note that this feature will resize your Arknights window and send mouse input to it.** If you want to make sure
   not to accidentally do that you can turn the feature off entirely by setting the `depotParsingEnabled` configuration
   parameter to `false`.
+  * Additionally, your player should be in landscape(16:9) mode.
 * This requires an installation of [TesseractOCR](https://github.com/tesseract-ocr/tesseract).
     * Prebuilt Binaries for Tesseract are available here: https://github.com/UB-Mannheim/tesseract/wiki
     * After installing, add the path to the Tesseract executable as the `tesseractExeLocation` config parameter.
 * `arknightsWindowName` uses sane defaults if left empty but some BlueStacks versions have different names, so you might 
-  need to change it to whatever it say in the to right corner of the window.
+  need to change it to whatever it says in the top right corner of the window.
 * `arknightsContainer` supports `""BlueStacks"` and `"LDPLayer"`. If you are not using either of those you can set it to
   `"genericWindow"` and add the remaining configuration yourself:
     * If the root window is not the one accepting input you need to adjust `arknightsInputWindowClass` to set a child
@@ -134,6 +135,16 @@ Then run `ArknightsMaterials.py`
 
 In case you want to build the executable yourself you can run `build.py` and a `_dist` folder will be created with the
 distribution. Simply move the contents where you want them.
+
+## Troubleshooting
+
+* Q: The tool crashes on startup 
+* Q: An operator recently got a new Module, but I don't see it in the tool, what happened?
+  * A: The tool caches Operator data, so it doesn't know an update was released. Go to the `data/upgradeCosts` folder
+    and delete the file with the operator name. 
+* Q: The tool keeps saying I need to navigate to the main menu or the depot even though I'm there already, what do I do?
+  * A: Disable any hotkey overlays you might have in your player, make sure not to overlap your mouse with the player.
+    If that does not work try increasing the `colorLeniency` config parameter. 
 
 ## Configuration Reference
 

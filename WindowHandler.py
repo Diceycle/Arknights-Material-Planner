@@ -18,10 +18,12 @@ def resolveHandler(windowName, childClass, advancedResolutionMode):
             # HINT, BlueStacks and LDPlayer usually have one enabled child window that takes input for the app
             if child[1]:
                 handler.hwndInput = child[0]
+                LOGGER.debug("NEW HWND_INPUT: %s", child[0])
     else:
         for className, child in children.items():
             if className.lower() == childClass.lower():
                 handler.hwndInput = child[0]
+                LOGGER.debug("NEW HWND_INPUT: %s", child[0])
 
     return handler
 
