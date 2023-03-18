@@ -43,18 +43,19 @@ class WindowHandler:
 
         self.initializeContext()
 
-        LOGGER.debug("HWND: %s", self.hwnd)
-        LOGGER.debug("HWND_INPUT: %s", self.hwndInput)
-        LOGGER.debug("HWND_DC: %s", self.hwndDC)
-        LOGGER.debug("MFC_DC: %s", self.mfcDC)
-        LOGGER.debug("SAVE_DC: %s", self.saveDC)
-
     def initializeContext(self):
         try:
             self.findWindowHandler()
             self.findDeviceContexts()
             self.updateBitmapBuffer()
             self.ready = True
+
+            LOGGER.debug("HWND: %s", self.hwnd)
+            LOGGER.debug("HWND_INPUT: %s", self.hwndInput)
+            LOGGER.debug("HWND_DC: %s", self.hwndDC)
+            LOGGER.debug("MFC_DC: %s", self.mfcDC)
+            LOGGER.debug("SAVE_DC: %s", self.saveDC)
+
         except Exception as err:
             LOGGER.error("Failed to initialize Context: %s", err)
             self.cleanup()
@@ -134,14 +135,9 @@ class WindowHandler:
     def takeScreenshot(self):
         placement = win32gui.GetWindowPlacement(self.hwnd)
         if win32con.SW_SHOWMINIMIZED == placement[1]:
-            win32gui.ShowWindow(self.hwnd, win32con.SW_NORMAL)
+            win32gui.ShowWindow(self.hwnd, win32con.SW_RESTORE)
             time.sleep(0.5)
-            self.cleanup()
-            self.initializeContext()
-
-        while not self.printWindowToBuffer():
-            self.cleanup()
-            self.initializeContext()
+            self.updateBitmapBuffer()
         
         bmpinfo = self.bitmapBuffer.GetInfo()
         bmpstr = self.bitmapBuffer.GetBitmapBits(True)
