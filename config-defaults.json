@@ -11,7 +11,7 @@
   "highlightUpgrades": false,
   "amountColor":"black",
   "amountColorFont": "white",
-  "depotColorSufficient": "00CC00",
+  "depotColorSufficient": "#00CC00",
   "depotColorSufficientFont": "black",
   "depotColorInsufficient": "red",
   "depotColorInsufficientFont": "white",
