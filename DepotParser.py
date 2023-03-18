@@ -1,5 +1,6 @@
 import threading
 import time
+import shutil
 
 from PIL import Image
 
@@ -98,14 +99,15 @@ def splitScreenshot(screenshot, firstBoxPosition):
 
     return boxes
 
-def readAmount(box, debug = False, fileName = None):
+def readAmount(box, fileName = None):
     crop = box.crop(AMOUNT_CROP_BOX)
-    if debug:
-        safeSave(crop, "tests/tests/{}.png".format(fileName))
+    if CONFIG.debug:
+        safeSave(crop, "debug/numbers/{}.png".format(fileName))
     ocrCrop = prepareImage(crop)
-    if debug:
-        safeSave(ocrCrop, "tests/processed/{}.png".format(fileName))
-    return readImage(ocrCrop)
+    ocrResult = readImage(ocrCrop)
+    if CONFIG.debug:
+        safeSave(ocrCrop, "debug/numbers_processed/{}_{}.png".format(fileName, ocrResult))
+    return ocrResult
 
 def validateMenu(handler):
     image = takeScreenshot(handler)
@@ -177,8 +179,13 @@ class DepotParser:
         self.finalPage = False
         self.interrupted = False
 
+        if CONFIG.debug:
+            shutil.rmtree("debug")
+
         if self.handler is not None:
             screenshot = validateMenu(self.handler)
+            if CONFIG.debug:
+                safeSave(screenshot, "debug/menu.png")
         else:
             screenshot = Image.open(self.image).convert("RGB")
 
@@ -241,21 +248,21 @@ class DepotParser:
         box = self.boxes[self.boxIndex]
 
         confidence = matchMasked(box, material)
+        if CONFIG.debug:
+            safeSave(box, "debug/boxes/{}_{:.3}.png".format(self.materialIndex, confidence))
         if confidence > self.confidenceThreshold:
-            print("    ", confidence, material)
             if self.boxIndex % BOXES_ON_SCREEN[1] == 0:
                 self.lastTopRow[self.boxIndex // BOXES_ON_SCREEN[1]] = material
             self.boxIndex += 1
-            return self.readAmountAsync(box, material, materialCallback, statusCallback)
+            return self.readAmountAsync(box, self.materialIndex, material, materialCallback, statusCallback)
         else:
-            print("Fail", confidence, material)
             materialCallback(material, self.convertAmount(None))
             return None
 
-    def readAmountAsync(self, box, material, materialCallback, statusCallback):
+    def readAmountAsync(self, box, materialIndex, material, materialCallback, statusCallback):
         def readAndNotifyAmount():
             try:
-                amount = readAmount(box)
+                amount = readAmount(box, fileName=materialIndex)
                 materialCallback(material, self.convertAmount(amount))
             except Exception as e:
                 self.interrupted = True

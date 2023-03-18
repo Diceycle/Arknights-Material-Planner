@@ -35,6 +35,7 @@ class Config:
                  colorLeniency = 3,
                  imageRecognitionThreshold = 0.95,
                  tesseractExeLocation = None,
+                 debug = True,
                  **kwargs):
 
         self.uiScale = uiScale
@@ -64,6 +65,7 @@ class Config:
         self.colorLeniency = colorLeniency
         self.imageRecognitionThreshold = imageRecognitionThreshold
         self.tesseractExeLocation = tesseractExeLocation
+        self.debug = debug
 
         if self.usesBlueStacks():
             if self.arknightsWindowName is None:

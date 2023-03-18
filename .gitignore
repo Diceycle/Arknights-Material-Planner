@@ -7,3 +7,4 @@ config.json
 
 _build
 _dist
+debug

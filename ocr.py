@@ -1,10 +1,7 @@
-import os
-import time
-
 import pytesseract
 from PIL import ImageOps, Image
 
-from utilImport import CONFIG, safeSave
+from utilImport import CONFIG
 
 pytesseract.pytesseract.tesseract_cmd = CONFIG.tesseractExeLocation
 
@@ -117,21 +114,4 @@ def readFile(folder, file, processedFolder = None, reprocess = True):
     else:
         image = Image.open(processedFolder + "/" + file).convert("RGB")
     return readImage(image), image
-
-if __name__ == "__main__":
-    start = time.time()
-    fails = 0
-    c = 0
-    testFolder = "img/tests"
-    for f in os.listdir(testFolder):
-        number = f[:f.index(".")]
-        expectedResult = expectedResults_new[number]
-        result, inputImage = readFile(testFolder, f, processedFolder="img/processed", reprocess=True)
-        if expectedResult != result:
-            print("Failed {}: {} != {}".format(f, expectedResult, result))
-            fails += 1
-        c += 1
-        safeSave(inputImage, "img/processed/" + f)
-    print("Error Rate: {}/{} = {:.2f}%".format(fails, c, fails/c * 100))
-    print("Took:", time.time() - start)
 

@@ -1,10 +1,6 @@
-import os
-
 import cv2
 import numpy as np
 from PIL import Image
-
-from utilImport import MATERIALS, safeSave
 
 
 def findMatches(image, template, mask=None, threshold=None):
@@ -23,20 +19,14 @@ def findMatches(image, template, mask=None, threshold=None):
 
     return result, res[maximum[0][0], maximum[1][0]]
 
-def matchMasked(targetRGB, material, savePath=None, threshold=None, debug=False):
+def matchMasked(targetRGB, material, threshold=None):
     targetImage = pilConversion(targetRGB)
     templateImage = material.renderImage()
     mask = getMaskMaterialFocus(material)
 
     alpha = pilToMask(mask)
-    if debug:
-        safeSave(mask, "img/masks/" + material.name + ".png")
 
     matchImage, confidence = findMatches(targetImage, pilConversion(templateImage.convert("RGB")), mask=alpha, threshold=threshold)
-    if debug:
-        fileName = savePath + material.name + "_" + str(int(confidence*100)) + ".png"
-        print(fileName)
-        cv2.imwrite(fileName, matchImage)
 
     return confidence
 
@@ -72,27 +62,3 @@ def pilToMask(singleChannel):
             openCVMask[x][y] /= 255
 
     return openCVMask
-
-def runFullImageRecognitionTest(cvImage, contents):
-    for f in os.listdir("img/negatives"):
-        os.remove("img/negatives/" + f)
-
-    for f in os.listdir("img/positives"):
-        os.remove("img/positives/" + f)
-
-    confidence = 1
-    for m in contents:
-        con = matchMasked(cvImage, MATERIALS[m], savePath ="img/positives/", debug = True)
-        if con < confidence:
-            confidence = con
-
-    print("\nMinimum Confidence:", confidence, "\n")
-    negCon = 0
-    for m in MATERIALS.keys():
-        if not m in contents:
-            con = matchMasked(cvImage, MATERIALS[m], savePath ="img/negatives/", threshold=confidence, debug = True)
-            if con > confidence:
-                print("False Positive!\n")
-            if con > negCon:
-                negCon = con
-    print("\nBiggest Negative Confidence:", negCon)
