@@ -119,6 +119,9 @@ def craftPossible(missing, available):
         for m in list(missing.keys()):
             if m.tier != tier:
                 continue
+            if m.canonicalName == "LMD":
+                missing[m] -= min(missing[m], available[m])
+                continue
 
             while missing[m] > 0:
                 path = findCraftingPath(m, available)
