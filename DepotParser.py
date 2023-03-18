@@ -60,8 +60,8 @@ def matchesColor(c1, c2, leniency = CONFIG.colorLeniency):
             abs(c1[2] - c2[2]) <= leniency)
 
 def resizeArknights(windowHandler):
-    windowHandler.resize((SCREENSHOT_SIZE[0] + WINDOW_BORDER[0] + WINDOW_BORDER[2],
-                          SCREENSHOT_SIZE[1] + WINDOW_BORDER[1] + WINDOW_BORDER[3]))
+    windowHandler.resize((int((SCREENSHOT_SIZE[0] + WINDOW_BORDER[0] + WINDOW_BORDER[2]) * 1 / CONFIG.displayScale),
+                          int((SCREENSHOT_SIZE[1] + WINDOW_BORDER[1] + WINDOW_BORDER[3]) * 1 / CONFIG.displayScale)))
 
 def takeScreenshot(windowHandler):
     resizeArknights(windowHandler)
@@ -242,11 +242,13 @@ class DepotParser:
 
         confidence = matchMasked(box, material)
         if confidence > self.confidenceThreshold:
+            print("    ", confidence, material)
             if self.boxIndex % BOXES_ON_SCREEN[1] == 0:
                 self.lastTopRow[self.boxIndex // BOXES_ON_SCREEN[1]] = material
             self.boxIndex += 1
             return self.readAmountAsync(box, material, materialCallback, statusCallback)
         else:
+            print("Fail", confidence, material)
             materialCallback(material, self.convertAmount(None))
             return None
 

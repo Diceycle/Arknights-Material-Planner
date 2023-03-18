@@ -31,6 +31,7 @@ class Config:
                  arknightsWindowName = None,
                  arknightsInputWindowClass = None,
                  arknightsWindowBorder = None,
+                 displayScale = 1,
                  colorLeniency = 3,
                  imageRecognitionThreshold = 0.95,
                  tesseractExeLocation = None,
@@ -59,6 +60,7 @@ class Config:
         self.arknightsWindowName = arknightsWindowName
         self.arknightsInputWindowClass = arknightsInputWindowClass
         self.arknightsWindowBorder = arknightsWindowBorder
+        self.displayScale = displayScale
         self.colorLeniency = colorLeniency
         self.imageRecognitionThreshold = imageRecognitionThreshold
         self.tesseractExeLocation = tesseractExeLocation
