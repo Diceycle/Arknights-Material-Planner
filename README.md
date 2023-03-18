@@ -138,12 +138,14 @@ distribution. Simply move the contents where you want them.
 
 ## Troubleshooting
 
-* Q: The tool crashes on startup 
-* Q: An operator recently got a new Module, but I don't see it in the tool, what happened?
-  * A: The tool caches Operator data, so it doesn't know an update was released. Go to the `data/upgradeCosts` folder
+* **Q**: The tool crashes on startup. What went wrong?
+  * **A**: Usually that is an issue with the `config.json`. Use an online JSON verifier like [JSONLint](https://jsonlint.com/)
+    to check if you've maybe made a mistake.
+* **Q**: An operator recently got a new Module, but I don't see it in the tool, what happened?
+  * **A**: The tool caches Operator data, so it doesn't know an update was released. Go to the `data/upgradeCosts` folder
     and delete the file with the operator name. 
-* Q: The tool keeps saying I need to navigate to the main menu or the depot even though I'm there already, what do I do?
-  * A: Disable any hotkey overlays you might have in your player, make sure not to overlap your mouse with the player.
+* **Q**: The tool keeps saying I need to navigate to the main menu or the depot even though I'm there already, what do I do?
+  * **A**: Disable any hotkey overlays you might have in your player, make sure not to overlap your mouse with the player.
     If that does not work try increasing the `colorLeniency` config parameter. 
 
 ## Configuration Reference
