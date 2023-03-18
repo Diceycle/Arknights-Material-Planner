@@ -110,7 +110,7 @@ class ItemSetDisplay(LockableCanvas):
             self.dropInPosition(e)
 
     def dropInPosition(self, e):
-        yPosition = e.y + self.coords(self.currentSetWidget)[1]
+        yPosition = self.coords(self.currentSetWidget)[1] + self.scale + e.y
         row = -1
         while (yPosition > 0 or row < 0) and row < len(self.itemSets):
             yPosition -= self.itemSets[row].getHeight() + self.spacing
