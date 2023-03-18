@@ -138,7 +138,8 @@ class WindowHandler:
             win32gui.ShowWindow(self.hwnd, win32con.SW_RESTORE)
             time.sleep(0.5)
             self.updateBitmapBuffer()
-        
+
+        self.printWindowToBuffer()
         bmpinfo = self.bitmapBuffer.GetInfo()
         bmpstr = self.bitmapBuffer.GetBitmapBits(True)
 
