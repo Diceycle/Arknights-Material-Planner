@@ -57,6 +57,8 @@ one button and sit back as **image and text recognition** tells you exactly **wh
   and the amount that is still missing after subtracting current stock and crafting ![The Indicator toggle in missing state](/img/ui/missing.png).
 * A second page ![The button to toggle between the pages](/img/ui/arrow-down.png) is available for skill books, module
   components and experience cards and chips and LMD.
+* **Hint**: There are `+` and `-` buttons, but you can also adjust the amount with the mouse wheel while hovering over a
+  material.
 
 ### Penguin Stats Export
 
@@ -82,7 +84,7 @@ the tool automatically.
     * After installing, add the path to the Tesseract executable as the `tesseractExeLocation` config parameter.
 * `arknightsWindowName` uses sane defaults if left empty but some BlueStacks versions have different names, so you might 
   need to change it to whatever it says in the top right corner of the window.
-* `arknightsContainer` supports `""BlueStacks"` and `"LDPLayer"`. If you are not using either of those you can set it to
+* `arknightsContainer` supports `"BlueStacks"` and `"LDPLayer"`. If you are not using either of those you can set it to
   `"genericWindow"` and add the remaining configuration yourself:
     * If the root window is not the one accepting input you need to adjust `arknightsInputWindowClass` to set a child
       window that does accept input. Use the `FindArknightsWindow.exe` to find the names
