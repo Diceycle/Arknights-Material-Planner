@@ -151,7 +151,7 @@ class DepotParser:
         if not image:
             self.handler = resolveHandler(CONFIG.arknightsWindowName,
                                           childClass=CONFIG.arknightsInputWindowClass,
-                                          resolutionMode=CONFIG.arknightsContainer)
+                                          advancedResolutionMode=CONFIG.usesBlueStacks() or CONFIG.usesLDPlayer())
             self.image = None
         else:
             self.handler = None

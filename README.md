@@ -22,9 +22,10 @@ one button and sit back as **image and text recognition** tells you exactly **wh
    located in the folder you chose for the tesseract installation.
     1. The path needs to be in quotes(`"`) and backslashes(``\``) need to be escaped. Here is a full example:
     2. `"tesseractExeLocation": "C:\\Program Files\\tesseractOCR\\tesseract.exe",`
-5. Modify the line that says: `"arknightsWindowName": "BlueStacks"` to contain the name of your BlueStacks window, if it
-   is not `BlueStacks`.
-6. Start the `ArknightsMaterials.exe`
+5. Replace the `"BlueStacks"` in the line: `"arknightsContainer": "BlueStacks"` with `"LDPlayer"` if you are using LDPlayer. 
+6. Modify the line that says: `"arknightsWindowName": null` to contain the name of your BlueStacks/LDPlayer window, if it
+   is not `BlueStacks` or `LDPlayer` respectively.
+7. Start the `ArknightsMaterials.exe`
 
 ## Features
 
@@ -78,13 +79,13 @@ the tool automatically.
 * This requires an installation of [TesseractOCR](https://github.com/tesseract-ocr/tesseract).
     * Prebuilt Binaries for Tesseract are available here: https://github.com/UB-Mannheim/tesseract/wiki
     * After installing, add the path to the Tesseract executable as the `tesseractExeLocation` config parameter.
-* You must always set `arknightsWindowName` to the name of the window that Arknights is running in.
-* The tool is configured to work with BlueStacks out of the box. If you do not play on BlueStacks these additional steps
-  are necessary:
-    * Set `arknightsContainer` to `"genericWindow"`
+* `arknightsWindowName` uses sane defaults if left empty but some BlueStacks versions have different names, so you might 
+  need to change it to whatever it say in the to right corner of the window.
+* `arknightsContainer` supports `""BlueStacks"` and `"LDPLayer"`. If you are not using either of those you can set it to
+  `"genericWindow"` and add the remaining configuration yourself:
     * If the root window is not the one accepting input you need to adjust `arknightsInputWindowClass` to set a child
-      window that does accept input
-    * Finally, you might need to adjust the border values in `arknightsWindowBorder` for the screenshots to get cropped
+      window that does accept input. Use the `FindArknightsWindow.exe` to find the names
+    * Also, you might need to provide the border values in `arknightsWindowBorder` for the screenshots to get cropped
       correctly.
 
 ### Recipe Display
@@ -126,7 +127,7 @@ the position if necessary. The color behind the image can also be separately con
 
 ### Requirements
 
-Run `pip install requirements.txt` to set up your Python environment with the correct dependencies.
+Run `pip install -r requirements.txt` to set up your Python environment with the correct dependencies.
 Then run `ArknightsMaterials.py`
 
 ### Building
@@ -159,10 +160,10 @@ Configuration is read from a file called `config.json` and is a single JSON-Obje
 | `depotColorInsufficientFont` | String/Color    | `"black"`                                    | Controls the **text color** in `depotColorInsufficient`                                                                                                                                                                                                                                                                |
 | `gampressUrl`                | String/URL      | `"https://gamepress.gg/arknights/operator/"` | The **base URL** for Operators on **Gamepress**. Just in case this ever changes.                                                                                                                                                                                                                                       |
 | `depotParsingEnabled`        | Boolean         | `true`                                       | Whether to **enable** the **depot scanning** feature. Disabling this will hide relevant UI-Elements                                                                                                                                                                                                                    |
-| `arknightsContainer`         | String          | `"BlueStacks"`                               | The type of player you run Arknights with. Currently two modes are supported `"BlueStacks"` and `"genericWindow"`.                                                                                                                                                                                                     |
-| `arknightsWindowName`        | String          | `"BlueStacks"`                               | The name of the **window** that **Arknights** is running in. This can either be read from the window title or a list is provided by `FindArknightsWindow.exe` is this value is left empty.                                                                                                                             |
+| `arknightsContainer`         | String          | `"BlueStacks"`                               | The type of player you run Arknights with. Currently three modes are supported: `"BlueStacks"`, `"LDPlayer"` and `"genericWindow"`.                                                                                                                                                                                    |
+| `arknightsWindowName`        | String          | `null`                                       | The name of the **window** that **Arknights** is running in. This can either be read from the window title or a list is provided by `FindArknightsWindow.exe` is this value is left empty. Defaults to `"BlueStacks"` or `"LDPlayer"` if the corresponding `arknightsContainer` is set.                                |
 | `arknightsInputWindowName`   | String          | `null`                                       | The name of the **child window class** that accepts input. Only supported for `arknightsContainer` = `"genericWindow"` This is an **expert setting**. `FindArknightsWindow.exe` will list available child windows for the window given in `arknightsContainer`. Can also be set to `null` to use the top-level window. |
-| `arknightsWindowBorder`      | List[Number]    | `[1, 33, 33, 1]`                             | The amount of **pixels to crop away** from Arknights **screenshots** from the Left, Top, Right and Bottom respectively.                                                                                                                                                                                                |
+| `arknightsWindowBorder`      | List[Number]    | `null`                                       | The amount of **pixels to crop away** from Arknights **screenshots** from the Left, Top, Right and Bottom respectively. Defaults to `[1, 33, 33, 1]` for BlueStacks and `[1, 34, 41, 2]` for LDPlayer.                                                                                                                 |
 | `colorLeniency`              | Number          | `3`                                          | How lenient certain pixel reads should be to determine which menu the Arknights app is in. This is a allowed delta in color value(0-255) per band.                                                                                                                                                                     |
 | `imageRecognitionThreshold`  | Float           | `0.95`                                       | The confidence required for the image recognition to decide a certain material has been found. This is a value from 0 to 1. 0.95 means 95% confident.                                                                                                                                                                  |
 | `tesseractExeLocation`       | String/Filename | `null`                                       | Path to the **Tesseract Exe** to use for Depot Scanning.                                                                                                                                                                                                                                                               |

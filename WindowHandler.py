@@ -10,17 +10,17 @@ from PIL import Image
 from utilImport import LOGGER
 
 
-def resolveHandler(windowName, childClass, resolutionMode):
+def resolveHandler(windowName, childClass, advancedResolutionMode):
     handler = WindowHandler(windowName)
     children = listChildWindows(handler.hwnd)
-    if resolutionMode == "BlueStacks":
+    if advancedResolutionMode:
         for child in children.values():
-            # HINT, BlueStacks usually has one enabled child window that takes input for the app
+            # HINT, BlueStacks and LDPlayer usually have one enabled child window that takes input for the app
             if child[1]:
                 handler.hwndInput = child[0]
-    elif resolutionMode == "genericWindow":
+    else:
         for className, child in children.items():
-            if className == childClass:
+            if className.lower() == childClass.lower():
                 handler.hwndInput = child[0]
 
     return handler
@@ -233,8 +233,8 @@ def click(hwnd, position):
     win32gui.PostMessage(hwnd, win32con.WM_LBUTTONUP, None, coords)
 
 if __name__ == "__main__":
-    from config import CONFIG
-    s = WindowHandler(CONFIG.arknightsWindowName, captureBorder=False)
+    from util import CONFIG
+    s = WindowHandler(CONFIG.arknightsWindowName, childClassName=CONFIG.arknightsInputWindowClass, captureBorder=False)
     if not s.ready:
         LOGGER.debug("Could not find Window with title '%s'", CONFIG.arknightsWindowName)
         listWindows()

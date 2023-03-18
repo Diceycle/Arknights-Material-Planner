@@ -28,9 +28,9 @@ class Config:
                  gamepressUrl ="https://gamepress.gg/arknights/operator/",
                  depotParsingEnabled = True,
                  arknightsContainer = "BlueStacks",
-                 arknightsWindowName ="BlueStacks",
+                 arknightsWindowName = None,
                  arknightsInputWindowClass = None,
-                 arknightsWindowBorder = (1, 33, 33, 1),
+                 arknightsWindowBorder = None,
                  colorLeniency = 3,
                  imageRecognitionThreshold = 0.95,
                  tesseractExeLocation = None,
@@ -63,8 +63,28 @@ class Config:
         self.imageRecognitionThreshold = imageRecognitionThreshold
         self.tesseractExeLocation = tesseractExeLocation
 
+        if self.usesBlueStacks():
+            if self.arknightsWindowName is None:
+                self.arknightsWindowName = "BlueStacks"
+            if self.arknightsWindowBorder is None:
+                self.arknightsWindowBorder = (1, 33, 33, 1)
+        elif self.usesLDPlayer():
+            if self.arknightsWindowName is None:
+                self.arknightsWindowName = "LDPlayer"
+            if self.arknightsWindowBorder is None:
+                self.arknightsWindowBorder = (1, 34, 41, 2)
+        else:
+            if self.arknightsWindowBorder is None:
+                self.arknightsWindowBorder = (0, 0, 0, 0)
+
         if len(kwargs) > 0:
             LOGGER.warning("Unrecognized Config Parameters: %s", kwargs)
+
+    def usesBlueStacks(self):
+        return self.arknightsContainer.lower() == "BlueStacks".lower()
+
+    def usesLDPlayer(self):
+        return self.arknightsContainer.lower() == "LDPlayer".lower()
 
 def createDirsIfNeeded(filename):
     dirname = os.path.dirname(filename)
