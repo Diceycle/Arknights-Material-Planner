@@ -5,7 +5,7 @@
 Streamline your Arknights planning with this all-in-one solution. Simply select the operator and the upgrade and let the
 tool do the rest.
 
-Requirements are **downloaded automatically** so no more researching upgrades and forgetting 10 seconds later which
+Requirements are **downloaded automatically**, so no more researching upgrades and forgetting 10 seconds later which
 materials you need to farm.
 
 Compare the **total of your selected upgrades** against what is in your depot, **see what you could craft** and what you
@@ -15,13 +15,14 @@ one button and sit back as **image and text recognition** tells you exactly **wh
 ## Quick Setup
 
 1. Download Tesseract from [here](https://github.com/UB-Mannheim/tesseract/wiki) and run the installer.
-2. Download the latest version of Arknights Material Planner from the releases tab and unzip it into a folder of your
+2. Download the latest version of Arknights Material Planner from the 
+   [releases tab](https://github.com/Diceycle/Arknights-Material-Planner/releases) and unzip it into a folder of your
    choice
 3. Rename `config-defaults.json` to `config.json` and open it in Notepad.
 4. Modify the line that says: `"tesseractExeLocation": null,` to contain the location to the tesseract.exe which is
    located in the folder you chose for the tesseract installation.
     1. The path needs to be in quotes(`"`) and backslashes(``\``) need to be escaped. Here is a full example:
-    2. `"tesseractExeLocation": "C:\\Program Files\\tesseractOCR\\tesseract.exe",`
+    2. `"tesseractExeLocation": "C:\\Program Files\\tesseractOCR\\tesseract.exe"`
 5. Replace the `"BlueStacks"` in the line: `"arknightsContainer": "BlueStacks"` with `"LDPlayer"` if you are using LDPlayer. 
 6. Modify the line that says: `"arknightsWindowName": null` to contain the name of your BlueStacks/LDPlayer window, if it
    is not `BlueStacks` or `LDPlayer` respectively.
@@ -33,7 +34,7 @@ one button and sit back as **image and text recognition** tells you exactly **wh
 
 ![An example of a planned upgrade](/img/readme/planning.png)
 
-* Choose the operator, and the type of Upgrade you want. Material requirements are then automatically downloaded from
+* Choose the operator and the type of Upgrade you want. Material requirements are then automatically downloaded from
   Gamepress.
 * Include ![The enable/disable checkbox in on state](/img/ui/check-on.png) or
   exclude ![The enable/disable checkbox in off state](/img/ui/check-off.png)
@@ -121,10 +122,11 @@ the position if necessary. The color behind the image can also be separately con
 * This tool has been primarily tested with BlueStacks. A configuration for other emulators can likely be found but is
   not guaranteed. As an example, Windows 11's native android emulation can not be interacted with in the same way
   BlueStacks can. As a result, it is not compatible with the depot scanning feature.
-* Text Recognition(OCR) is not a perfect technology. Mistakes can and will happen, so I doubt the depot scanning feature
-  will ever be 100% accurate. Please do not submit bug reports for every single misread.
-    * Additionally, this has been tested on the english client. I have seen that the korean client uses a different font
-      for numbers. This might throw off the tool as well.
+* This has been tested on the english client. I have seen that the korean client uses a different font
+  for numbers. This might throw off the tool as well, but if enough demand exists for it, I might add a different mode
+  for other regions.
+* Since this tool relies on relatively exact pixel measurements, slight changes might throw it off. I have tried my best
+  to add leniency but in the end the result is still somewhat fragile.
 
 ## Building or running from the source
 
@@ -133,7 +135,7 @@ the position if necessary. The color behind the image can also be separately con
 Run `pip install -r requirements.txt` to set up your Python environment with the correct dependencies.
 Then run `ArknightsMaterials.py`
 
-### Building
+### Building the source
 
 In case you want to build the executable yourself you can run `build.py` and a `_dist` folder will be created with the
 distribution. Simply move the contents where you want them.
@@ -149,6 +151,9 @@ distribution. Simply move the contents where you want them.
 * **Q**: The tool keeps saying I need to navigate to the main menu or the depot even though I'm there already, what do I do?
   * **A**: Disable any hotkey overlays you might have in your player, make sure not to overlap your mouse with the player.
     If that does not work try increasing the `colorLeniency` config parameter. 
+* **Q**: The tool added a digit to a number, did not recognize a number or is missing a digit. Can you fix that?
+  * **A**: Text Recognition(OCR) is not a perfect technology. Mistakes can and will happen, so I doubt the depot 
+    scanning feature will ever be 100% accurate. Please do not submit bug reports for every single misread.
 
 ## Configuration Reference
 
