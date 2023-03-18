@@ -160,15 +160,6 @@ class Depot(LockableCanvas):
 
         self.contentCanvas.config(scrollregion=(0, offset, self.width, offset + self.totalHeight))
 
-    def renderIndicatorVisibility(self, state):
-        for m in self.indicators.keys():
-            if self.craftingRequirements[m].get() == 0 and state > 0:
-                self.indicators[m].hide()
-            elif self.missingMaterials[m].get() == 0 and state > 1:
-                self.indicators[m].hide()
-            else:
-                self.indicators[m].show()
-
     def drawRequirementLabel(self, material, showMissingAmount):
         if self.craftingRequirements[material].get() > 0:
             self.missingLabels[material].setHidden(not showMissingAmount)
@@ -186,6 +177,19 @@ class Depot(LockableCanvas):
             self.requirementLabels[material].changeColor(color=CONFIG.depotColorInsufficient, fontColor=CONFIG.depotColorInsufficientFont)
         else:
             self.requirementLabels[material].changeColor(color=CONFIG.depotColorSufficient, fontColor=CONFIG.depotColorSufficientFont)
+
+    def renderIndicatorVisibility(self, state):
+        for m in self.indicators.keys():
+            if self.craftingRequirements[m].get() == 0 and state > 0:
+                self.indicators[m].hide()
+                self.missingLabels[m].hide()
+                self.requirementLabels[m].hide()
+            elif self.missingMaterials[m].get() == 0 and state > 1:
+                self.indicators[m].hide()
+                self.missingLabels[m].hide()
+                self.requirementLabels[m].hide()
+            else:
+                self.indicators[m].show()
 
     def parseDepot(self):
         OVERLAYS["ParsedDepotContents"].registerCallback(self.updateDepot)
