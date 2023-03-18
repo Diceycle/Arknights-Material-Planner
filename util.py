@@ -188,6 +188,15 @@ LOGGER.addHandler(handler)
 
 LOGGER.addHandler(logging.StreamHandler(sys.stdout))
 
+ERROR_LOGGER = logging.getLogger("ArknightsMaterialsErrors")
+ERROR_LOGGER.addHandler(handler)
+ERROR_LOGGER.addHandler(logging.StreamHandler(sys.stderr))
+
+def exceptHook(type, value, traceback):
+    ERROR_LOGGER.error("Unhandled exception occurred", exc_info=(type,value,traceback))
+
+sys.excepthook = exceptHook
+
 MATERIALS = {}
 UI_ELEMENTS = {}
 UPGRADES = {}

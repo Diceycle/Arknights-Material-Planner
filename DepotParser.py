@@ -111,6 +111,8 @@ def readAmount(box, fileName = None):
 
 def validateMenu(handler):
     image = takeScreenshot(handler)
+    if CONFIG.debug:
+        safeSave(image, "debug/menu.png")
 
     mainMenu = True
     for p in MAIN_MENU_CHECKS:
@@ -180,12 +182,10 @@ class DepotParser:
         self.interrupted = False
 
         if CONFIG.debug:
-            shutil.rmtree("debug")
+            shutil.rmtree("debug", ignore_errors=True)
 
         if self.handler is not None:
             screenshot = validateMenu(self.handler)
-            if CONFIG.debug:
-                safeSave(screenshot, "debug/menu.png")
         else:
             screenshot = Image.open(self.image).convert("RGB")
 
