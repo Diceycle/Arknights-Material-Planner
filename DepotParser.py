@@ -60,17 +60,17 @@ def matchesColor(c1, c2, leniency = CONFIG.colorLeniency):
             abs(c1[2] - c2[2]) <= leniency)
 
 def resizeArknights(windowHandler):
-    windowHandler.resize((int((SCREENSHOT_SIZE[0] + WINDOW_BORDER[0] + WINDOW_BORDER[2]) * 1 / CONFIG.displayScale),
-                          int((SCREENSHOT_SIZE[1] + WINDOW_BORDER[1] + WINDOW_BORDER[3]) * 1 / CONFIG.displayScale)))
+    windowHandler.resize((int(round(SCREENSHOT_SIZE[0] / CONFIG.displayScale)) + WINDOW_BORDER[0] + WINDOW_BORDER[2],
+                          int(round(SCREENSHOT_SIZE[1] / CONFIG.displayScale)) + WINDOW_BORDER[1] + WINDOW_BORDER[3]))
 
 def takeScreenshot(windowHandler):
     resizeArknights(windowHandler)
 
     screenshot = windowHandler.takeScreenshot().crop((
-        WINDOW_BORDER[0],
-        WINDOW_BORDER[1],
-        SCREENSHOT_SIZE[0] + WINDOW_BORDER[0],
-        SCREENSHOT_SIZE[1] + WINDOW_BORDER[1]))
+        int(round(WINDOW_BORDER[0] * CONFIG.displayScale)),
+        int(round(WINDOW_BORDER[1] * CONFIG.displayScale)),
+        SCREENSHOT_SIZE[0] + int(round(WINDOW_BORDER[0] * CONFIG.displayScale)),
+        SCREENSHOT_SIZE[1] + int(round(WINDOW_BORDER[1] * CONFIG.displayScale))))
     return screenshot.convert("RGB")
 
 def scrollArknights(windowHandler):
