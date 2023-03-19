@@ -105,7 +105,8 @@ class ItemSetDisplay(LockableCanvas):
         if self.currentSetWidget is not None and time.time() - self.setTime > 1 / self.scrollFPS:
             self.coords(self.currentSetWidget,
                         self.coords(self.currentSetWidget)[0],
-                        min(self.getTotalHeight(), max(0, e.y - self.initialY + self.coords(self.currentSetWidget)[1])))
+                        min(self.getTotalHeight() - self.currentSet.getHeight() - self.scale - self.spacing * 2,
+                            max(0, e.y - self.initialY + self.coords(self.currentSetWidget)[1])))
             self.setTime = time.time()
             self.dropInPosition()
 
