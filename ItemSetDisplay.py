@@ -110,15 +110,27 @@ class ItemSetDisplay(LockableCanvas):
             self.dropInPosition(e)
 
     def dropInPosition(self, e):
-        yPosition = self.coords(self.currentSetWidget)[1] + self.scale + e.y
-        row = -1
-        while (yPosition > 0 or row < 0) and row < len(self.itemSets):
+        yPosition = self.coords(self.currentSetWidget)[1] + self.currentSet.getHeight() // 2
+        row = 0
+        while row + 1 < len(self.itemSets):
+            # Midway line of myself relative to the bottom line of the current row
             yPosition -= self.itemSets[row].getHeight() + self.spacing
+
+            if self.currentSet.getHeight() == self.itemSets[row].getHeight():
+                # Likely moving down, i.e. self.currentSet == self.itemSets[row]
+                # Take this position if my bottom line is not over the halfway line of the next row
+                if yPosition + self.currentSet.getHeight() // 2 <= (self.itemSets[row + 1].getHeight()) // 2:
+                    break
+            else:
+                # Take this position if my top line is not over the halfway line of the current row
+                if yPosition - self.currentSet.getHeight() // 2 <= -self.itemSets[row].getHeight() // 2:
+                    break
+
             row += 1
 
         self.itemSets.remove(self.currentSet)
-        self.itemSets.insert(row, self.currentSet)
         self.itemSetWidgets.remove(self.currentSetWidget)
+        self.itemSets.insert(row, self.currentSet)
         self.itemSetWidgets.insert(row, self.currentSetWidget)
         self.draw()
 
