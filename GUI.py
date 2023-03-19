@@ -104,7 +104,7 @@ class GUI:
                     "enabled": bool(rawSet["enabled"])
                 })
 
-                data["depot"] = toMaterials(rawData["depot"])
+            data["depot"] = toMaterials(rawData["depot"])
 
         return data
 
