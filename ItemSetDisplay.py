@@ -107,9 +107,9 @@ class ItemSetDisplay(LockableCanvas):
                         self.coords(self.currentSetWidget)[0],
                         min(self.getTotalHeight(), max(0, e.y - self.initialY + self.coords(self.currentSetWidget)[1])))
             self.setTime = time.time()
-            self.dropInPosition(e)
+            self.dropInPosition()
 
-    def dropInPosition(self, e):
+    def dropInPosition(self):
         yPosition = self.coords(self.currentSetWidget)[1] + self.currentSet.getHeight() // 2
         row = 0
         while row + 1 < len(self.itemSets):
