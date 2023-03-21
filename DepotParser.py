@@ -55,7 +55,7 @@ DEPOT_END_CHECKS = [
 AMOUNT_CROP_BOX = (118, 157, 181, 192)
 AMOUNT_CROP_BOX_SLIM = (123, 163, 176, 188)
 
-def matchesColor(c1, c2, leniency = CONFIG.colorLeniency):
+def matchesColor(c1, c2, leniency = 3):
     return (abs(c1[0] - c2[0]) <= leniency and
             abs(c1[1] - c2[1]) <= leniency and
             abs(c1[2] - c2[2]) <= leniency)
@@ -114,41 +114,45 @@ def validateMenu(handler):
     if CONFIG.debug:
         safeSave(image, "debug/menu.png")
 
-    mainMenu = True
-    for p in MAIN_MENU_CHECKS:
-        if not matchesColor(image.getpixel(p[0]), p[1]):
-            mainMenu = False
-            break
-
-    if mainMenu:
-        handler.click(MAIN_MENU_CHECKS[0][0], delay=1)
-        handler.click(DEPOT_CHECKS[0][0], delay=0.5)
-        return takeScreenshot(handler)
-
     filterPreselected = True
     for p in DEPOT_FILTER_CHECKS:
-        if (p[1] is not None and not matchesColor(image.getpixel(p[0]), p[1]) or
-            p[1] is None and matchesColor(image.getpixel(p[0]), DEPOT_FILTER_CHECKS[0][1])):
+        print(p, image.getpixel(p[0]), DEPOT_FILTER_CHECKS[0][1])
+        if (p[1] is not None and not matchesColor(image.getpixel(p[0]), p[1], leniency=CONFIG.colorLeniency) or
+            p[1] is None and matchesColor(image.getpixel(p[0]), DEPOT_FILTER_CHECKS[0][1], leniency=min(3, 256 - CONFIG.colorLeniency))):
             filterPreselected = False
             break
 
     if filterPreselected:
         handler.click((DEPOT_CHECKS[0][0][0] - DEPOT_BUTTON_SIZE, DEPOT_CHECKS[0][0][1]), delay=0.5)
         handler.click(DEPOT_CHECKS[0][0], delay=0.5)
+        LOGGER.debug("Scan: I'm in the depot with the Growth Material filter is preselected")
+        return takeScreenshot(handler)
+
+    mainMenu = True
+    for p in MAIN_MENU_CHECKS:
+        if not matchesColor(image.getpixel(p[0]), p[1], leniency=CONFIG.colorLeniency):
+            mainMenu = False
+            break
+
+    if mainMenu:
+        handler.click(MAIN_MENU_CHECKS[0][0], delay=1)
+        handler.click(DEPOT_CHECKS[0][0], delay=0.5)
+        LOGGER.debug("Scan: I'm in the main menu")
         return takeScreenshot(handler)
 
     inDepot = True
     for p in DEPOT_CHECKS:
-        if (p[1] is not None and not matchesColor(image.getpixel(p[0]), p[1]) or
-            p[1] is None and matchesColor(image.getpixel(p[0]), DEPOT_CHECKS[0][1])):
+        if (p[1] is not None and not matchesColor(image.getpixel(p[0]), p[1], leniency=CONFIG.colorLeniency) or
+            p[1] is None and matchesColor(image.getpixel(p[0]), DEPOT_CHECKS[0][1], min(3, 256 - CONFIG.colorLeniency))):
             inDepot = False
             break
 
     if inDepot:
         handler.click(DEPOT_CHECKS[0][0], delay=0.5)
+        LOGGER.debug("Scan: I'm in the depot")
         return takeScreenshot(handler)
-    else:
-        return None
+
+    return None
 
 class DepotParser:
     def __init__(self, image = None, confidenceThreshold = 0.95, debug = False):
