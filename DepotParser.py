@@ -41,7 +41,7 @@ MATERIAL_DISTANCE = (199, 243)
 BOX_RADIUS = 120
 BOXES_ON_SCREEN = (7, 3)
 
-SCROLL_LINE_START = (1450, 360)
+SCROLL_LINE_START = (1425 + CONFIG.depotScanScrollOffset, 360)
 SCROLL_LINE_END = (25, 360)
 
 DEPOT_END_CHECKS = [
@@ -76,7 +76,7 @@ def takeScreenshot(windowHandler):
 
 def scrollArknights(windowHandler):
     resizeArknights(windowHandler)
-    windowHandler.dragLine(SCROLL_LINE_START, SCROLL_LINE_END)
+    windowHandler.dragLine(SCROLL_LINE_START, SCROLL_LINE_END, CONFIG.depotScanScrollDelay)
     # Give Arknights time to snap back in case of overscroll
     time.sleep(1)
 

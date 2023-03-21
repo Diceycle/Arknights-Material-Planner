@@ -31,6 +31,8 @@ class Config:
                  arknightsWindowName = None,
                  arknightsInputWindowClass = None,
                  arknightsWindowBorder = None,
+                 depotScanScrollDelay = 2,
+                 depotScanScrollOffset = 25,
                  displayScale = 1,
                  colorLeniency = 3,
                  imageRecognitionThreshold = 0.95,
@@ -61,6 +63,8 @@ class Config:
         self.arknightsWindowName = arknightsWindowName
         self.arknightsInputWindowClass = arknightsInputWindowClass
         self.arknightsWindowBorder = arknightsWindowBorder
+        self.depotScanScrollOffset = depotScanScrollOffset
+        self.depotScanScrollDelay = depotScanScrollDelay
         self.displayScale = displayScale
         self.colorLeniency = colorLeniency
         self.imageRecognitionThreshold = imageRecognitionThreshold

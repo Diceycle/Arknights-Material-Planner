@@ -109,14 +109,14 @@ class WindowHandler:
         win32gui.PostMessage(self.hwndInput, win32con.WM_LBUTTONUP, None, encodedCoords)
         time.sleep(delay)
 
-    def dragLine(self, start, end):
+    def dragLine(self, start, end, delayScale):
         encodedStart = win32api.MAKELONG(start[0], start[1])
         encodedEnd = win32api.MAKELONG(end[0], end[1])
         win32gui.PostMessage(self.hwndInput, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, encodedStart)
 
         points = 50
         for i in range(points):
-            time.sleep(.02)
+            time.sleep(.01 * delayScale)
             pos = (start[0] + int((end[0] - start[0]) / points * (i+1)),
                    start[1] + int((end[1] - start[1]) / points * (i+1)))
             encodedEnd = win32api.MAKELONG(pos[0], pos[1])
