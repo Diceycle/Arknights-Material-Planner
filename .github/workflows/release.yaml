@@ -1,6 +1,9 @@
 name: Release
 
-on: [workflow_dispatch]
+on:
+  push:
+    tags:
+      - "v*.*.*"
 
 jobs:
   build:
@@ -22,27 +25,25 @@ jobs:
       - name: Build release
         run: |
           python build.py
-          mkdir release
 
       - name: Zip Binaries
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          filename: 'release/release.zip'
+          filename: 'release.zip'
           path: '_dist/ArknightsMaterials'
 
       - name: Zip Source
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          filename: 'release/source.zip'
+          filename: 'source.zip'
           exclusions: '*.git* _dist/* _build/*'
 
-      - name: Tag and Push
-        uses: anothrNick/github-tag-action@1.61.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WITH_V: true
-          SOURCE: release
-          DEFAULT_BUMP: patch
-          PRERELEASE: true
+      - name: Release
+        uses: softprops/action-gh-release@v0.1.15
+        with:
+          files: |
+            release.zip
+            source.zip
+          draft: true
