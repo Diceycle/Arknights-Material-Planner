@@ -18,15 +18,18 @@ one button and sit back as **image and text recognition** tells you exactly **wh
 2. Download the latest version of Arknights Material Planner from the 
    [releases tab](https://github.com/Diceycle/Arknights-Material-Planner/releases) and unzip it into a folder of your
    choice
-3. Rename `config-defaults.json` to `config.json` and open it in Notepad.
-4. Modify the line that says: `"tesseractExeLocation": null,` to contain the location to the tesseract.exe which is
+3. Ensure Windows Defender didn't remove the exe due to a false positive. This tool trips up virus scanners occasionally
+   so use your own judgement if you trust it. All releases are built using GitHub Actions:
+   ![workflow badge](https://github.com/diceycle/arknights-material-planner/actions/workflows/release.yaml/badge.svg?event=push)
+4. Rename `config-defaults.json` to `config.json` and open it in Notepad.
+5. Modify the line that says: `"tesseractExeLocation": null,` to contain the location to the tesseract.exe which is
    located in the folder you chose for the tesseract installation.
     1. The path needs to be in quotes(`"`) and backslashes(``\``) need to be escaped. Here is a full example:
     2. `"tesseractExeLocation": "C:\\Program Files\\tesseractOCR\\tesseract.exe"`
-5. Replace the `"BlueStacks"` in the line: `"arknightsContainer": "BlueStacks"` with `"LDPlayer"` if you are using LDPlayer. 
-6. Modify the line that says: `"arknightsWindowName": null` to contain the name of your BlueStacks/LDPlayer window, if it
+6. Replace the `"BlueStacks"` in the line: `"arknightsContainer": "BlueStacks"` with `"LDPlayer"` if you are using LDPlayer. 
+7. Modify the line that says: `"arknightsWindowName": null` to contain the name of your BlueStacks/LDPlayer window, if it
    is not `BlueStacks` or `LDPlayer` respectively.
-7. Start the `ArknightsMaterials.exe`
+8. Start the `ArknightsMaterials.exe`
 
 ## Features
 
