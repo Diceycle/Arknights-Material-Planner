@@ -25,7 +25,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Build release
+      - name: Build Binaries
         run: |
           python build.py
 
@@ -33,20 +33,14 @@ jobs:
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          filename: 'release.zip'
-          path: '_dist/ArknightsMaterials'
+          filename: ArknightsMaterials_${{ github.ref }}.zip
+          directory: _dist/ArknightsMaterials
 
-      - name: Zip Source
-        uses: thedoctor0/zip-release@0.7.1
-        with:
-          type: 'zip'
-          filename: 'source.zip'
-          exclusions: '*.git* _dist/* _build/*'
-
-      - name: Release
+      - name: Create Release
         uses: softprops/action-gh-release@v0.1.15
         with:
+          name: Arknights Material Planner ${{ github.ref }}
+          body: The update can be unzipped into the same folder as the initial installation or installed on its own.
           files: |
-            release.zip
-            source.zip
+            _dist/ArknightsMaterials/ArknightsMaterials_${{ github.ref }}.zip
           draft: true
