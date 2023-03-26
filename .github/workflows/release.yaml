@@ -22,12 +22,21 @@ jobs:
       - name: Build release
         run: |
           python build.py
-
-      - name: Zip Release
-        run: |
           mkdir release
-          zip -r release/release.zip _dist/ArknightsMaterials
-          zip -r release/source.zip . -x '_dist/*' -x '_build/*'
+
+      - name: Zip Binaries
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          filename: 'release/release.zip'
+          path: '_dist/ArknightsMaterials'
+
+      - name: Zip Source
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          filename: 'release/source.zip'
+          exclusions: '*.git* _dist/* _build/*'
 
       - name: Tag and Push
         uses: anothrNick/github-tag-action@1.61.0
