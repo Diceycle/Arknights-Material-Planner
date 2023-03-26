@@ -33,13 +33,14 @@ jobs:
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          filename: ArknightsMaterials_$GITHUB_REF_NAME.zip
+          filename: ArknightsMaterials_${{ github.ref_name }}.zip
           directory: _dist/ArknightsMaterials
 
       - name: Create Release
         uses: softprops/action-gh-release@v0.1.15
         with:
-          name: Arknights Material Planner $GITHUB_REF_NAME
+          name: Arknights Material Planner ${{ github.ref_name }}
           body: The update can be unzipped into the same folder as the initial installation or installed on its own.
           files: |
-            _dist/ArknightsMaterials/ArknightsMaterials_$GITHUB_REF_NAME.zip
+            _dist/ArknightsMaterials/ArknightsMaterials_${{ github.ref_name }}.zip
+          draft: true
