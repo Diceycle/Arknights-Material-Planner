@@ -93,9 +93,9 @@ def getRequest(url):
         return urllib.request.urlopen(urllib.request.Request(url, None, headers))
     except urllib.error.HTTPError as response:
         LOGGER.error("Error(%s) reading url: %s", response.code, url)
-        for line in response.readlines():
+        for line in response.readlines()[:10]:
             line = line.decode("utf-8")
-            LOGGER.debug(line)
+            LOGGER.debug(line.replace("\n", ""))
 
 def hasCache(operator):
     return os.path.isfile(getFileName(operator))
