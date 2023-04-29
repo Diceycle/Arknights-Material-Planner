@@ -340,9 +340,9 @@ Material("solvent-4", "Refined Solvent", 4, "solvent-4.png", externalId="31044",
 Material("fluid-3", "Compound Cutting Fluid", 3, "fluid-3.png", externalId="31053", externalFileName="MTL_SL_CCF")
 Material("fluid-4", "Cutting Fluid Solution", 4, "fluid-4.png", externalId="31054", externalFileName="MTL_SL_PLCF", recipe={"fluid-3": 1, "crystal-3": 1, "rma-3": 1})
 
-Material("salt-3", "转质盐组", 3, "salt-3.png", externalId="31063", externalFileName="MTL_SL_ZY")
-Material("salt-4", "转质盐聚块", 4, "salt-4.png", externalId="31064", externalFileName="MTL_SL_ZYK", recipe={"salt-3": 2, "solvent-3": 1, "sugar-3": 1})
-Material("salt-5", "烧结核凝晶", 5, "salt-5.png", externalId="30155", externalFileName="MTL_SL_SHJ", recipe={"salt-4": 1, "fluid-4": 1, "solvent-4": 2})
+Material("salt-3", "Transmuted Salt", 3, "salt-3.png", externalId="31063", externalFileName="MTL_SL_ZY")
+Material("salt-4", "Transmuted Salt Agglomerate", 4, "salt-4.png", externalId="31064", externalFileName="MTL_SL_ZYK", recipe={"salt-3": 2, "solvent-3": 1, "sugar-3": 1})
+Material("salt-5", "Nucleic Crystal Sinter", 5, "salt-5.png", externalId="30155", externalFileName="MTL_SL_SHJ", recipe={"salt-4": 1, "fluid-4": 1, "solvent-4": 2})
 
 Material("steel-5", "D32 Steel", 5, "steel-5.png", externalId="30135", externalFileName="MTL_SL_DS", recipe={"manganese-4": 1, "grindstone-4": 1, "rma-4": 1})
 Material("nanoflake-5", "Bipolar Nanoflake", 5, "nanoflake-5.png", externalId="30125", externalFileName="MTL_SL_BN", recipe={"device-4": 1, "kohl-4": 2})
@@ -400,8 +400,8 @@ Material("chip-specialist-3", "Specialist Dualchip", 5, "chip-specialist-3.png",
 
 
 DEPOT_ORDER = ["exp-4", "exp-3", "exp-2", "exp-1", "skill-3", "skill-2", "skill-1", "module-1", "module-3", "module-2",
-               "crystal-5", "steel-5", "nanoflake-5", "polymer-5",
-               "fluid-4", "fluid-3", "solvent-4", "solvent-3", "crystal-4", "crystal-3",
+               "salt-5", "crystal-5", "steel-5", "nanoflake-5", "polymer-5",
+               "salt-4", "salt-3", "fluid-4", "fluid-3", "solvent-4", "solvent-3", "crystal-4", "crystal-3",
                "incandescent-4", "incandescent-3", "gel-4", "gel-3",
                "kohl-4", "kohl-3", "manganese-4", "manganese-3", "grindstone-4", "grindstone-3", "rma-4", "rma-3",
                "rock-4", "rock-3", "rock-2", "rock-1", "device-4", "device-3", "device-2", "device-1",
