@@ -136,7 +136,7 @@ class Depot(LockableCanvas):
                 if m.tier == tier and m.isCraftable():
                     craftable = True
                     for ing in m.getIngredients().keys():
-                        if ing not in self.craftable:
+                        if ing not in self.craftable and missing[ing] > 0:
                             craftable = False
                             break
                     if craftable:
