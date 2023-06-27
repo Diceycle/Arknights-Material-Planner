@@ -3,7 +3,7 @@ from collections import Counter
 from tkinter import *
 
 from utilImport import *
-from ItemSet import ItemSet
+from ItemSet import ResearchItemSet
 from widgets import LockableCanvas
 
 
@@ -12,7 +12,7 @@ class ItemSetDisplay(LockableCanvas):
                  totalsUpdateCallback=None):
         self.scale = scale
         self.scrollbarWidth = scale // 4
-        self.width = ItemSet.getWidth(maxItems, scale) + self.scrollbarWidth
+        self.width = ResearchItemSet.getWidth(maxItems, scale) + self.scrollbarWidth
         self.height = height
         super().__init__(parent, height=self.height, width=self.width, highlightthickness=0, bg=CONFIG.colorDark)
 
@@ -46,9 +46,8 @@ class ItemSetDisplay(LockableCanvas):
         self.draw()
 
     def addSet(self, operator, upgrade, materials, enabled=True):
-        itemSet = ItemSet(self, operator, upgrade, materials, self.scale, updateCallback=self.updateItemTotals,
-                          maxItems=self.maxItems, grabbable=True, deletable=True, enabled=enabled, researchOnly=True,
-                          allowMultipleRows=True, naturalOrder=CONFIG.maintainNaturalOrder)
+        itemSet = ResearchItemSet(self, operator, upgrade, materials, self.scale, updateCallback=self.updateItemTotals,
+                                  maxItems=self.maxItems, enabled=enabled, naturalOrder=CONFIG.maintainNaturalOrder)
         itemSetWidget = self.create_window(0, 0, window=itemSet, anchor=NW)
 
         self.itemSets.append(itemSet)
