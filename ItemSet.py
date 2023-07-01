@@ -71,7 +71,7 @@ class ItemSet(LockableCanvas):
         return (3 + maxItems) * scale
 
 class ResearchItemSet(ItemSet):
-    def __init__(self, parent, operator, upgrade, materials, scale, updateCallback = None, maxItems = 4, enabled = True,
+    def __init__(self, parent, operator, upgrade, scale, updateCallback = None, maxItems = 4, enabled = True,
                  naturalOrder = True):
 
         self.uiIconScale = scale // 2
@@ -80,7 +80,7 @@ class ResearchItemSet(ItemSet):
 
         self.researching = False
 
-        super().__init__(parent, operator, upgrade, materials, scale, maxItems)
+        super().__init__(parent, operator, upgrade, {}, scale, maxItems)
 
         self.dragHandle = self.create_image(0, self.scale // 2, image=UI_ELEMENTS["drag"].getPhotoImage(self.uiIconScale), anchor=W)
 

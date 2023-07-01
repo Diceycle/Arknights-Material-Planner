@@ -55,7 +55,7 @@ class GUI:
 
         self.initialising = True
         for savedSet in saveData["sets"]:
-            self.setCanvas.addSet(savedSet["operator"], savedSet["upgrade"], savedSet["materials"], savedSet["enabled"])
+            self.setCanvas.addSet(savedSet["operator"], savedSet["upgrade"], savedSet["enabled"])
         self.initialising = False
         self.updateItemTotals(self.setCanvas.getItemTotals())
 
@@ -80,7 +80,6 @@ class GUI:
             sets.append({
                 "operator": s.operator.name,
                 "upgrade": s.upgrade.name,
-                "materials": toExternal(s.materials, lambda v: v.get()),
                 "enabled": s.enabled
             })
 
@@ -100,7 +99,6 @@ class GUI:
                 data["sets"].append({
                     "operator": OPERATORS[rawSet["operator"]],
                     "upgrade": UPGRADES[rawSet["upgrade"]],
-                    "materials": toMaterials(rawSet["materials"]),
                     "enabled": bool(rawSet["enabled"])
                 })
 
