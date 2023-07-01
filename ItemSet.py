@@ -3,7 +3,7 @@ import threading
 from tkinter import *
 
 from utilImport import *
-from GlobalOverlays import OVERLAYS, GlobalSelection
+from GlobalOverlays import OVERLAYS
 from ItemIndicator import ItemIndicator
 from widgets import LockableCanvas, ImageCheckbutton
 
@@ -180,26 +180,3 @@ class ResearchItemSet(ItemSet):
 
     def getLeftOffset(self):
         return self.uiIconScale
-
-class RecipeDisplay(GlobalSelection):
-    def __init__(self, parent, scale, **kwargs):
-        width = 5*scale
-        super().__init__(parent, "RecipeDisplay", width=width, height=1*scale, **kwargs)
-
-        self.scale = scale
-        self.width = width
-        self.arrow = UI_ELEMENTS["craft-arrow"]
-
-        self.itemSet = None
-
-    def callDisableCallback(self):
-        self.disableCallback(self.cancelCallback)
-
-    def displayRecipe(self, parent, targetMaterial, x, y):
-        if targetMaterial.isCraftable():
-            if self.itemSet is not None:
-                self.itemSet.destroy()
-            self.itemSet = ItemSet(self, targetMaterial, self.arrow, targetMaterial.getIngredients(), self.scale, maxItems=3)
-            self.itemSet.bind("<Button-3>", lambda e: self.cancelCallback())
-            self.itemSet.place(x=2, y=2, width=self.width)
-            super().registerCallback(parent, x, y, None)

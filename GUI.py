@@ -8,8 +8,7 @@ from PIL import Image, ImageTk
 from utilImport import *
 from widgets import LockableCanvas
 from ItemSetDisplay import ItemSetDisplay
-from GlobalOverlays import MaterialSelection, OperatorSelection, UpgradeSelection
-from ItemSet import RecipeDisplay
+from GlobalOverlays import MaterialSelection, OperatorSelection, UpgradeSelection, RecipeDisplay
 from Depot import Depot, ParseDepotOverlay
 
 class GUI:

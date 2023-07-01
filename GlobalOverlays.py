@@ -1,5 +1,6 @@
 from tkinter import *
 
+from ItemIndicator import ItemIndicator
 from utilImport import *
 
 OVERLAYS = {}
@@ -230,3 +231,31 @@ class OperatorSelection(GlobalSelection):
     def cleanup(self):
         self.query.set("")
         super().cleanup()
+
+class RecipeDisplay(GlobalSelection):
+    def __init__(self, parent, scale, **kwargs):
+        self.width = 5*scale
+        self.scale = scale
+
+        super().__init__(parent, "RecipeDisplay", width=self.width, height=1*scale, **kwargs)
+
+        self.arrowImage = self.create_image(self.scale, 0, anchor=NW, image = UI_ELEMENTS["craft-arrow"].getPhotoImage(self.scale, transparency=0.75))
+
+        self.targetImage = None
+        self.indicators = []
+
+    def callDisableCallback(self):
+        self.disableCallback(self.cancelCallback)
+
+    def displayRecipe(self, parent, targetMaterial, x, y):
+        if targetMaterial.isCraftable():
+            for i in self.indicators:
+                i.delete()
+            self.indicators = []
+            if self.targetImage is not None:
+                self.delete(self.targetImage)
+
+            for m, a in targetMaterial.getIngredients().items():
+                self.indicators.append(ItemIndicator(self, self.scale, m, (len(self.indicators) + 2) * self.scale, 0, self.scale // 5, IntVar(value=a), editable=False))
+            self.targetImage = self.create_image(0, 0, anchor=NW, image=targetMaterial.getPhotoImage(self.scale))
+            super().registerCallback(parent, x, y, None)
