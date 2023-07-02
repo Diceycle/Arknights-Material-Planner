@@ -60,6 +60,8 @@ class ItemSetDisplay(LockableCanvas):
         upgradeSet.tag_bind(upgradeSet.dragHandle, "<B1-Motion>", self.dragCurrentSet)
         upgradeSet.tag_bind(upgradeSet.dragHandle, "<ButtonRelease-1>", lambda e: self.release())
 
+        self.updateItemTotals()
+
     def removeSet(self, upgradeSet, setWidget):
         upgradeSet.destroy()
         self.upgradeSets.remove(upgradeSet)
