@@ -1,5 +1,6 @@
 import math
 import threading
+from collections import Counter
 from tkinter import *
 
 from utilImport import *
@@ -8,32 +9,34 @@ from ItemIndicator import ItemIndicator
 from widgets import LockableCanvas, ImageCheckbutton
 
 class ItemSet(LockableCanvas):
-    def __init__(self, parent, operator, upgrade, materials, scale, maxItems):
+    def __init__(self, parent, operator, upgrade, scale, maxItems, enabled, updateCallback, naturalOrder):
 
         self.maxItems = maxItems
-        self.width = ItemSet.getWidth(maxItems, scale)
+        self.scale = scale
+        self.uiIconScale = scale // 2
+        self.width = (1 + self.maxItems) * self.scale + self.uiIconScale
+
         super().__init__(parent, highlightthickness=0, bd=0, bg=CONFIG.color, width=self.width, height=scale)
 
         self.operator = operator
         self.upgrade = upgrade
-        self.materials = {}
-        for m in list(materials.keys()):
-            self.addMaterialInternal(m, materials[m])
-
         self.itemIndicators = []
 
-        self.scale = scale
+        self.updateCallback = updateCallback
+        self.naturalOrder = naturalOrder
 
-        self.operatorImage = self.create_image(self.getLeftOffset(), 0, anchor=NW)
-        self.upgradeImage = self.create_image(self.getLeftOffset() + self.scale + self.scale // 2, self.scale // 2, anchor=CENTER)
+        self.upgradeImage = self.create_image(self.scale // 2, self.scale // 2, anchor=CENTER)
 
-        self.init()
+        self.loadingImage = self.create_image(self.scale + self.scale // 2, 0, image=UI_ELEMENTS["loading"].getPhotoImage(self.scale, transparency=0.75), anchor = NW, state="hidden")
+        self.notAvailable = self.create_image(self.scale + self.scale // 2, 0, image=UI_ELEMENTS["n-a"].getPhotoImage(self.scale, transparency=0.75), anchor = NW, state="hidden")
 
-    def init(self):
-        self.draw()
+        self.enabled = enabled
+        self.enableButton = ImageCheckbutton(self, self.width, self.scale, anchor = SE, callback=self.toggle,
+                                             images=(UI_ELEMENTS["check-off"].getPhotoImage(self.uiIconScale),
+                                                     UI_ELEMENTS["check-on"].getPhotoImage(self.uiIconScale)))
+        self.enableButton.setState(self.enabled)
 
-    def addMaterialInternal(self, material, amount):
-        self.materials[material] = IntVar(value=amount)
+        self.deleteButton = self.create_image(self.width, 0, image=UI_ELEMENTS["close"].getPhotoImage(self.uiIconScale), anchor=NE)
 
     def draw(self):
         for i in self.itemIndicators:
@@ -41,142 +44,165 @@ class ItemSet(LockableCanvas):
 
         self.itemIndicators = []
 
-        self.itemconfigure(self.operatorImage, image=self.operator.getPhotoImage(self.scale))
-        self.drawUpgrade()
+        operator = self.operator
+        if not self.operator.hasCache():
+            operator = None
+        self.itemconfigure(self.upgradeImage, image=self.upgrade.getPhotoImage(self.scale, operator=operator))
 
+        materials = self.getMaterials()
         c = 0
-        for m in self.materials.keys():
+        for m in materials.keys():
             x, y = self.getMaterialCoords(c)
             self.itemIndicators.append(ItemIndicator(self, self.scale, m, x, y, self.scale // 5,
-                                                     self.materials[m], editable=False))
+                                                     IntVar(value=materials[m]), editable=False))
             c += 1
 
-        self.resize(height=self.getHeight())
-
-    def drawUpgrade(self):
-        self.itemconfigure(self.upgradeImage, image=self.upgrade.getPhotoImage(self.scale, operator=self.operator))
-
-    def getMaterialCoords(self, c):
-        return (self.getLeftOffset() + self.scale * 2 + (c % self.maxItems) * self.scale,
-                (c // self.maxItems) * self.scale)
-
-    def getHeight(self):
-        return max(int(math.ceil(len(self.materials) / self.maxItems)) * self.scale, self.scale)
-
-    def getLeftOffset(self):
-        return 0
-
-    @staticmethod
-    def getWidth(maxItems, scale):
-        return (3 + maxItems) * scale
-
-class ResearchItemSet(ItemSet):
-    def __init__(self, parent, operator, upgrade, scale, updateCallback = None, maxItems = 4, enabled = True,
-                 naturalOrder = True):
-
-        self.uiIconScale = scale // 2
-        self.updateCallback = updateCallback
-        self.naturalOrder = naturalOrder
-
-        self.researching = False
-
-        super().__init__(parent, operator, upgrade, {}, scale, maxItems)
-
-        self.dragHandle = self.create_image(0, self.scale // 2, image=UI_ELEMENTS["drag"].getPhotoImage(self.uiIconScale), anchor=W)
-
-        self.tag_bind(self.operatorImage, "<Button-1>", lambda e: self.changeOperator())
-        self.tag_bind(self.upgradeImage, "<Button-1>", lambda e: self.changeUpgrade())
-
-        self.loadingImage = self.create_image(self.scale * 2 + self.scale // 2, 0, image=UI_ELEMENTS["loading"].getPhotoImage(self.scale, transparency=0.75), anchor = NW, state="hidden")
-        self.notAvailable = self.create_image(self.scale * 2 + self.scale // 2, 0, image=UI_ELEMENTS["n-a"].getPhotoImage(self.scale, transparency=0.75), anchor = NW, state="hidden")
-
-        self.enabled = enabled
-        self.enableButton = ImageCheckbutton(self, self.width, self.scale, anchor = SE, callback=self.toggle,
-            images=(UI_ELEMENTS["check-off"].getPhotoImage(self.uiIconScale),
-                    UI_ELEMENTS["check-on"].getPhotoImage(self.uiIconScale)))
-        self.enableButton.setState(self.enabled)
-
-        self.deleteButton = self.create_image(self.width, 0, image=UI_ELEMENTS["close"].getPhotoImage(self.uiIconScale), anchor=NE)
-
-        self.researchMaterials()
-
-    def init(self):
-        pass
-
-    def draw(self):
-        super().draw()
-
-        if len(self.materials) == 0 and not self.researching:
+        if len(materials) == 0 and self.operator.hasCache():
             self.itemconfigure(self.notAvailable, state="normal")
         else:
             self.itemconfigure(self.notAvailable, state="hidden")
 
-        if self.researching:
+        if not self.operator.hasCache():
             self.itemconfigure(self.loadingImage, state="normal")
         else:
             self.itemconfigure(self.loadingImage, state="hidden")
 
-    def drawUpgrade(self):
-        operator = None
-        if not self.researching:
-            operator = self.operator
-        self.itemconfigure(self.upgradeImage, image=self.upgrade.getPhotoImage(self.scale, operator=operator))
+        self.resize(height=self.getHeight())
 
-    def addMaterialInternal(self, material, amount):
-        super().addMaterialInternal(material, amount)
-        self.materials[material].trace("w", lambda *args: self.updateAmounts())
+    def toggle(self, state):
+        self.enabled = state
+        self.updateCallback()
+
+    def getMaterials(self):
+        if not self.operator.hasCache():
+            return {}
+
+        mats = self.upgrade.calculateCosts(self.operator.getCosts())
+        if self.naturalOrder:
+            matsSorted = {}
+            order = list(mats.keys())
+            order.sort(key = lambda m: m.getSearchKey())
+            for m in order:
+                matsSorted[m] = mats[m]
+            return matsSorted
+
+        return mats
+
+    def getMaterialCoords(self, c):
+        return (self.scale + (c % self.maxItems) * self.scale,
+                (c // self.maxItems) * self.scale)
+
+    def getHeight(self):
+        return max(int(math.ceil(len(self.getMaterials()) / self.maxItems)) * self.scale, self.scale)
+
+class UpgradeSet(LockableCanvas):
+    def __init__(self, parent, operator, upgrade, scale, updateCallback = None, maxItems = 4, enabled = True,
+                 naturalOrder = True, bindFunction = None):
+
+        super().__init__(parent, highlightthickness=0, bd=0, bg=CONFIG.color, width=UpgradeSet.getWidth(maxItems, scale), height=scale)
+
+        self.scale = scale
+        self.uiIconScale = self.scale // 2
+
+        self.researching = False
+
+        self.updateCallback = updateCallback
+        self.deleteCallback = None
+        self.maxItems = maxItems
+        self.naturalOrder = naturalOrder
+
+        self.bindFunction = bindFunction
+        self.bindFunction(self)
+
+        self.operator = operator
+        self.operatorImage = self.create_image(self.getLeftOffset(), 0, anchor=NW)
+        self.tag_bind(self.operatorImage, "<Button-1>", lambda e: self.changeOperator())
+
+        self.upgrades = [upgrade]
+        self.itemSets = []
+        for u in self.upgrades:
+            self.addUpgrade(u, enabled)
+
+        self.dragHandle = self.create_image(0, self.scale // 2, image=UI_ELEMENTS["drag"].getPhotoImage(self.uiIconScale), anchor=W)
+
+        self.changeOperatorInternal(self.operator)
+
+    def draw(self):
+        self.itemconfigure(self.operatorImage, image=self.operator.getPhotoImage(self.scale))
+
+        yPos = 0
+        for itemSet in self.itemSets:
+            itemSet.place_forget()
+            itemSet.place(x = self.getLeftOffset() + self.scale, y = yPos)
+            itemSet.draw()
+            yPos += itemSet.getHeight()
+
+        self.resize(height=self.getHeight())
+        self.updateCallback()
+
+    def changeOperator(self):
+        OVERLAYS["OperatorSelection"].registerCallback(self, posX = self.getLeftOffset(), posY = self.scale, callback = lambda op : self.changeOperatorInternal(op))
+
+    def changeOperatorInternal(self, operator):
+        self.operator = operator
+        for s in self.itemSets:
+            s.operator = operator
+        self.researchMaterials()
+
+    def changeUpgrade(self, upgradeSet):
+        OVERLAYS["UpgradeSelection"].registerCallback(self, posX = self.getLeftOffset() + self.scale, posY = self.scale + upgradeSet.winfo_y(),
+                                                      callback = lambda up : self.changeUpgradeInternal(up, upgradeSet), operator = self.operator)
+
+    def changeUpgradeInternal(self, upgrade, itemSet):
+        itemSet.upgrade = upgrade
+        self.draw()
 
     def researchMaterials(self):
         if self.operator.hasCache():
             self.researching = False
-            self.replaceMaterials(self.upgrade.calculateCosts(self.operator.getCosts()))
+            self.draw()
         else:
             if not self.researching:
                 self.researching = True
-                self.replaceMaterials({})
-                threading.Thread(target=self.operator.getCosts).start()
+                self.draw()
+                threading.Thread(target=self.operator.downloadData).start()
             self.after(1, self.researchMaterials)
 
-    def replaceMaterials(self, materials):
-        self.materials = {}
-        order = list(materials.keys())
-        if not self.naturalOrder:
-            order.sort(key = lambda m: m.getSearchKey())
-        for m in order:
-            self.addMaterialInternal(m, materials[m])
-        self.updateInternal()
+    def addUpgrade(self, upgrade, enabled):
+        itemSet = ItemSet(self, self.operator, upgrade, self.scale, self.maxItems, enabled, self.updateCallback, self.naturalOrder)
+        self.bindFunction(itemSet)
+        itemSet.tag_bind(itemSet.deleteButton, "<Button-1>", lambda e: self.removeUpgrade(itemSet))
+        itemSet.tag_bind(itemSet.upgradeImage, "<Button-1>", lambda e: self.changeUpgrade(itemSet))
+        self.itemSets.append(itemSet)
+        self.addChildCanvas(itemSet)
 
-    def updateInternal(self):
-        self.updateAmounts()
         self.draw()
 
-    def changeOperator(self):
-        OVERLAYS["OperatorSelection"].registerCallback(self, posX = + self.getLeftOffset(), posY = self.scale, callback = lambda op : self.changeOperatorInternal(op))
+    def removeUpgrade(self, itemSet):
+        self.itemSets.remove(itemSet)
+        self.removeChildCanvas(itemSet)
+        itemSet.destroy()
+        if len(self.itemSets) == 0:
+            if self.deleteCallback is not None:
+                self.deleteCallback()
+        else:
+            self.draw()
 
-    def changeOperatorInternal(self, operator):
-        self.operator = operator
-        self.researchMaterials()
-        self.draw()
+    def setDeleteCallBack(self, callback):
+        self.deleteCallback = callback
 
-    def changeUpgrade(self):
-        OVERLAYS["UpgradeSelection"].registerCallback(self, posX = self.scale + self.getLeftOffset(), posY = self.scale,
-                                                      callback = lambda op : self.changeUpgradeInternal(op), operator = self.operator)
+    def getEnabledMaterials(self):
+        return sum([Counter(s.getMaterials()) for s in self.itemSets if s.enabled], Counter())
 
-    def changeUpgradeInternal(self, upgrade):
-        self.upgrade = upgrade
-        self.researchMaterials()
-        self.draw()
-
-    def toggle(self, state):
-        self.enabled = state
-        self.updateAmounts()
-
-    def updateAmounts(self):
-        if self.updateCallback is not None:
-            self.updateCallback()
-
-    def getMaterials(self):
-        return unpackVar(self.materials)
+    def getHeight(self):
+        height = 0
+        for u in self.itemSets:
+            height += u.getHeight()
+        return height
 
     def getLeftOffset(self):
         return self.uiIconScale
+
+    @staticmethod
+    def getWidth(maxItems, scale):
+        return (3 + maxItems) * scale

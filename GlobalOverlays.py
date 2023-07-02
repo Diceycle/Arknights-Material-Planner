@@ -71,14 +71,12 @@ class UpgradeSelection(GlobalSelection):
 
         self.totalSeparator = self.create_line(0, self.scale * 3, width, self.scale*3, fill=CONFIG.color)
 
-        self.draw()
-
-    def draw(self, operator = None):
+    def draw(self, operator):
         for up in self.upgrades:
             self.delete(up)
 
         upgrades = None
-        if operator is not None:
+        if operator.hasCache():
             upgrades = operator.getCosts()
 
         x = 0

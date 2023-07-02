@@ -75,11 +75,11 @@ class GUI:
     def save(self):
         data = {}
         sets = []
-        for s in self.setCanvas.itemSets:
+        for s in self.setCanvas.upgradeSets:
             sets.append({
                 "operator": s.operator.name,
-                "upgrade": s.upgrade.name,
-                "enabled": s.enabled
+                "upgrade": s.upgrades[0].name,
+                "enabled": s.itemSets[0].enabled
             })
 
         data["sets"] = sets

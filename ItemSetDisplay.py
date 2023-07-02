@@ -3,7 +3,7 @@ from collections import Counter
 from tkinter import *
 
 from utilImport import *
-from ItemSet import ResearchItemSet
+from ItemSet import UpgradeSet
 from widgets import LockableCanvas
 
 
@@ -12,7 +12,7 @@ class ItemSetDisplay(LockableCanvas):
                  totalsUpdateCallback=None):
         self.scale = scale
         self.scrollbarWidth = scale // 4
-        self.width = ResearchItemSet.getWidth(maxItems, scale) + self.scrollbarWidth
+        self.width = UpgradeSet.getWidth(maxItems, scale) + self.scrollbarWidth
         self.height = height
         super().__init__(parent, height=self.height, width=self.width, highlightthickness=0, bg=CONFIG.colorDark)
 
@@ -26,7 +26,7 @@ class ItemSetDisplay(LockableCanvas):
         self.currentSetWidget = None
 
         self.addSetButton = self.create_image(0, 0, image=UI_ELEMENTS["add-set"].getPhotoImage(self.scale, transparency=0.75), anchor = NW)
-        self.tag_bind(self.addSetButton, "<Button-1>", lambda e: self.addSet(OPERATORS["Amiya"], UPGRADES["E1"], {}))
+        self.tag_bind(self.addSetButton, "<Button-1>", lambda e: self.addSet(OPERATORS["Amiya"], UPGRADES["E1"]))
 
         self.scrollbarCanvas = LockableCanvas(self, height = self.height, width=self.scrollbarWidth, highlightthickness=0, bg=CONFIG.colorDark)
         self.scrollbarCanvas.place(relx = 1, y = 0, anchor=NE)
@@ -40,34 +40,33 @@ class ItemSetDisplay(LockableCanvas):
         self.scrollbarCanvas.tag_bind(self.scrollbar, "<ButtonRelease-1>", lambda e: self.stopScroll())
         self.scrolling = False
 
-        self.itemSets = []
-        self.itemSetWidgets = []
+        self.upgradeSets = []
+        self.upgradeSetWidgets = []
 
         self.draw()
 
     def addSet(self, operator, upgrade, enabled=True):
-        itemSet = ResearchItemSet(self, operator, upgrade, self.scale, updateCallback=self.updateItemTotals,
-                                  maxItems=self.maxItems, enabled=enabled, naturalOrder=CONFIG.maintainNaturalOrder)
-        itemSetWidget = self.create_window(0, 0, window=itemSet, anchor=NW)
+        upgradeSet = UpgradeSet(self, operator, upgrade, self.scale, updateCallback=self.updateItemTotals,
+                             maxItems=self.maxItems, enabled=enabled, naturalOrder=CONFIG.maintainNaturalOrder,
+                             bindFunction=lambda canvas: canvas.bind("<MouseWheel>", self.scrollWheel))
+        upgradeSetWidget = self.create_window(0, 0, window=upgradeSet, anchor=NW)
+        upgradeSet.setDeleteCallBack(lambda : self.removeSet(upgradeSet, upgradeSetWidget))
 
-        self.itemSets.append(itemSet)
-        self.itemSetWidgets.append(itemSetWidget)
-        self.addChildCanvas(itemSet)
+        self.upgradeSets.append(upgradeSet)
+        self.upgradeSetWidgets.append(upgradeSetWidget)
+        self.addChildCanvas(upgradeSet)
 
-        itemSet.bind("<MouseWheel>", self.scrollWheel)
-        itemSet.tag_bind(itemSet.dragHandle, "<Button-1>", lambda e: self.pickUpSet(e, itemSet, itemSetWidget))
-        itemSet.tag_bind(itemSet.dragHandle, "<B1-Motion>", self.dragCurrentSet)
-        itemSet.tag_bind(itemSet.dragHandle, "<ButtonRelease-1>", lambda e: self.release())
-        itemSet.tag_bind(itemSet.deleteButton, "<Button-1>", lambda e: self.removeSet(itemSet, itemSetWidget))
-        self.updateItemTotals()
+        upgradeSet.tag_bind(upgradeSet.dragHandle, "<Button-1>", lambda e: self.pickUpSet(e, upgradeSet, upgradeSetWidget))
+        upgradeSet.tag_bind(upgradeSet.dragHandle, "<B1-Motion>", self.dragCurrentSet)
+        upgradeSet.tag_bind(upgradeSet.dragHandle, "<ButtonRelease-1>", lambda e: self.release())
 
-    def removeSet(self, itemSet, setWidget):
-        itemSet.destroy()
-        self.itemSets.remove(itemSet)
-        self.removeChildCanvas(itemSet)
+    def removeSet(self, upgradeSet, setWidget):
+        upgradeSet.destroy()
+        self.upgradeSets.remove(upgradeSet)
+        self.removeChildCanvas(upgradeSet)
 
         self.delete(setWidget)
-        self.itemSetWidgets.remove(setWidget)
+        self.upgradeSetWidgets.remove(setWidget)
 
         self.updateItemTotals()
 
@@ -77,15 +76,15 @@ class ItemSetDisplay(LockableCanvas):
         self.draw()
 
     def getItemTotals(self):
-        return sum([Counter(s.getMaterials()) for s in self.itemSets if s.enabled], Counter())
+        return sum([Counter(s.getEnabledMaterials()) for s in self.upgradeSets], Counter())
 
 ### UI-Methods ###
 
     def draw(self):
         currentY = 0
-        for c in range(len(self.itemSetWidgets)):
-            widget = self.itemSetWidgets[c]
-            set = self.itemSets[c]
+        for c in range(len(self.upgradeSetWidgets)):
+            widget = self.upgradeSetWidgets[c]
+            set = self.upgradeSets[c]
             if widget != self.currentSetWidget:
                 self.coords(widget, 0, currentY)
             currentY += set.getHeight() + self.spacing
@@ -93,11 +92,11 @@ class ItemSetDisplay(LockableCanvas):
         self.coords(self.addSetButton, 0, currentY)
         self.updateViewbox()
 
-    def pickUpSet(self, e, itemSet, widget):
-        self.currentSet = itemSet
+    def pickUpSet(self, e, upgradeSet, widget):
+        self.currentSet = upgradeSet
         self.currentSetWidget = widget
         self.setTime = time.time()
-        self.winfo_toplevel().call('raise', itemSet, None)
+        self.winfo_toplevel().call('raise', upgradeSet, None)
         self.initialY = e.y
 
     def dragCurrentSet(self, e):
@@ -112,26 +111,26 @@ class ItemSetDisplay(LockableCanvas):
     def dropInPosition(self):
         yPosition = self.coords(self.currentSetWidget)[1] + self.currentSet.getHeight() // 2
         row = 0
-        while row + 1 < len(self.itemSets):
+        while row + 1 < len(self.upgradeSets):
             # Midway line of myself relative to the bottom line of the current row
-            yPosition -= self.itemSets[row].getHeight() + self.spacing
+            yPosition -= self.upgradeSets[row].getHeight() + self.spacing
 
-            if self.currentSet.getHeight() == self.itemSets[row].getHeight():
+            if self.currentSet.getHeight() == self.upgradeSets[row].getHeight():
                 # Likely moving down, i.e. self.currentSet == self.itemSets[row]
                 # Take this position if my bottom line is not over the halfway line of the next row
-                if yPosition + self.currentSet.getHeight() // 2 <= (self.itemSets[row + 1].getHeight()) // 2:
+                if yPosition + self.currentSet.getHeight() // 2 <= (self.upgradeSets[row + 1].getHeight()) // 2:
                     break
             else:
                 # Take this position if my top line is not over the halfway line of the current row
-                if yPosition - self.currentSet.getHeight() // 2 <= -self.itemSets[row].getHeight() // 2:
+                if yPosition - self.currentSet.getHeight() // 2 <= -self.upgradeSets[row].getHeight() // 2:
                     break
 
             row += 1
 
-        self.itemSets.remove(self.currentSet)
-        self.itemSetWidgets.remove(self.currentSetWidget)
-        self.itemSets.insert(row, self.currentSet)
-        self.itemSetWidgets.insert(row, self.currentSetWidget)
+        self.upgradeSets.remove(self.currentSet)
+        self.upgradeSetWidgets.remove(self.currentSetWidget)
+        self.upgradeSets.insert(row, self.currentSet)
+        self.upgradeSetWidgets.insert(row, self.currentSetWidget)
         self.draw()
 
     def release(self):
@@ -179,4 +178,4 @@ class ItemSetDisplay(LockableCanvas):
         self.scrolling = False
 
     def getTotalHeight(self):
-        return self.scale + (len(self.itemSets) + 1) * self.spacing + sum([s.getHeight() for s in self.itemSets])
+        return self.scale + (len(self.upgradeSets) + 1) * self.spacing + sum([s.getHeight() for s in self.upgradeSets])

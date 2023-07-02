@@ -119,14 +119,9 @@ class Operator(ScalableImage):
             self.externalName = name.lower().replace(" ", "-")
 
     def getCosts(self):
-        if self.costs is None:
-            self.downloadData()
         return self.costs
 
     def getModuleImagePath(self, moduleType):
-        if self.meta is None:
-            self.downloadData()
-
         return getModuleImagePath(self.meta, moduleType)
 
     def hasCache(self):
