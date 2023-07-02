@@ -118,9 +118,9 @@ class UpgradeSet(LockableCanvas):
         self.operatorImage = self.create_image(self.getLeftOffset(), 0, anchor=NW)
         self.tag_bind(self.operatorImage, "<Button-1>", lambda e: self.changeOperator())
 
-        self.dragHandle = self.create_image(0, 0, image=UI_ELEMENTS["drag"].getPhotoImage(self.uiIconScale), anchor=NW)
+        self.dragHandle = self.create_image(0, self.scale // 2, image=UI_ELEMENTS["drag"].getPhotoImage(self.uiIconScale), anchor=W)
 
-        self.addUpgradeButton = self.create_image(0, 0, image=UI_ELEMENTS["add"].getPhotoImage(self.uiIconScale), anchor=SW)
+        self.addUpgradeButton = self.create_image(0, 0, image=UI_ELEMENTS["add"].getPhotoImage(self.uiIconScale), anchor=S)
         self.tag_bind(self.addUpgradeButton, "<Button-1>", lambda e: self.addUpgrade(UPGRADES["E1"], True))
 
         self.itemSets = []
@@ -144,7 +144,7 @@ class UpgradeSet(LockableCanvas):
 
         self.resize(height=self.getHeight())
 
-        self.coords(self.addUpgradeButton, 0, self.getHeight())
+        self.coords(self.addUpgradeButton, self.uiIconScale + self.scale + self.scale // 2, self.getHeight())
 
         self.updateCallback()
 
@@ -206,7 +206,7 @@ class UpgradeSet(LockableCanvas):
         height = 0
         for u in self.itemSets:
             height += u.getHeight()
-        return height
+        return height + self.uiIconScale
 
     def getLeftOffset(self):
         return self.uiIconScale
