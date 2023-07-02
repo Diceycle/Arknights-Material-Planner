@@ -101,6 +101,13 @@ class Upgrade(ScalableImage):
                                         MAX_MODULE_IMAGE_DIMENSIONS[1] // 2 - module.height // 2))
         return i
 
+    def getSortKey(self):
+        return (str(not int(self.name.startswith("E"))) +
+                str(not int(self.name.startswith("SK"))) +
+                str(not int(self.name.startswith("S"))) +
+                str(not int(self.name.startswith("MOD"))) +
+                self.name)
+
     def __str__(self):
         return self.canonicalName
 
@@ -209,7 +216,7 @@ class Material(ScalableImage):
         border.alpha_composite(self.image, ((border.width - self.image.width) // 2, (border.height - self.image.height) // 2))
         return border
 
-    def getSearchKey(self):
+    def getSortKey(self):
         return (str(int(self.canonicalName != "LMD")) +
                 str(int(not self.name.startswith("chip") and not self.name.startswith("module") and not self.name.startswith("skill") and not self.name.startswith("exp"))) +
                 str(5 - self.tier) +

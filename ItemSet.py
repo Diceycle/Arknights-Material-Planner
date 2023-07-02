@@ -81,7 +81,7 @@ class ItemSet(LockableCanvas):
         if not self.naturalOrder:
             matsSorted = {}
             order = list(mats.keys())
-            order.sort(key = lambda m: m.getSearchKey())
+            order.sort(key = lambda m: m.getSortKey())
             for m in order:
                 matsSorted[m] = mats[m]
             return matsSorted
@@ -133,7 +133,10 @@ class UpgradeSet(LockableCanvas):
         self.itemconfigure(self.operatorImage, image=self.operator.getPhotoImage(self.scale))
 
         yPos = 0
-        for itemSet in self.itemSets:
+        sets = self.itemSets.copy()
+        if CONFIG.sortUpgrades:
+            sets.sort(key=lambda s: s.upgrade.getSortKey(), reverse=True)
+        for itemSet in sets:
             itemSet.place_forget()
             itemSet.place(x = self.getLeftOffset() + self.scale, y = yPos)
             itemSet.draw()

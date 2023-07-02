@@ -12,6 +12,7 @@ class Config:
                  scrollSpeed = 30,
                  saveFile = "default.materials",
                  maintainNaturalOrder = False,
+                 sortUpgrades = True,
                  backgroundImage = None,
                  backgroundImageOffset = 0,
                  backgroundColor = "#444444",
@@ -44,6 +45,7 @@ class Config:
         self.scrollSpeed = scrollSpeed
         self.saveFile = saveFile
         self.maintainNaturalOrder = maintainNaturalOrder
+        self.sortUpgrades = sortUpgrades
         self.backgroundImage = backgroundImage
         self.backgroundImageOffset = backgroundImageOffset
         self.backgroundColor = backgroundColor
