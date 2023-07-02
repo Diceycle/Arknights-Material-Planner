@@ -143,6 +143,18 @@ Then run `ArknightsMaterials.py`
 In case you want to build the executable yourself you can run `build.py` and a `_dist` folder will be created with the
 distribution. Simply move the contents where you want them.
 
+### Hint: Updating the Operator List
+
+I usually do not update the tool as soon as an operator comes out and instead just add the new operators in a batch 
+every few months or so. But updating the operator list does not require an update to the code.
+
+`operators.json` contains a full list of all operators with their name (which is used for the search in the operator 
+selection), an image which has to be present in the `img/operator` folder, and an external name, in case the URL on
+Gamepress differs from the name of the operator. 
+
+By providing these details, the tool can be kept up to date in case the releases ever fall behind too far, or you want to 
+plan further into the future. 
+
 ## Troubleshooting
 
 * **Q**: The tool crashes on startup. What went wrong?
