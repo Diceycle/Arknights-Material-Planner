@@ -135,7 +135,7 @@ class UpgradeSet(LockableCanvas):
         yPos = 0
         sets = self.itemSets.copy()
         if CONFIG.sortUpgrades:
-            sets.sort(key=lambda s: s.upgrade.getSortKey(), reverse=True)
+            sets.sort(key=lambda s: s.upgrade.getSortKey())
         for itemSet in sets:
             itemSet.place_forget()
             itemSet.place(x = self.getLeftOffset() + self.scale, y = yPos)

@@ -102,8 +102,10 @@ class Upgrade(ScalableImage):
         return i
 
     def getSortKey(self):
-        return (str(not int(self.name.startswith("E"))) +
+        return (str(not int(self.name.startswith("SK1")) and not int(self.name == "SK2") and not int(self.name == "SK3") and not int(self.name == "SK4")) +
+                str(not int(self.name == "E1")) +
                 str(not int(self.name.startswith("SK"))) +
+                str(not int(self.name == "E2")) +
                 str(not int(self.name.startswith("S"))) +
                 str(not int(self.name.startswith("MOD"))) +
                 self.name)
