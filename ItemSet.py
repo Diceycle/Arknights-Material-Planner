@@ -96,7 +96,7 @@ class ItemSet(LockableCanvas):
         return max(int(math.ceil(len(self.getMaterials()) / self.maxItems)) * self.scale, self.scale)
 
 class UpgradeSet(LockableCanvas):
-    def __init__(self, parent, operator, upgrade, scale, updateCallback = None, maxItems = 4, enabled = True,
+    def __init__(self, parent, operator, upgrades, scale, updateCallback = None, maxItems = 4,
                  naturalOrder = True, bindFunction = None):
 
         super().__init__(parent, highlightthickness=0, bd=0, bg=CONFIG.color, width=UpgradeSet.getWidth(maxItems, scale), height=scale)
@@ -118,12 +118,14 @@ class UpgradeSet(LockableCanvas):
         self.operatorImage = self.create_image(self.getLeftOffset(), 0, anchor=NW)
         self.tag_bind(self.operatorImage, "<Button-1>", lambda e: self.changeOperator())
 
-        self.upgrades = [upgrade]
-        self.itemSets = []
-        for u in self.upgrades:
-            self.addUpgrade(u, enabled)
+        self.dragHandle = self.create_image(0, 0, image=UI_ELEMENTS["drag"].getPhotoImage(self.uiIconScale), anchor=NW)
 
-        self.dragHandle = self.create_image(0, self.scale // 2, image=UI_ELEMENTS["drag"].getPhotoImage(self.uiIconScale), anchor=W)
+        self.addUpgradeButton = self.create_image(0, 0, image=UI_ELEMENTS["add"].getPhotoImage(self.uiIconScale), anchor=SW)
+        self.tag_bind(self.addUpgradeButton, "<Button-1>", lambda e: self.addUpgrade(UPGRADES["E1"], True))
+
+        self.itemSets = []
+        for u in upgrades:
+            self.addUpgrade(u["upgrade"], u["enabled"])
 
         self.changeOperatorInternal(self.operator)
 
@@ -138,6 +140,9 @@ class UpgradeSet(LockableCanvas):
             yPos += itemSet.getHeight()
 
         self.resize(height=self.getHeight())
+
+        self.coords(self.addUpgradeButton, 0, self.getHeight())
+
         self.updateCallback()
 
     def changeOperator(self):

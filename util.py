@@ -183,6 +183,57 @@ def findCraftingPath(material, available):
                 path += multiplyCounter(Counter(m.getIngredients()), need)
                 path[m] -= need
 
+def save(upgradeSets, depotContents):
+    data = {}
+    sets = []
+    for s in upgradeSets:
+        sets.append({
+            "operator": s.operator.name,
+            "upgrades": [{ "name": itemSet.upgrade.name, "enabled": itemSet.enabled } for itemSet in s.itemSets]
+        })
+
+    data["version"] = "1.1"
+    data["sets"] = sets
+    data["depot"] = toExternal(depotContents)
+
+    json.dump(data, safeOpen(CONFIG.saveFile), indent=2)
+
+def load():
+    data = {"sets": [], "depot": {}}
+
+    if os.path.isfile(CONFIG.saveFile):
+        rawData = json.load(open(CONFIG.saveFile, "r"))
+
+        version = None
+        if "version" in rawData:
+            version = rawData["version"]
+
+        if version is None:
+            rawData = migrateToVersion_1_1(rawData)
+
+        for rawSet in rawData["sets"]:
+            data["sets"].append({
+                "operator": OPERATORS[rawSet["operator"]],
+                "upgrades": [{ "upgrade": UPGRADES[up["name"]], "enabled": bool(up["enabled"]) } for up in rawSet["upgrades"]]
+            })
+
+        data["depot"] = toMaterials(rawData["depot"])
+
+    return data
+
+def migrateToVersion_1_1(rawData):
+    operators = {}
+    for rawSet in rawData["sets"]:
+        operator = rawSet["operator"]
+        if not operator in operators:
+            operators[operator] = []
+
+        operators[operator].append({"name": rawSet["upgrade"], "enabled": rawSet["enabled"]})
+
+    return { "sets": [{ "operator": op, "upgrades": operators[op] } for op in operators.keys()],
+             "depot": rawData["depot"],
+             "version": "1.1" }
+
 LOGGER = logging.getLogger("ArknightsMaterials")
 LOGGER.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')

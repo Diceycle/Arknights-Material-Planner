@@ -1,7 +1,4 @@
 
-import json
-import os
-
 from tkinter import *
 from PIL import Image, ImageTk
 
@@ -37,7 +34,7 @@ class GUI:
                                         totalsUpdateCallback=self.updateItemTotals)
         self.setCanvas.pack(side=LEFT)
 
-        saveData = self.load()
+        saveData = load()
 
         self.background = LockableCanvas(self.window, bg=CONFIG.backgroundColor, highlightthickness=0, width=self.height, height=self.height)
 
@@ -54,7 +51,7 @@ class GUI:
 
         self.initialising = True
         for savedSet in saveData["sets"]:
-            self.setCanvas.addSet(savedSet["operator"], savedSet["upgrade"], savedSet["enabled"])
+            self.setCanvas.addSet(savedSet["operator"], savedSet["upgrades"])
         self.initialising = False
         self.updateItemTotals(self.setCanvas.getItemTotals())
 
@@ -72,39 +69,6 @@ class GUI:
         self.background.enable()
         self.setCanvas.enable()
 
-    def save(self):
-        data = {}
-        sets = []
-        for s in self.setCanvas.upgradeSets:
-            sets.append({
-                "operator": s.operator.name,
-                "upgrade": s.upgrades[0].name,
-                "enabled": s.itemSets[0].enabled
-            })
-
-        data["sets"] = sets
-        data["depot"] = toExternal(self.depot.getContents())
-
-        if data != {}:
-            json.dump(data, safeOpen(CONFIG.saveFile))
-
-    def load(self):
-        data = {"sets": [], "depot": {}}
-
-        if os.path.isfile(CONFIG.saveFile):
-            rawData = json.load(open(CONFIG.saveFile, "r"))
-
-            for rawSet in rawData["sets"]:
-                data["sets"].append({
-                    "operator": OPERATORS[rawSet["operator"]],
-                    "upgrade": UPGRADES[rawSet["upgrade"]],
-                    "enabled": bool(rawSet["enabled"])
-                })
-
-            data["depot"] = toMaterials(rawData["depot"])
-
-        return data
-
     def destroy(self):
-        self.save()
+        save(self.setCanvas.upgradeSets, self.depot.getContents())
         self.window.destroy()
