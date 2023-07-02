@@ -78,7 +78,7 @@ class ItemSet(LockableCanvas):
             return {}
 
         mats = self.upgrade.calculateCosts(self.operator.getCosts())
-        if self.naturalOrder:
+        if not self.naturalOrder:
             matsSorted = {}
             order = list(mats.keys())
             order.sort(key = lambda m: m.getSearchKey())
