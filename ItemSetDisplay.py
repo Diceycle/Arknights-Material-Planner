@@ -47,7 +47,7 @@ class ItemSetDisplay(LockableCanvas):
         self.draw()
 
     def addSet(self):
-        OVERLAYS["OperatorSelection"].registerCallback(self, posX = self.scale + self.scale // 2, posY = self.height,
+        OVERLAYS["OperatorSelection"].registerCallback(self, posX = self.scale + self.scale // 2, posY = self.coords(self.addSetButton)[1],
                                                        callback = lambda op : self.addSetInternal(op, [{ "upgrade": UPGRADES["E1"], "enabled": True }]))
 
     def addSetInternal(self, operator, upgrades):
