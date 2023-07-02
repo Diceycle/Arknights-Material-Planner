@@ -121,11 +121,11 @@ class UpgradeSet(LockableCanvas):
         self.dragHandle = self.create_image(0, self.scale // 2, image=UI_ELEMENTS["drag"].getPhotoImage(self.uiIconScale), anchor=W)
 
         self.addUpgradeButton = self.create_image(0, 0, image=UI_ELEMENTS["add"].getPhotoImage(self.uiIconScale), anchor=S)
-        self.tag_bind(self.addUpgradeButton, "<Button-1>", lambda e: self.addUpgrade(UPGRADES["E1"], True))
+        self.tag_bind(self.addUpgradeButton, "<Button-1>", lambda e: self.addUpgrade())
 
         self.itemSets = []
         for u in upgrades:
-            self.addUpgrade(u["upgrade"], u["enabled"])
+            self.addUpgradeInternal(u["upgrade"], u["enabled"])
 
         self.changeOperatorInternal(self.operator)
 
@@ -144,7 +144,7 @@ class UpgradeSet(LockableCanvas):
 
         self.resize(height=self.getHeight())
 
-        self.coords(self.addUpgradeButton, self.uiIconScale + self.scale + self.scale // 2, self.getHeight())
+        self.coords(self.addUpgradeButton, self.getLeftOffset() + self.scale + self.scale // 2, self.getHeight())
 
         self.updateCallback()
 
@@ -176,7 +176,11 @@ class UpgradeSet(LockableCanvas):
                 threading.Thread(target=self.operator.downloadData).start()
             self.after(1, self.researchMaterials)
 
-    def addUpgrade(self, upgrade, enabled):
+    def addUpgrade(self):
+        OVERLAYS["UpgradeSelection"].registerCallback(self, posX = self.getLeftOffset() + self.scale, posY = self.getHeight(),
+                                                      callback = lambda up : self.addUpgradeInternal(up, True), operator = self.operator)
+
+    def addUpgradeInternal(self, upgrade, enabled):
         itemSet = ItemSet(self, self.operator, upgrade, self.scale, self.maxItems, enabled, self.updateCallback, self.naturalOrder)
         self.bindFunction(itemSet)
         itemSet.tag_bind(itemSet.deleteButton, "<Button-1>", lambda e: self.removeUpgrade(itemSet))

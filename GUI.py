@@ -51,7 +51,7 @@ class GUI:
 
         self.initialising = True
         for savedSet in saveData["sets"]:
-            self.setCanvas.addSet(savedSet["operator"], savedSet["upgrades"])
+            self.setCanvas.addSetInternal(savedSet["operator"], savedSet["upgrades"])
         self.initialising = False
         self.updateItemTotals(self.setCanvas.getItemTotals())
 

@@ -2,6 +2,7 @@ import time
 from collections import Counter
 from tkinter import *
 
+from GlobalOverlays import OVERLAYS
 from utilImport import *
 from ItemSet import UpgradeSet
 from widgets import LockableCanvas
@@ -26,7 +27,7 @@ class ItemSetDisplay(LockableCanvas):
         self.currentSetWidget = None
 
         self.addSetButton = self.create_image(0, 0, image=UI_ELEMENTS["add-set"].getPhotoImage(self.scale, transparency=0.75), anchor = NW)
-        self.tag_bind(self.addSetButton, "<Button-1>", lambda e: self.addSet(OPERATORS["Amiya"], [{ "upgrade": UPGRADES["E1"], "enabled": True }]))
+        self.tag_bind(self.addSetButton, "<Button-1>", lambda e: self.addSet())
 
         self.scrollbarCanvas = LockableCanvas(self, height = self.height, width=self.scrollbarWidth, highlightthickness=0, bg=CONFIG.colorDark)
         self.scrollbarCanvas.place(relx = 1, y = 0, anchor=NE)
@@ -45,7 +46,11 @@ class ItemSetDisplay(LockableCanvas):
 
         self.draw()
 
-    def addSet(self, operator, upgrades):
+    def addSet(self):
+        OVERLAYS["OperatorSelection"].registerCallback(self, posX = self.scale + self.scale // 2, posY = self.height,
+                                                       callback = lambda op : self.addSetInternal(op, [{ "upgrade": UPGRADES["E1"], "enabled": True }]))
+
+    def addSetInternal(self, operator, upgrades):
         upgradeSet = UpgradeSet(self, operator, upgrades, self.scale, updateCallback=self.updateItemTotals,
                              maxItems=self.maxItems, naturalOrder=CONFIG.maintainNaturalOrder,
                              bindFunction=lambda canvas: canvas.bind("<MouseWheel>", self.scrollWheel))
