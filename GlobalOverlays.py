@@ -84,6 +84,7 @@ class UpgradeSelection(GlobalSelection):
             self.placeImage(x, 0, UPGRADES["E1"])
             if upgrades is None or UPGRADES["E2"] in upgrades:
                 self.placeImage(x, 1, UPGRADES["E2"])
+                self.placeImage(x, 3, UPGRADES["Base E2"])
             x += 1
 
         if upgrades is None or UPGRADES["SK2"] in upgrades:

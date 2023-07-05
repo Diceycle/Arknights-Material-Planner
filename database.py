@@ -65,6 +65,8 @@ class Upgrade(ScalableImage):
             for up in self.cumulativeUpgrades:
                 if up in costs:
                     result += Counter(costs[up])
+                else:
+                    return {}
             return result
 
     def getPhotoImage(self, size, **renderFlags):
@@ -220,7 +222,8 @@ class Material(ScalableImage):
 
     def getSortKey(self):
         return (str(int(self.canonicalName != "LMD")) +
-                str(int(not self.name.startswith("chip") and not self.name.startswith("module") and not self.name.startswith("skill") and not self.name.startswith("exp"))) +
+                str(int(not self.name.startswith("chip") and not self.name.startswith("exp"))) +
+                str(int(not self.name.startswith("module") and not self.name.startswith("skill"))) +
                 str(5 - self.tier) +
                 self.name)
 
@@ -253,7 +256,6 @@ UIElement("loading", "loading.png")
 
 Upgrade("E1", "Elite 1", "E1.png", mainDimension=0)
 Upgrade("E2", "Elite 2", "E2.png", mainDimension=0)
-Upgrade("SK1", "Skill rank 1", "1.png", mainDimension=0)
 Upgrade("SK2", "Skill rank 2", "2.png", mainDimension=0)
 Upgrade("SK3", "Skill rank 3", "3.png", mainDimension=0)
 Upgrade("SK4", "Skill rank 4", "4.png", mainDimension=0)
@@ -262,6 +264,7 @@ Upgrade("SK5", "Skill rank 5", "5.png", mainDimension=0)
 Upgrade("SK6", "Skill rank 6", "6.png", mainDimension=0)
 Upgrade("SK7", "Skill rank 7", "7.png", mainDimension=0)
 Upgrade("SK4-7", "Skill rank 4-7", "4-7.png", mainDimension=0, cumulativeUpgrades=["SK5", "SK6", "SK7"])
+Upgrade("Base E2", "E2 and Skills Maxed", "E2-7.png", mainDimension=0, cumulativeUpgrades=["SK2", "SK3", "SK4", "SK5", "SK6", "SK7", "E1", "E2"])
 Upgrade("S1M1", "Skill 1 Mastery 1", "m-1.png", overlay = "S1", mainDimension=0)
 Upgrade("S1M2", "Skill 1 Mastery 2", "m-2.png", overlay = "S1", mainDimension=0)
 Upgrade("S1M3", "Skill 1 Mastery 3", "m-3.png", overlay = "S1", mainDimension=0)
