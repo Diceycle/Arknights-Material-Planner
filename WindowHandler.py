@@ -20,10 +20,12 @@ def resolveHandler(windowName, childClass, advancedResolutionMode):
                 handler.hwndInput = child[0]
                 LOGGER.debug("NEW HWND_INPUT: %s", child[0])
     else:
-        for className, child in children.items():
-            if className.lower() == childClass.lower():
-                handler.hwndInput = child[0]
-                LOGGER.debug("NEW HWND_INPUT: %s", child[0])
+        if childClass is not None:
+            for className, child in children.items():
+                if className.lower() == childClass.lower():
+                    handler.hwndInput = child[0]
+                    LOGGER.debug("NEW HWND_INPUT: %s", child[0])
+                    return 
 
     return handler
 
