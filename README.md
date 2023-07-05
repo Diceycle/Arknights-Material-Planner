@@ -37,8 +37,9 @@ one button and sit back as **image and text recognition** tells you exactly **wh
 
 ![An example of a planned upgrade](/img/readme/planning.png)
 
-* Choose the operator and the type of Upgrade you want. Material requirements are then automatically downloaded from
+* Start by adding a operator and the type of Upgrade you want. Material requirements are then automatically downloaded from
   Gamepress.
+* Multiple Upgrades can be selected per Operator. The individual Upgrades per Operator will be sorted automatically.
 * Include ![The enable/disable checkbox in on state](/img/ui/check-on.png) or
   exclude ![The enable/disable checkbox in off state](/img/ui/check-off.png)
   the material list from the total requirements
