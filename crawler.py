@@ -61,7 +61,7 @@ def parseQuantity(line):
 def parseModuleType(line):
     filePath = re.search(".*img src=\"(.*)\"", line).group(1)
     fileName = re.search("(?=/[^/\.]*\.png)/(.*\.png)", filePath).group(1)
-    match = re.search(".*([xy])\.png", fileName)
+    match = re.search(".*([xy])\.png", fileName, re.IGNORECASE)
     if match is not None:
         moduleType = match.group(1)
     else:
