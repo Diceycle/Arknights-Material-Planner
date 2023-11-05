@@ -13,7 +13,7 @@ class GUI:
 
         self.scale = CONFIG.uiScale
         self.width = 16 * self.scale
-        self.height = 11 * self.scale
+        self.height = 12 * self.scale
         self.setSpacing = self.scale // 10
 
         self.window = Tk()

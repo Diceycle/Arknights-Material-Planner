@@ -159,11 +159,11 @@ class Material(ScalableImage):
             return toMaterials(self.recipe)
 
     def getPosition(self):
-
+        page2 = 12
         x = 5 - self.tier
         if self.name.startswith("fluid") or self.name.startswith("gel") or \
             self.name.startswith("solvent") or self.name.startswith("manganese") or \
-            self.name.startswith("grindstone"):
+            self.name.startswith("grindstone") or self.name.startswith("carbon"):
             x += 2
 
         if self.name.startswith("keton") or self.name.startswith("polymer"):
@@ -188,32 +188,35 @@ class Material(ScalableImage):
             return x, 9
         elif self.name.startswith("salt") or self.name.startswith("fluid"):
             return x, 10
+        elif self.name.startswith("fiber") or self.name.startswith("carbon"):
+            return x, 11
+
         elif self.name.startswith("exp"):
-            return x+1, 11
+            return x+1, page2
         elif self.name.startswith("skill"):
-            return x+1, 12
+            return x+1, page2 + 1
         elif self.name.startswith("money"):
-            return 1, 12
+            return 1, page2 + 1
         elif self.name.startswith("module"):
-            return 5-int(self.name[self.name.find("-")+1:]), 13
+            return 5-int(self.name[self.name.find("-")+1:]), page2 + 2
         elif self.name.startswith("chip-catalyst"):
-            return 1, 13
+            return 1, page2 + 2
         elif self.name.startswith("chip-vanguard"):
-            return x+2, 14
+            return x+2, page2 + 3
         elif self.name.startswith("chip-guard"):
-            return x+2, 15
+            return x+2, page2 + 4
         elif self.name.startswith("chip-defender"):
-            return x+2, 16
+            return x+2, page2 + 5
         elif self.name.startswith("chip-sniper"):
-            return x+2, 17
+            return x+2, page2 + 6
         elif self.name.startswith("chip-caster"):
-            return x+2, 18
+            return x+2, page2 + 7
         elif self.name.startswith("chip-healer"):
-            return x+2, 19
+            return x+2, page2 + 8
         elif self.name.startswith("chip-supporter"):
-            return x+2, 20
+            return x+2, page2 + 9
         elif self.name.startswith("chip-specialist"):
-            return x+2, 21
+            return x+2, page2 + 10
 
     def renderImage(self, **flags):
         border = loadImage("img/border", "T" + str(self.tier) + ".png")
@@ -347,9 +350,26 @@ Material("solvent-4", "Refined Solvent", 4, "solvent-4.png", externalId="31044",
 Material("fluid-3", "Compound Cutting Fluid", 3, "fluid-3.png", externalId="31053", externalFileName="MTL_SL_CCF")
 Material("fluid-4", "Cutting Fluid Solution", 4, "fluid-4.png", externalId="31054", externalFileName="MTL_SL_PLCF", recipe={"fluid-3": 1, "crystal-3": 1, "rma-3": 1})
 
-Material("salt-3", "Transmuted Salt", 3, "salt-3.png", externalId="31063", externalFileName="MTL_SL_ZY")
-Material("salt-4", "Transmuted Salt Agglomerate", 4, "salt-4.png", externalId="31064", externalFileName="MTL_SL_ZYK", recipe={"salt-3": 2, "solvent-3": 1, "sugar-3": 1})
-Material("salt-5", "Nucleic Crystal Sinter", 5, "salt-5.png", externalId="30155", externalFileName="MTL_SL_SHJ", recipe={"salt-4": 1, "fluid-4": 1, "solvent-4": 2})
+Material("salt-3", "Transmuted Salt", 3, "salt-3.png", externalId="31063",
+         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E8%BD%AC%E8%B4%A8%E7%9B%90%E7%BB%84")
+Material("salt-4", "Transmuted Salt Agglomerate", 4, "salt-4.png", externalId="31064",
+         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E8%BD%AC%E8%B4%A8%E7%9B%90%E8%81%9A%E5%9D%97",
+         recipe={"salt-3": 2, "solvent-3": 1, "sugar-3": 1})
+Material("salt-5", "Nucleic Crystal Sinter", 5, "salt-5.png", externalId="30155",
+         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E7%83%A7%E7%BB%93%E6%A0%B8%E5%87%9D%E6%99%B6",
+         recipe={"salt-4": 1, "fluid-4": 1, "solvent-4": 2})
+
+Material("fiber-3", "褐素纤维", 3, "fiber-3.png", externalId="31073",
+         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E8%A4%90%E7%B4%A0%E7%BA%A4%E7%BB%B4")
+Material("fiber-4", "固化纤维板", 4, "fiber-4.png", externalId="31074",
+         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E5%9B%BA%E5%8C%96%E7%BA%A4%E7%BB%B4%E6%9D%BF",
+         recipe={"fiber-3": 1, "plastic-3": 2, "rock-3": 1})
+
+Material("carbon-3", "环烃聚质", 3, "carbon-3.png", externalId="31083",
+         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E7%8E%AF%E7%83%83%E8%81%9A%E8%B4%A8")
+Material("carbon-4", "环烃预制体", 4, "carbon-4.png", externalId="31084",
+         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E7%8E%AF%E7%83%83%E9%A2%84%E5%88%B6%E4%BD%93",
+         recipe={"carbon-3": 1, "fiber-3": 1, "salt-3": 1})
 
 Material("steel-5", "D32 Steel", 5, "steel-5.png", externalId="30135", externalFileName="MTL_SL_DS", recipe={"manganese-4": 1, "grindstone-4": 1, "rma-4": 1})
 Material("nanoflake-5", "Bipolar Nanoflake", 5, "nanoflake-5.png", externalId="30125", externalFileName="MTL_SL_BN", recipe={"device-4": 1, "kohl-4": 2})
