@@ -13,6 +13,7 @@ workFolder = "_build/"
 mainCommand = ['ArknightsMaterials.py',
                '--name', name,
                '--icon', '../rock.ico',
+               '--contents-directory', '.',
                '--distpath', distFolder,
                '--workpath', workFolder,
                '--add-data', '../img;img',
