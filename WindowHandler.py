@@ -7,7 +7,7 @@ import win32gui
 import win32ui
 from PIL import Image
 
-from utilImport import LOGGER
+from utilImport import LOGGER, CONFIG
 
 
 def resolveHandler(windowName, childClass, advancedResolutionMode):
@@ -140,6 +140,8 @@ class WindowHandler:
             win32gui.ShowWindow(self.hwnd, win32con.SW_RESTORE)
             time.sleep(0.5)
             self.updateBitmapBuffer()
+        if CONFIG.focusWindowBeforeScanning:
+            win32gui.SetForegroundWindow(self.hwnd)
 
         self.printWindowToBuffer()
         bmpinfo = self.bitmapBuffer.GetInfo()
