@@ -116,7 +116,6 @@ def validateMenu(handler):
 
     filterPreselected = True
     for p in DEPOT_FILTER_CHECKS:
-        print(p, image.getpixel(p[0]), DEPOT_FILTER_CHECKS[0][1])
         if (p[1] is not None and not matchesColor(image.getpixel(p[0]), p[1], leniency=CONFIG.colorLeniency) or
             p[1] is None and matchesColor(image.getpixel(p[0]), DEPOT_FILTER_CHECKS[0][1], leniency=min(3, 256 - CONFIG.colorLeniency))):
             filterPreselected = False

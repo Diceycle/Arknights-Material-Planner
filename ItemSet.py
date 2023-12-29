@@ -1,5 +1,4 @@
 import math
-import threading
 from collections import Counter
 from tkinter import *
 
@@ -120,6 +119,9 @@ class UpgradeSet(LockableCanvas):
 
         self.dragHandle = self.create_image(0, self.scale // 2, image=UI_ELEMENTS["drag"].getPhotoImage(self.uiIconScale), anchor=W)
 
+        self.refreshCostsButton = self.create_image(self.getLeftOffset() + self.scale // 2, self.scale, image=UI_ELEMENTS["resetCache"].getPhotoImage(self.uiIconScale), anchor=N)
+        self.tag_bind(self.refreshCostsButton, "<Button-1>", lambda e: self.researchMaterials(ignoreCache=True))
+
         self.addUpgradeButton = self.create_image(0, 0, image=UI_ELEMENTS["add"].getPhotoImage(self.uiIconScale), anchor=S)
         self.tag_bind(self.addUpgradeButton, "<Button-1>", lambda e: self.addUpgrade())
 
@@ -165,15 +167,15 @@ class UpgradeSet(LockableCanvas):
         itemSet.upgrade = upgrade
         self.draw()
 
-    def researchMaterials(self):
-        if self.operator.hasCache():
+    def researchMaterials(self, ignoreCache = False):
+        if self.operator.hasCache() and not ignoreCache:
             self.researching = False
             self.draw()
         else:
             if not self.researching:
                 self.researching = True
+                self.operator.downloadDataAsync(ignoreCache)
                 self.draw()
-                threading.Thread(target=self.operator.downloadData).start()
             self.after(1, self.researchMaterials)
 
     def addUpgrade(self):

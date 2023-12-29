@@ -1,5 +1,5 @@
 import json
-import time
+import threading
 from collections import Counter
 
 from PIL import Image, ImageTk, ImageColor
@@ -138,8 +138,14 @@ class Operator(ScalableImage):
     def hasCache(self):
         return self.costs is not None
 
-    def downloadData(self):
-        self.costs, self.meta = downloadCosts(self)
+    def downloadDataAsync(self, ignoreCache = False):
+        if ignoreCache:
+            self.costs = None
+            self.meta = None
+        threading.Thread(target=lambda: self.downloadData(ignoreCache)).start()
+
+    def downloadData(self, ignoreCache = False):
+        self.costs, self.meta = downloadCosts(self, ignoreCache)
 
 class Material(ScalableImage):
     def __init__(self, name, canonicalName, tier, image, externalId = None, externalFileName = None, recipe = None):
@@ -249,7 +255,7 @@ UIElement("arrow-up", "arrow-up.png")
 UIElement("arrow-down", "arrow-down.png")
 UIElement("drag", "drag.png")
 UIElement("add", "add.png")
-UIElement("research", "research.png")
+UIElement("resetCache", "resetCache.png")
 UIElement("research-button", "research-button.png")
 UIElement("export", "export.png")
 UIElement("craft-arrow", "craft-arrow.png")

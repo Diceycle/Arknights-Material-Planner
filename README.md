@@ -1,6 +1,6 @@
 # Arknights Material Planner
 
-![A full screenshot of the application](/img/readme/full-screenshot.png)
+![A full screenshot of the application](/img/readme/full-screenshot.jpg)
 
 Streamline your Arknights planning with this all-in-one solution. Simply select the operator and the upgrade and let the
 tool do the rest.
@@ -39,6 +39,8 @@ one button and sit back as **image and text recognition** tells you exactly **wh
 
 * Start by adding a operator and the type of Upgrade you want. Material requirements are then automatically downloaded from
   Gamepress.
+  * Material requirements are cached locally to not spam Gamepress. In case a module releases for an Operator, you can
+    force a refresh on the material requirements ![The button to refresh material requirements](/img/ui/resetCache.png) 
 * Multiple Upgrades can be selected per Operator. The individual Upgrades per Operator will be sorted automatically.
 * Include ![The enable/disable checkbox in on state](/img/ui/check-on.png) or
   exclude ![The enable/disable checkbox in off state](/img/ui/check-off.png)
@@ -129,6 +131,8 @@ the position if necessary. The color behind the image can also be separately con
 * This has been tested on the english client. I have seen that the korean client uses a different font
   for numbers. This might throw off the tool as well, but if enough demand exists for it, I might add a different mode
   for other regions.
+* Scanning expects numbers attached to the materials. For numbers larger than 1000 Arknights starts to abbreviate them to
+  1k, etc. This breaks the scanning.
 * Since this tool relies on relatively exact pixel measurements, slight changes might throw it off. I have tried my best
   to add leniency but in the end the result is still somewhat fragile.
 
@@ -162,8 +166,8 @@ plan further into the future.
   * **A**: Usually that is an issue with the `config.json`. Use an online JSON verifier like [JSONLint](https://jsonlint.com/)
     to check if you've maybe made a mistake.
 * **Q**: An operator recently got a new Module, but I don't see it in the tool, what happened?
-  * **A**: The tool caches Operator data, so it doesn't know an update was released. Go to the `data/upgradeCosts` folder
-    and delete the file with the operator name. 
+  * **A**: The tool caches Operator data, so it doesn't know an update was released. You can force a manual refresh by 
+    clicking the button under the operator image.
 * **Q**: The tool keeps saying I need to navigate to the main menu or the depot even though I'm there already, what do I do?
   * **A**: Disable any hotkey overlays you might have in your player, make sure not to overlap your mouse with the player.
     If that does not work try increasing the `colorLeniency` config parameter. 

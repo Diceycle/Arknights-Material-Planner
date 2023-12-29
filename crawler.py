@@ -102,8 +102,8 @@ def hasCache(operator):
 
 metaKey = "meta"
 costsKey = "costs"
-def downloadCosts(operator):
-    if hasCache(operator):
+def downloadCosts(operator, ignoreCache = False):
+    if hasCache(operator) and not ignoreCache:
         data = json.load(open(getFileName(operator), "r"))
         return toUpgrades(data[costsKey], recurse=toMaterials), data[metaKey]
 
