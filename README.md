@@ -15,7 +15,7 @@ one button and sit back as **image and text recognition** tells you exactly **wh
 ## Quick Setup
 
 1. Download Tesseract from [here](https://github.com/UB-Mannheim/tesseract/wiki) and run the installer.
-2. Download the latest version of Arknights Material Planner from the 
+2. Download the zip of the latest version(`ArknightsMaterials_vX.Y.Z.zip`) of Arknights Material Planner from the 
    [releases tab](https://github.com/Diceycle/Arknights-Material-Planner/releases) and unzip it into a folder of your
    choice
 3. Ensure Windows Defender didn't remove the exe due to a false positive. This tool trips up virus scanners occasionally
@@ -24,7 +24,7 @@ one button and sit back as **image and text recognition** tells you exactly **wh
 4. Rename `config-defaults.json` to `config.json` and open it in Notepad.
 5. Modify the line that says: `"tesseractExeLocation": null,` to contain the location to the tesseract.exe which is
    located in the folder you chose for the tesseract installation.
-    1. The path needs to be in quotes(`"`) and backslashes(``\``) need to be escaped. Here is a full example:
+    1. The path needs to be in quotes(`"`) and backslashes(``\``) need to be escaped with an additional backslash. Here is a full example:
     2. `"tesseractExeLocation": "C:\\Program Files\\tesseractOCR\\tesseract.exe"`
 6. Replace the `"BlueStacks"` in the line: `"arknightsContainer": "BlueStacks"` with `"LDPlayer"` if you are using LDPlayer. 
 7. Modify the line that says: `"arknightsWindowName": null` to contain the name of your BlueStacks/LDPlayer window, if it
@@ -181,7 +181,7 @@ Configuration is read from a file called `config.json` and is a single JSON-Obje
 
 | Parameter Name               | Type            | Default                                      | Description                                                                                                                                                                                                                                                                                                            |
 |------------------------------|-----------------|----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `uiScale`                    | Number          | `100`                                        | Controls the **size** of **all screen elements**.                                                                                                                                                                                                                                                                      |
+| `uiScale`                    | Number          | `80`                                         | Controls the **size** of **all screen elements** as well as the **window itself**.                                                                                                                                                                                                                                     |
 | `scrollSpeed`                | Number          | `30`                                         | Controls how fast the **left panel** can be **scrolled with the mouse wheel**. Pro tip: Setting this to 110 will scroll exactly one element per tick.                                                                                                                                                                  |
 | `saveFile`                   | String          | `"default.materials"`                        | Determines the **file** name of where the **data is saved and loaded from**. Have alt accounts? Switch back and forth between them with this parameter.                                                                                                                                                                |
 | `maintainNaturalOrder`       | Boolean         | `false`                                      | Whether to **sort** the **material list** in upgrades as they appear **in the game client** or apply a **consistent order** over all materials                                                                                                                                                                         |
