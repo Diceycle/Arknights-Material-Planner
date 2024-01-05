@@ -65,6 +65,7 @@ def resizeArknights(windowHandler):
                           int(round(SCREENSHOT_SIZE[1] / CONFIG.displayScale)) + WINDOW_BORDER[1] + WINDOW_BORDER[3]))
 
 def takeScreenshot(windowHandler):
+    windowHandler.activate()
     resizeArknights(windowHandler)
 
     screenshot = windowHandler.takeScreenshot().crop((
@@ -75,7 +76,6 @@ def takeScreenshot(windowHandler):
     return screenshot.convert("RGB")
 
 def scrollArknights(windowHandler):
-    resizeArknights(windowHandler)
     windowHandler.dragLine(SCROLL_LINE_START, SCROLL_LINE_END, CONFIG.depotScanScrollDelay)
     # Give Arknights time to snap back in case of overscroll
     time.sleep(1)

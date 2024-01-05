@@ -32,7 +32,6 @@ class Config:
                  arknightsWindowName = None,
                  arknightsInputWindowClass = None,
                  arknightsWindowBorder = None,
-                 focusWindowBeforeScanning = False,
                  depotScanScrollDelay = 2,
                  depotScanScrollOffset = 25,
                  displayScale = 1,
@@ -66,7 +65,6 @@ class Config:
         self.arknightsWindowName = arknightsWindowName
         self.arknightsInputWindowClass = arknightsInputWindowClass
         self.arknightsWindowBorder = arknightsWindowBorder
-        self.focusWindowBeforeScanning = focusWindowBeforeScanning
         self.depotScanScrollOffset = depotScanScrollOffset
         self.depotScanScrollDelay = depotScanScrollDelay
         self.displayScale = displayScale

@@ -78,12 +78,12 @@ class WindowHandler:
         self.mfcDC  = win32ui.CreateDCFromHandle(self.hwndDC)
         self.saveDC = self.mfcDC.CreateCompatibleDC()
 
-    def findWindowDimensions(self, includeBorder):    
-        ## GetClientRect = WindowContent
-        ## GetWindowRect = Window + Border
+    def findWindowDimensions(self, includeBorder):
         if includeBorder:
+            # GetWindowRect = Window + Border
             left, top, right, bot = win32gui.GetWindowRect(self.hwnd)
         else:
+            ## GetClientRect = WindowContent - Top-Left is always (0,0)
             left, top, right, bot = win32gui.GetClientRect(self.hwnd)
             
         return left, top, right - left, bot - top
@@ -97,10 +97,18 @@ class WindowHandler:
 
         self.saveDC.SelectObject(self.bitmapBuffer)
 
+    def activate(self):
+        placement = win32gui.GetWindowPlacement(self.hwnd)
+        if win32con.SW_SHOWMINIMIZED == placement[1]:
+            win32gui.ShowWindow(self.hwnd, win32con.SW_SHOWNOACTIVATE)
+            time.sleep(0.5)
+
+        win32gui.SendMessage(self.hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+
     def resize(self, dimensions):
         # Establish consistent Window-Dimensions so pixel values always line up
         left, top, width, height = self.findWindowDimensions(includeBorder=True)
-        win32gui.MoveWindow(self.hwnd, left, top, dimensions[0], dimensions[1], True)
+        win32gui.SetWindowPos(self.hwnd, None, left, top, dimensions[0], dimensions[1], win32con.SWP_NOACTIVATE + win32con.SWP_NOZORDER)
 
         self.updateBitmapBuffer()
 
@@ -109,40 +117,29 @@ class WindowHandler:
 
         win32gui.PostMessage(self.hwndInput, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, encodedCoords)
         win32gui.PostMessage(self.hwndInput, win32con.WM_LBUTTONUP, None, encodedCoords)
+
         time.sleep(delay)
 
     def dragLine(self, start, end, delayScale):
-        encodedStart = win32api.MAKELONG(start[0], start[1])
-        encodedEnd = win32api.MAKELONG(end[0], end[1])
-        win32gui.PostMessage(self.hwndInput, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, encodedStart)
+        def dragLineInternal(start, end, delayScale, mouseDown, drag, mouseUp):
+            mouseDown(start)
 
-        points = 50
-        for i in range(points):
-            time.sleep(.01 * delayScale)
-            pos = (start[0] + int((end[0] - start[0]) / points * (i+1)),
-                   start[1] + int((end[1] - start[1]) / points * (i+1)))
-            encodedEnd = win32api.MAKELONG(pos[0], pos[1])
-            win32gui.PostMessage(self.hwndInput, win32con.WM_MOUSEMOVE, win32con.MK_LBUTTON, encodedEnd)
-        time.sleep(.3)
-        win32gui.PostMessage(self.hwndInput, win32con.WM_LBUTTONUP, None, encodedEnd)
+            points = 50
+            for i in range(points):
+                time.sleep(.01 * delayScale)
+                pos = (start[0] + int((end[0] - start[0]) / points * (i + 1)),
+                       start[1] + int((end[1] - start[1]) / points * (i + 1)))
+                drag(pos)
+            time.sleep(.3)
+            mouseUp(end)
 
-    # PostMessage is asynchronous and just queues events. So here we spam the window to take the events as quickly as it can process them
-    def spamClick(self, position, clicks):
-        encodedCoords = win32api.MAKELONG(position[0], position[1])
-
-        for i in range(clicks):        
-            win32gui.PostMessage(self.hwndInput, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, encodedCoords)
-            win32gui.PostMessage(self.hwndInput, win32con.WM_LBUTTONUP, None, encodedCoords)
+        dragLineInternal(
+            start, end, delayScale,
+            lambda coords: win32gui.PostMessage(self.hwndInput, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, win32api.MAKELONG(coords[0], coords[1])),
+            lambda coords: win32gui.PostMessage(self.hwndInput, win32con.WM_MOUSEMOVE, win32con.MK_LBUTTON, win32api.MAKELONG(coords[0], coords[1])),
+            lambda coords: win32gui.PostMessage(self.hwndInput, win32con.WM_LBUTTONUP, None, win32api.MAKELONG(coords[0], coords[1])))
 
     def takeScreenshot(self):
-        placement = win32gui.GetWindowPlacement(self.hwnd)
-        if win32con.SW_SHOWMINIMIZED == placement[1]:
-            win32gui.ShowWindow(self.hwnd, win32con.SW_RESTORE)
-            time.sleep(0.5)
-            self.updateBitmapBuffer()
-        if CONFIG.focusWindowBeforeScanning:
-            win32gui.SetForegroundWindow(self.hwnd)
-
         self.printWindowToBuffer()
         bmpinfo = self.bitmapBuffer.GetInfo()
         bmpstr = self.bitmapBuffer.GetBitmapBits(True)
@@ -223,17 +220,6 @@ def listChildWindows(hwnd):
     win32gui.EnumChildWindows(hwnd, callback, childHandles)
 
     return childHandles
-
-def activate(hwnd):
-    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-
-def foreground(hwnd):
-    win32gui.SetForegroundWindow(hwnd)
-
-def click(hwnd, position):
-    coords = win32api.MAKELONG(position[0], position[1])
-    win32gui.PostMessage(hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, coords)
-    win32gui.PostMessage(hwnd, win32con.WM_LBUTTONUP, None, coords)
 
 if __name__ == "__main__":
     from util import CONFIG
