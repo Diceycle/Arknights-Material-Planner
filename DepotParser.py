@@ -27,10 +27,16 @@ DEPOT_FILTER_CHECKS = [
     ((1433, 47), None)
 ]
 
-MAIN_MENU_CHECKS = [
+MAIN_MENU_CHECKS_OLD = [
     ((1480, 800), (255, 255, 255)),
     ((1480, 840), (66, 66, 66)),
     ((1520, 840), (85, 85, 85))
+]
+
+MAIN_MENU_CHECKS_NEW = [
+    ((1485, 800), (255, 255, 255)),
+    ((1485, 830), (66, 66, 66)),
+    ((1520, 830), (81, 81, 81))
 ]
 
 DEPOT_BUTTON_SIZE = 250
@@ -127,14 +133,20 @@ def validateMenu(handler):
         LOGGER.debug("Scan: I'm in the depot with the Growth Material filter is preselected")
         return takeScreenshot(handler)
 
-    mainMenu = True
-    for p in MAIN_MENU_CHECKS:
+    mainMenuOld = True
+    for p in MAIN_MENU_CHECKS_OLD:
         if not matchesColor(image.getpixel(p[0]), p[1], leniency=CONFIG.colorLeniency):
-            mainMenu = False
+            mainMenuOld = False
             break
 
-    if mainMenu:
-        handler.click(MAIN_MENU_CHECKS[0][0], delay=1)
+    mainMenuNew = True
+    for p in MAIN_MENU_CHECKS_NEW:
+        if not matchesColor(image.getpixel(p[0]), p[1], leniency=CONFIG.colorLeniency):
+            mainMenuNew = False
+            break
+
+    if mainMenuOld or mainMenuNew:
+        handler.click(MAIN_MENU_CHECKS_OLD[0][0], delay=1)
         handler.click(DEPOT_CHECKS[0][0], delay=0.5)
         LOGGER.debug("Scan: I'm in the main menu")
         return takeScreenshot(handler)
