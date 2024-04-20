@@ -27,16 +27,28 @@ DEPOT_FILTER_CHECKS = [
     ((1433, 47), None)
 ]
 
-MAIN_MENU_CHECKS_OLD = [
-    ((1480, 800), (255, 255, 255)),
-    ((1480, 840), (66, 66, 66)),
-    ((1520, 840), (85, 85, 85))
-]
-
-MAIN_MENU_CHECKS_NEW = [
+MAIN_MENU_CHECKS_DAYTIME = [
     ((1485, 800), (255, 255, 255)),
     ((1485, 830), (66, 66, 66)),
     ((1520, 830), (81, 81, 81))
+]
+
+MAIN_MENU_CHECKS_NIGHT = [
+    ((1485, 800), (208, 208, 208)),
+    ((1485, 830), (45, 45, 45)),
+    ((1520, 830), (66, 66, 66))
+]
+
+MAIN_MENU_CHECKS_MISTY_CITY = [
+    ((1485, 800), (25, 25, 25)),
+    ((1485, 830), (27, 27, 27)),
+    ((1520, 830), (49, 52, 49))
+]
+
+MAIN_MENU_THEMES = [
+    MAIN_MENU_CHECKS_DAYTIME,
+    MAIN_MENU_CHECKS_NIGHT,
+    MAIN_MENU_CHECKS_MISTY_CITY
 ]
 
 DEPOT_BUTTON_SIZE = 250
@@ -133,23 +145,18 @@ def validateMenu(handler):
         LOGGER.debug("Scan: I'm in the depot with the Growth Material filter is preselected")
         return takeScreenshot(handler)
 
-    mainMenuOld = True
-    for p in MAIN_MENU_CHECKS_OLD:
-        if not matchesColor(image.getpixel(p[0]), p[1], leniency=CONFIG.colorLeniency):
-            mainMenuOld = False
-            break
+    for theme in MAIN_MENU_THEMES:
+        mainMenu = True
+        for p in theme:
+            if not matchesColor(image.getpixel(p[0]), p[1], leniency=CONFIG.colorLeniency):
+                mainMenu = False
+                break
 
-    mainMenuNew = True
-    for p in MAIN_MENU_CHECKS_NEW:
-        if not matchesColor(image.getpixel(p[0]), p[1], leniency=CONFIG.colorLeniency):
-            mainMenuNew = False
-            break
-
-    if mainMenuOld or mainMenuNew:
-        handler.click(MAIN_MENU_CHECKS_OLD[0][0], delay=1)
-        handler.click(DEPOT_CHECKS[0][0], delay=0.5)
-        LOGGER.debug("Scan: I'm in the main menu")
-        return takeScreenshot(handler)
+        if mainMenu:
+            handler.click(theme[0][0], delay=1)
+            handler.click(DEPOT_CHECKS[0][0], delay=0.5)
+            LOGGER.debug("Scan: I'm in the main menu")
+            return takeScreenshot(handler)
 
     inDepot = True
     for p in DEPOT_CHECKS:
