@@ -133,6 +133,13 @@ class UpgradeSelection(GlobalSelection):
             self.placeImage(x, 3, UPGRADES["MOD-Y-X"], operator)
             x += 1
 
+        if upgrades is None or UPGRADES["MOD-Z-1"] in upgrades:
+            self.placeImage(x, 0, UPGRADES["MOD-Z-1"], operator)
+            self.placeImage(x, 1, UPGRADES["MOD-Z-2"], operator)
+            self.placeImage(x, 2, UPGRADES["MOD-Z-3"], operator)
+            self.placeImage(x, 3, UPGRADES["MOD-Z-X"], operator)
+            x += 1
+
         self.config(width = self.scale * x)
 
     def placeImage(self, x, y, upgrade, operator = None):

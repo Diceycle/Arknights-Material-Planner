@@ -295,6 +295,10 @@ Upgrade("MOD-Y-1", "Module Y Stage 1", "img_stg1.png", overlay = "mod-y", mainDi
 Upgrade("MOD-Y-2", "Module Y Stage 2", "img_stg2.png", overlay = "mod-y", mainDimension=1, moduleType="Y")
 Upgrade("MOD-Y-3", "Module Y Stage 3", "img_stg3.png", overlay = "mod-y", mainDimension=1, moduleType="Y")
 Upgrade("MOD-Y-X", "Module Y Full", "img_stgX.png", overlay = "mod-y", mainDimension=1, moduleType="Y", cumulativeUpgrades=["MOD-Y-1", "MOD-Y-2", "MOD-Y-3"])
+Upgrade("MOD-Z-1", "Module Z Stage 1", "img_stg1.png", overlay = "mod-z", mainDimension=1, moduleType="Z")
+Upgrade("MOD-Z-2", "Module Z Stage 2", "img_stg2.png", overlay = "mod-z", mainDimension=1, moduleType="Z")
+Upgrade("MOD-Z-3", "Module Z Stage 3", "img_stg3.png", overlay = "mod-z", mainDimension=1, moduleType="Z")
+Upgrade("MOD-Z-X", "Module Z Full", "img_stgX.png", overlay = "mod-z", mainDimension=1, moduleType="Z", cumulativeUpgrades=["MOD-Z-1", "MOD-Z-2", "MOD-Z-3"])
 
 Material("money", "LMD", 4, "lmd.png", externalFileName="GOLD")
 

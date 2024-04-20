@@ -62,7 +62,10 @@ def parseModuleType(line):
     filePath = re.search(".*img src=\"(.*)\"", line).group(1)
     fileName = re.search("(?=/[^/\.]*\.png)/(.*\.png)", filePath).group(1)
     match = re.search("[a-z]{3}\-([xy]).*\.png", fileName, re.IGNORECASE)
-    if match is not None:
+    # Special case for Ebenholz' third module
+    if "unnamed" in fileName:
+        moduleType = "z"
+    elif match is not None:
         moduleType = match.group(1)
     else:
         moduleType = None
