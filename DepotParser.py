@@ -96,7 +96,7 @@ def takeScreenshot(windowHandler):
 def scrollArknights(windowHandler):
     windowHandler.dragLine(SCROLL_LINE_START, SCROLL_LINE_END, CONFIG.depotScanScrollDelay)
     # Give Arknights time to snap back in case of overscroll
-    time.sleep(1)
+    time.sleep(0.5)
 
 def checkEndOfDepot(image):
     for p in DEPOT_END_CHECKS:
