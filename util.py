@@ -36,7 +36,7 @@ class Config:
                  depotScanScrollOffset = 25,
                  displayScale = 1,
                  colorLeniency = 3,
-                 imageRecognitionThreshold = 0.95,
+                 imageRecognitionThreshold = 0.8,
                  tesseractExeLocation = None,
                  debug = True,
                  **kwargs):

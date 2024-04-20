@@ -231,7 +231,7 @@ class DepotParser:
     def findFirstUnknownBox(self):
         c = 0
         for m in self.lastTopRow:
-            if matchMasked(self.boxes[0], m) > self.confidenceThreshold:
+            if matchMasked(self.boxes[0], m)[1] > self.confidenceThreshold:
                 return (BOXES_ON_SCREEN[0] - c) * BOXES_ON_SCREEN[1]
             c += 1
         return 0
@@ -262,9 +262,9 @@ class DepotParser:
         material = MATERIALS[DEPOT_ORDER[self.materialIndex]]
         box = self.boxes[self.boxIndex]
 
-        confidence = matchMasked(box, material)
+        result, confidence = matchMasked(box, material)
         if CONFIG.debug:
-            safeSave(box, "debug/boxes/{}_{:.3}.png".format(self.materialIndex, confidence))
+            safeSave(result, "debug/boxes/{}_{:.3}.png".format(self.materialIndex, confidence))
         if confidence > self.confidenceThreshold:
             if self.boxIndex % BOXES_ON_SCREEN[1] == 0:
                 self.lastTopRow[self.boxIndex // BOXES_ON_SCREEN[1]] = material

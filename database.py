@@ -365,15 +365,15 @@ Material("salt-5", "Nucleic Crystal Sinter", 5, "salt-5.png", externalId="30155"
          externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E7%83%A7%E7%BB%93%E6%A0%B8%E5%87%9D%E6%99%B6",
          recipe={"salt-4": 1, "fluid-4": 1, "solvent-4": 2})
 
-Material("fiber-3", "褐素纤维", 3, "fiber-3.png", externalId="31073",
+Material("fiber-3", "Fuscous Fiber", 3, "fiber-3.png", externalId="31073",
          externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E8%A4%90%E7%B4%A0%E7%BA%A4%E7%BB%B4")
-Material("fiber-4", "固化纤维板", 4, "fiber-4.png", externalId="31074",
+Material("fiber-4", "Solidified Fiber Board", 4, "fiber-4.png", externalId="31074",
          externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E5%9B%BA%E5%8C%96%E7%BA%A4%E7%BB%B4%E6%9D%BF",
          recipe={"fiber-3": 1, "plastic-3": 2, "rock-3": 1})
 
-Material("carbon-3", "环烃聚质", 3, "carbon-3.png", externalId="31083",
+Material("carbon-3", "Aggregate Cyclicene", 3, "carbon-3.png", externalId="31083",
          externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E7%8E%AF%E7%83%83%E8%81%9A%E8%B4%A8")
-Material("carbon-4", "环烃预制体", 4, "carbon-4.png", externalId="31084",
+Material("carbon-4", "Cyclicene Prefab", 4, "carbon-4.png", externalId="31084",
          externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E7%8E%AF%E7%83%83%E9%A2%84%E5%88%B6%E4%BD%93",
          recipe={"carbon-3": 1, "fiber-3": 1, "salt-3": 1})
 
@@ -434,7 +434,7 @@ Material("chip-specialist-3", "Specialist Dualchip", 5, "chip-specialist-3.png",
 
 DEPOT_ORDER = ["exp-4", "exp-3", "exp-2", "exp-1", "skill-3", "skill-2", "skill-1", "module-1", "module-3", "module-2",
                "salt-5", "crystal-5", "steel-5", "nanoflake-5", "polymer-5",
-               "salt-4", "salt-3", "fluid-4", "fluid-3", "solvent-4", "solvent-3", "crystal-4", "crystal-3",
+               "carbon-4", "carbon-3", "fiber-4", "fiber-3", "salt-4", "salt-3", "fluid-4", "fluid-3", "solvent-4", "solvent-3", "crystal-4", "crystal-3",
                "incandescent-4", "incandescent-3", "gel-4", "gel-3",
                "kohl-4", "kohl-3", "manganese-4", "manganese-3", "grindstone-4", "grindstone-3", "rma-4", "rma-3",
                "rock-4", "rock-3", "rock-2", "rock-1", "device-4", "device-3", "device-2", "device-1",

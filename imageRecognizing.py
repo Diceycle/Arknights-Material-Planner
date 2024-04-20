@@ -1,64 +1,41 @@
 import cv2
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 
+def matchMasked(targetRGB, material):
+    templateImage = material.renderImage().convert("RGB")
+    mask = createMask(material, templateImage.size)
 
-def findMatches(image, template, mask=None, threshold=None):
-    w, h = template.shape[:-1]
+    return findMatch(targetRGB, templateImage, mask=mask)
 
-    res = cv2.matchTemplate(image, template, cv2.TM_CCORR_NORMED, mask=mask)
-    if threshold is not None:
-        loc = np.where(res >= threshold)
-    else:
-        loc = np.where(res == res.max())
-    maximum = np.where(res == res.max())
+def findMatch(image, template, mask=None):
+    w, h = template.size
+    redCircle = image.copy()
 
-    result = image.copy()
-    for pt in zip(*loc[::-1]):  # Switch columns and rows
-        cv2.rectangle(result, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)
+    res = cv2.matchTemplate(np.array(image), np.array(template), cv2.TM_CCOEFF_NORMED, mask=mask)
+    # CCOEFF_NORMED sometimes outputs infinity instead of 0 filter those occurrences
+    res[res == np.inf] = 0
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
 
-    return result, res[maximum[0][0], maximum[1][0]]
+    loc = max_loc
+    mask = Image.fromarray(np.uint8(mask), mode="L")
+    draw = ImageDraw.Draw(redCircle)
+    draw.rectangle((loc, (loc[0] + w, loc[1] + h)), outline = (255,), width = 2)
 
-def matchMasked(targetRGB, material, threshold=None):
-    targetImage = pilConversion(targetRGB)
-    templateImage = material.renderImage()
-    mask = getMaskMaterialFocus(material)
+    return redCircle, max_val
 
-    alpha = pilToMask(mask)
+def createMask(material, size):
+    mask = centerTransparentImage(material.image, size)
+    # Mask MUST be Float32 Type to assign weights to the pixels
+    mask = np.array(mask.getchannel("A"), dtype=np.float32)
+    # Increase significance of central area where the class icons are on the class chips
+    mask /= 2
+    mask[56:111, 68:123] *= 2
 
-    matchImage, confidence = findMatches(targetImage, pilConversion(templateImage.convert("RGB")), mask=alpha, threshold=threshold)
+    return mask
 
-    return confidence
-
-def getMaskMaterialFocus(material):
-    templateImage = material.renderImage()
-    materialMask = addBackgroundToRawMaterial(material).getchannel("A")
-    borderMask = Image.eval(templateImage.getchannel("A"), lambda v : v // 2)
-
-    return Image.fromarray(np.maximum(materialMask, borderMask), mode="L")
-
-def addBackground(image, size = None, color = (255, 255, 255, 255)):
-    if size is None:
-        size = image.size
+def centerTransparentImage(image, size, color = (255, 255, 255, 0)):
     background = Image.new("RGBA", size, color)
     background.alpha_composite(image, dest=((background.width - image.width) // 2,
                                             (background.height - image.height) // 2))
-
     return background
-
-def addBackgroundToRawMaterial(material):
-    templateImage = material.renderImage()
-    return addBackground(material.image, color = (255, 255, 255, 0), size = templateImage.size)
-
-def pilConversion(rgbPilImage):
-    open_cv_image = np.array(rgbPilImage)
-    # Convert RGB to BGR
-    return open_cv_image[:, :, ::-1].copy()
-
-def pilToMask(singleChannel):
-    openCVMask = np.array(singleChannel)
-    for x in range(singleChannel.width):
-        for y in range(singleChannel.height):
-            openCVMask[x][y] /= 255
-
-    return openCVMask
