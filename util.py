@@ -26,7 +26,7 @@ class Config:
                  depotColorSufficientFont = "black",
                  depotColorInsufficient = "red",
                  depotColorInsufficientFont ="white",
-                 gamepressUrl ="https://gamepress.gg/arknights/operator/",
+                 gamepressUrl ="https://ak.gamepress.gg/operator/",
                  depotParsingEnabled = True,
                  arknightsContainer = "BlueStacks",
                  arknightsWindowName = None,
