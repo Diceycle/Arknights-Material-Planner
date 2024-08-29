@@ -60,10 +60,10 @@ def parseQuantity(line):
 
 def parseModuleType(line):
     filePath = re.search(".*img src=\"(.*)\"", line).group(1)
-    fileName = re.search("(?=/[^/\.]*\.png)/(.*\.png)", filePath).group(1)
+    fileName = re.search("(?=/[^/\.]*\.png)/(.*\.png)", filePath).group(1).split("_")[-1]
     match = re.search("[a-z]{3}\-([xy]).*\.png", fileName, re.IGNORECASE)
-    # Special case for Ebenholz' third module
-    if "unnamed" in fileName:
+    # Special case for delta-modules %CE%94=Unicode-Delta
+    if "unnamed" in fileName or "%CE%94" in fileName:
         moduleType = "z"
     elif match is not None:
         moduleType = match.group(1)
