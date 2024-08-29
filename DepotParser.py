@@ -27,29 +27,14 @@ DEPOT_FILTER_CHECKS = [
     ((1433, 47), None)
 ]
 
-MAIN_MENU_CHECKS_DAYTIME = [
-    ((1485, 800), (255, 255, 255)),
-    ((1485, 830), (66, 66, 66)),
-    ((1520, 830), (81, 81, 81))
+MAIN_MENU_CHECKS = [
+    ((60, 35), (255, 255, 255)),
+    ((170, 70), (255, 255, 255)),
+    ((220, 70), (255, 255, 255)),
+    ((915, 100), (34, 187, 255)),
+    ((30, 450), (50, 50, 50))
 ]
-
-MAIN_MENU_CHECKS_NIGHT = [
-    ((1485, 800), (208, 208, 208)),
-    ((1485, 830), (45, 45, 45)),
-    ((1520, 830), (66, 66, 66))
-]
-
-MAIN_MENU_CHECKS_MISTY_CITY = [
-    ((1485, 800), (25, 25, 25)),
-    ((1485, 830), (27, 27, 27)),
-    ((1520, 830), (49, 52, 49))
-]
-
-MAIN_MENU_THEMES = [
-    MAIN_MENU_CHECKS_DAYTIME,
-    MAIN_MENU_CHECKS_NIGHT,
-    MAIN_MENU_CHECKS_MISTY_CITY
-]
+MAIN_MENU_DEPOT_BUTTON = (1530, 830)
 
 DEPOT_BUTTON_SIZE = 250
 
@@ -145,18 +130,17 @@ def validateMenu(handler):
         LOGGER.debug("Scan: I'm in the depot with the Growth Material filter is preselected")
         return takeScreenshot(handler)
 
-    for theme in MAIN_MENU_THEMES:
-        mainMenu = True
-        for p in theme:
-            if not matchesColor(image.getpixel(p[0]), p[1], leniency=CONFIG.colorLeniency):
-                mainMenu = False
-                break
+    mainMenu = True
+    for p in MAIN_MENU_CHECKS:
+        if not matchesColor(image.getpixel(p[0]), p[1], leniency=CONFIG.colorLeniency):
+            mainMenu = False
+            break
 
-        if mainMenu:
-            handler.click(theme[0][0], delay=1)
-            handler.click(DEPOT_CHECKS[0][0], delay=0.5)
-            LOGGER.debug("Scan: I'm in the main menu")
-            return takeScreenshot(handler)
+    if mainMenu:
+        handler.click(MAIN_MENU_DEPOT_BUTTON, delay=1)
+        handler.click(DEPOT_CHECKS[0][0], delay=0.5)
+        LOGGER.debug("Scan: I'm in the main menu")
+        return takeScreenshot(handler)
 
     inDepot = True
     for p in DEPOT_CHECKS:
