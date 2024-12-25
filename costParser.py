@@ -1,4 +1,5 @@
 import json
+import datetime
 import os.path
 import urllib.error
 import urllib.request
@@ -9,7 +10,8 @@ from utilImport import *
 MODULE_IMAGE_PATH = "data/moduleTypeImages/"
 OPERATOR_IMAGE_PATH = "data/operatorImages/"
 
-DATA_REPOSITORY_BASE_URL = CONFIG.dataRepositoryBaseUrl
+DATA_REPOSITORY = CONFIG.dataRepository
+DATA_REPOSITORY_FOLDER = "json/gamedata/ArknightsGameData/zh_CN/gamedata/excel/"
 OPERATOR_DATA_FILE = "character_table.json"
 ADDITIONAL_OPERATOR_DATA_FILE = "char_patch_table.json"
 MODULE_DATA_FILE = "uniequip_table.json"
@@ -33,10 +35,25 @@ def getRequest(url):
             line = line.decode("utf-8")
             LOGGER.debug(line.replace("\n", ""))
 
-def tryUpdateFileFromWeb(url, fileName):
-    if not os.path.exists(fileName):
-        LOGGER.debug("Updating from Web: %s", fileName)
-        f = safeOpen(fileName, mode="wb+")
+def getMostRecentCommitTimestamp(repo, remotePath):
+    response = json.loads(getRequest(f"https://api.github.com/repos/{repo}/commits?path={remotePath}").read())
+    return response[0]["commit"]["author"]["date"]
+
+def tryDownloadNewerFileFromGithub(repo, remotePath, localPath):
+    fullUrl = f"https://raw.githubusercontent.com/{repo}/refs/heads/main/{remotePath}"
+    if not os.path.exists(localPath):
+        downloadFileFromWeb(fullUrl, localPath)
+    else:
+        localTimestamp = os.path.getmtime(localPath)
+        remoteTimestamp = datetime.datetime.fromisoformat(getMostRecentCommitTimestamp(repo, remotePath)).timestamp()
+
+        if localTimestamp < remoteTimestamp:
+            downloadFileFromWeb(fullUrl, localPath, replace=True)
+
+def downloadFileFromWeb(url, localPath, replace=False):
+    if replace or not os.path.exists(localPath):
+        LOGGER.debug("Updating from Web: %s", localPath)
+        f = safeOpen(localPath, mode="wb+")
         f.write(getRequest(url).read())
         f.close()
 
@@ -74,7 +91,7 @@ def getOperatorCosts(internalId):
     costs = {}
     subclassId = None
 
-    tryUpdateFileFromWeb(IMAGE_REPOSITORY_BASE_URL + OPERATOR_IMAGE_SUB_URL + internalId + ".png", getOperatorImagePath(internalId))
+    downloadFileFromWeb(IMAGE_REPOSITORY_BASE_URL + OPERATOR_IMAGE_SUB_URL + internalId + ".png", getOperatorImagePath(internalId))
 
     for i, phase in enumerate(data["phases"]):
         if phase["evolveCost"] is not None:
@@ -121,7 +138,7 @@ def getOperatorCosts(internalId):
                 moduleType = module["typeName2"]
                 imageFileName = module["typeIcon"] + ".png"
 
-                tryUpdateFileFromWeb(IMAGE_REPOSITORY_BASE_URL + MODULE_IMAGE_SUB_URL + imageFileName.lower(), getModuleImagePath(subclassId, moduleType))
+                downloadFileFromWeb(IMAGE_REPOSITORY_BASE_URL + MODULE_IMAGE_SUB_URL + imageFileName.lower(), getModuleImagePath(subclassId, moduleType))
 
                 for stage in module["itemCost"]:
                     moduleKey = toModuleUpgradeKey(moduleType, stage)
@@ -138,7 +155,7 @@ def downloadOperatorData(progressCallback = None):
     for i, f in enumerate(files):
         if progressCallback is not None:
             progressCallback(i, len(files))
-        tryUpdateFileFromWeb(DATA_REPOSITORY_BASE_URL + f, "data/" + f)
+        tryDownloadNewerFileFromGithub(DATA_REPOSITORY, DATA_REPOSITORY_FOLDER + f, "data/" + f)
 
     RAW_OPERATORS = json.load(open("data/" + OPERATOR_DATA_FILE, "r", encoding="utf-8"))
     RAW_MODULES = json.load(open("data/" + MODULE_DATA_FILE, "r", encoding="utf-8"))

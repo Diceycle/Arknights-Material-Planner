@@ -26,7 +26,7 @@ class Config:
                  depotColorSufficientFont = "black",
                  depotColorInsufficient = "red",
                  depotColorInsufficientFont ="white",
-                 dataRepositoryBaseUrl ="https://raw.githubusercontent.com/PuppiizSunniiz/AN-EN-Tags/refs/heads/main/json/gamedata/ArknightsGameData/zh_CN/gamedata/excel/",
+                 dataRepository ="PuppiizSunniiz/AN-EN-Tags",
                  imageRepositoryBaseUrl ="https://raw.githubusercontent.com/PuppiizSunniiz/Arknight-Images/refs/heads/main/",
                  depotParsingEnabled = True,
                  arknightsContainer = "BlueStacks",
@@ -60,7 +60,7 @@ class Config:
         self.depotColorSufficientFont = depotColorSufficientFont
         self.depotColorInsufficient = depotColorInsufficient
         self.depotColorInsufficientFont = depotColorInsufficientFont
-        self.dataRepositoryBaseUrl = dataRepositoryBaseUrl
+        self.dataRepository = dataRepository
         self.imageRepositoryBaseUrl = imageRepositoryBaseUrl
         self.depotParsingEnabled = depotParsingEnabled
         self.arknightsContainer = arknightsContainer
