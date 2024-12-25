@@ -33,13 +33,13 @@ def progressCallback(text, current, goal):
 
 downloadOperatorData(lambda current, goal: progressCallback("Downloading Operator Data", current, goal))
 
-loadMaterials(lambda current, goal: progressCallback("Downloading Material Images", current, goal))
+materialPageSize = loadMaterials(lambda current, goal: progressCallback("Downloading Material Images", current, goal))
 
 loadOperators(lambda current, goal: progressCallback("Downloading Operator Images", current, goal))
 
 l.config(text="Preprocessing Images...")
 loadscreen.update()
-GUI(window)
+GUI(window, materialPageSize)
 window.report_callback_exception=exceptHook
 
 loadscreen.destroy()

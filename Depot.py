@@ -13,8 +13,9 @@ from widgets import CanvasLabel, LockableCanvas, ImageCheckbutton
 
 
 class Depot(LockableCanvas):
-    def __init__(self, parent, scale, initialContents = {}, controlCanvasParent = None):
-        self.pageHeight = 12 * scale
+    def __init__(self, parent, materialPageSize, scale, initialContents = {}, controlCanvasParent = None):
+        self.materialPageSize = materialPageSize
+        self.pageHeight = materialPageSize * scale
         self.totalHeight = self.pageHeight * 2
         self.width = 5 * scale
 
@@ -219,8 +220,9 @@ class Depot(LockableCanvas):
         pyperclip.copy(json.dumps(result))
 
 class ParseDepotOverlay(GlobalSelection):
-    def __init__(self, parent, scale, **kwargs):
-        width = 12 * scale
+    def __init__(self, parent, scale, materialPageSize, **kwargs):
+        self.materialPageSize = materialPageSize
+        width = self.materialPageSize * scale
         height = 10 * scale
         super().__init__(parent, "ParsedDepotContents", width=width, height=height, **kwargs)
 
@@ -246,8 +248,8 @@ class ParseDepotOverlay(GlobalSelection):
 
     def placeIndicator(self, material):
         y, x = material.getPosition()
-        if x > 11:
-            x -= 12
+        if x >= self.materialPageSize:
+            x -= self.materialPageSize
             y = (4-y) + 5
         y += 1
         self.vars[material] = IntVar(value=0)

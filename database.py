@@ -240,6 +240,8 @@ def loadMaterials(progressCallback):
 
     DEPOT_ORDER = rawMaterials["depotOrder"]
 
+    return rawMaterials["pageSize"]
+
 def loadOperators(progressCallback):
     rawOperators = json.load(open("operators.json", "r"))
     for i, o in enumerate(rawOperators):

@@ -9,11 +9,12 @@ from GlobalOverlays import MaterialSelection, OperatorSelection, UpgradeSelectio
 from Depot import Depot, ParseDepotOverlay
 
 class GUI:
-    def __init__(self, window):
+    def __init__(self, window, materialPageSize):
 
+        self.materialPageSize = materialPageSize
         self.scale = CONFIG.uiScale
         self.width = 16 * self.scale
-        self.height = 12 * self.scale
+        self.height = self.materialPageSize * self.scale
         self.setSpacing = self.scale // 10
 
         self.window = window
@@ -27,7 +28,7 @@ class GUI:
         OperatorSelection(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
         UpgradeSelection(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
         RecipeDisplay(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
-        ParseDepotOverlay(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
+        ParseDepotOverlay(self.window, self.scale, self.materialPageSize, disableCallback = self.disable, enableCallback = self.enable)
 
         self.setCanvas = ItemSetDisplay(self.window, self.scale, self.height, self.scale // 10,
                                         scrollSpeed=int(CONFIG.scrollSpeed / 100 * self.scale),
@@ -44,7 +45,7 @@ class GUI:
             self.backgroundImage = ImageTk.PhotoImage(image)
             self.background.create_image(CONFIG.backgroundImageOffset, self.height // 2, anchor=CENTER, image=self.backgroundImage)
 
-        self.depot = Depot(self.window, self.scale, initialContents=saveData["depot"], controlCanvasParent=self.background)
+        self.depot = Depot(self.window, self.materialPageSize, self.scale, initialContents=saveData["depot"], controlCanvasParent=self.background)
         self.depot.pack(side=RIGHT)
         self.background.pack(side=RIGHT)
         self.depot.controlCanvas.place(relx=1, y=0, anchor=NE)
