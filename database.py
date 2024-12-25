@@ -74,7 +74,10 @@ class Upgrade(ScalableImage):
     def renderImage(self, operator = None, **flags):
         im = self.image.copy()
 
-        if operator is not None and self.moduleType is not None and self in operator.costs:
+        if (operator is not None and
+            self.moduleType is not None and
+            (self in operator.costs or self.cumulativeUpgrades is not None and self.cumulativeUpgrades[0] in operator.costs)):
+
             orig = im
             moduleImage = self.centerModuleImage(Image.open(operator.getModuleImagePath(self.moduleType), "r").convert("RGBA"))
 
