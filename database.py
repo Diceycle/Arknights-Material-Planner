@@ -4,7 +4,7 @@ from collections import Counter
 from PIL import Image, ImageTk, ImageColor
 
 from utilImport import *
-from gameDataReader import getOperatorCosts, getModuleImagePath, getOperatorImagePath, downloadMaterialData, getMaterialImagePath
+from gameDataReader import readOperatorCosts, getModuleImagePath, getOperatorImagePath, readMaterialData, getMaterialImagePath
 
 UPGRADE_SCALE = 0.75
 MAX_MODULE_IMAGE_DIMENSIONS = (70, 60)
@@ -124,7 +124,7 @@ class Upgrade(ScalableImage):
 class Operator(ScalableImage):
     def __init__(self, name, internalId):
         self.internalId = internalId
-        self.costs, self.subclassId = getOperatorCosts(internalId)
+        self.costs, self.subclassId = readOperatorCosts(internalId)
 
         super().__init__(name, OPERATORS, getOperatorImagePath(internalId))
 
@@ -132,13 +132,12 @@ class Operator(ScalableImage):
         return getModuleImagePath(self.subclassId, moduleType)
 
 class Material(ScalableImage):
-    def __init__(self, name, canonicalName, internalId, position, recipe = None):
-        self.tier = downloadMaterialData(internalId)
+    def __init__(self, name, canonicalName, internalId, position):
+        self.tier, self.recipe = readMaterialData(internalId)
 
         self.internalId = internalId
         self.canonicalName = canonicalName
         self.position = position
-        self.recipe = recipe
 
         super().__init__(name, MATERIALS, getMaterialImagePath(internalId))
 
@@ -147,7 +146,7 @@ class Material(ScalableImage):
 
     def getIngredients(self):
         if self.isCraftable():
-            return toMaterials(self.recipe)
+            return { getMaterialByInternalId(k): v for k, v in self.recipe.items() }
 
     def getPosition(self):
         return tuple(self.position)

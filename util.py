@@ -140,6 +140,12 @@ def toExternal(d, recurse=lambda v: v):
 def unpackVar(d):
     return { k: v.get() for k, v in d.items() }
 
+def getMaterialByInternalId(internalId):
+    for m in MATERIALS.values():
+        if m.internalId == internalId:
+            return m
+    LOGGER.warning("Unrecognized Material: %s", internalId)
+
 def multiplyCounter(counter, factor):
     for k in counter.keys():
         counter[k] *= factor

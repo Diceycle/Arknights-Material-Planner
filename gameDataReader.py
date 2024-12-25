@@ -14,6 +14,7 @@ MODULE_IMAGE_PATH = "data/moduleTypeImages/"
 DATA_REPOSITORY = CONFIG.dataRepository
 DATA_REPOSITORY_FOLDER = CONFIG.dataRepositoryExcelPath
 MATERIAL_DATA_FILE = "item_table.json"
+RECIPE_DATA_FILE = "building_data.json"
 OPERATOR_DATA_FILE = "character_table.json"
 ADDITIONAL_OPERATOR_DATA_FILE = "char_patch_table.json"
 MODULE_DATA_FILE = "uniequip_table.json"
@@ -27,6 +28,7 @@ userAgent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2
 headers = {'User-Agent': userAgent, }
 
 RAW_MATERIALS = None
+RAW_RECIPES = None
 RAW_OPERATORS = None
 RAW_MODULES = None
 
@@ -72,18 +74,6 @@ def getOperatorImagePath(internalId):
 def getMaterialImagePath(internalId):
     return MATERIAL_IMAGE_PATH + internalId + ".png"
 
-def getMaterial(internalId):
-    for m in MATERIALS.values():
-        if m.internalId == internalId:
-            return m
-    LOGGER.warning("Unrecognized Material: %s", internalId)
-
-def getOperator(internalId):
-    for o in OPERATORS.values():
-        if o.internalId == internalId:
-            return o
-    LOGGER.warning("Unrecognized Operator: %s", internalId)
-
 def toModuleUpgradeKey(moduleType, stage):
     return f"MOD-{moduleType.upper()}-{stage}"
 
@@ -94,7 +84,7 @@ def addCosts(cost, upgradeKey, material, quantity):
 
     cost[up][material] = quantity
 
-def getOperatorCosts(internalId):
+def readOperatorCosts(internalId):
     data = RAW_OPERATORS[internalId]
 
     costs = {}
@@ -106,7 +96,7 @@ def getOperatorCosts(internalId):
         if phase["evolveCost"] is not None:
             eliteKey = "E" + str(i)
             for mat in phase["evolveCost"]:
-                addCosts(costs, eliteKey, getMaterial(mat["id"]), mat["count"])
+                addCosts(costs, eliteKey, getMaterialByInternalId(mat["id"]), mat["count"])
 
             # For some reason, money isn't listed in that table
             if data["rarity"] == "TIER_3":
@@ -130,14 +120,14 @@ def getOperatorCosts(internalId):
     for i, skillUpgrade in enumerate(data["allSkillLvlup"]):
         skillKey = "SK" + str(i + 2)
         for mat in skillUpgrade["lvlUpCost"]:
-            addCosts(costs, skillKey, getMaterial(mat["id"]), mat["count"])
+            addCosts(costs, skillKey, getMaterialByInternalId(mat["id"]), mat["count"])
 
     for i, skill in enumerate(data["skills"]):
         skillKeyPrefix = "S" + str(i + 1)
         for j, mastery in enumerate(skill["levelUpCostCond"]):
             skillKey = skillKeyPrefix + "M" + str(j + 1)
             for mat in mastery["levelUpCost"]:
-                addCosts(costs, skillKey, getMaterial(mat["id"]), mat["count"])
+                addCosts(costs, skillKey, getMaterialByInternalId(mat["id"]), mat["count"])
 
     if internalId in RAW_MODULES["charEquip"]:
         for assignment in RAW_MODULES["charEquip"][internalId]:
@@ -152,30 +142,51 @@ def getOperatorCosts(internalId):
                 for stage in module["itemCost"]:
                     moduleKey = toModuleUpgradeKey(moduleType, stage)
                     for mat in module["itemCost"][stage]:
-                        addCosts(costs, moduleKey, getMaterial(mat["id"]), mat["count"])
+                        addCosts(costs, moduleKey, getMaterialByInternalId(mat["id"]), mat["count"])
 
     return costs, subclassId
 
-def downloadMaterialData(internalId):
+def readMaterialData(internalId):
     data = RAW_MATERIALS["items"][internalId]
     imageId = data["iconId"]
     tier = int(data["rarity"][-1])
+
     downloadFileFromWeb(IMAGE_REPOSITORY_BASE_URL + MATERIAL_IMAGE_SUB_URL + imageId + ".png", getMaterialImagePath(internalId))
 
-    return tier
+    recipe = None
+    for formulaReference in data["buildingProductList"]:
+        if formulaReference["roomType"] == "WORKSHOP":
+            formula = RAW_RECIPES["workshopFormulas"][formulaReference["formulaId"]]
+        elif formulaReference["roomType"] == "MANUFACTURE":
+            formula = RAW_RECIPES["manufactFormulas"][formulaReference["formulaId"]]
+        else:
+            continue
+
+        # Exclude Chip crafting recipes since that leads to infinite loops
+        if formula["count"] > 1:
+            continue
+
+        recipe = {}
+        costs = formula["costs"]
+        for cost in costs:
+            recipe[cost["id"]] = cost["count"]
+
+    return tier, recipe
 
 def downloadOperatorData(progressCallback = None):
     global RAW_MATERIALS
+    global RAW_RECIPES
     global RAW_OPERATORS
     global RAW_MODULES
 
-    files = [MATERIAL_DATA_FILE, OPERATOR_DATA_FILE, ADDITIONAL_OPERATOR_DATA_FILE, MODULE_DATA_FILE]
+    files = [MATERIAL_DATA_FILE, RECIPE_DATA_FILE, OPERATOR_DATA_FILE, ADDITIONAL_OPERATOR_DATA_FILE, MODULE_DATA_FILE]
     for i, f in enumerate(files):
         if progressCallback is not None:
             progressCallback(i, len(files))
         tryDownloadNewerFileFromGithub(DATA_REPOSITORY, DATA_REPOSITORY_FOLDER + f, "data/" + f)
 
     RAW_MATERIALS = json.load(open("data/" + MATERIAL_DATA_FILE, "r", encoding="utf-8"))
+    RAW_RECIPES = json.load(open("data/" + RECIPE_DATA_FILE, "r", encoding="utf-8"))
     RAW_OPERATORS = json.load(open("data/" + OPERATOR_DATA_FILE, "r", encoding="utf-8"))
     RAW_MODULES = json.load(open("data/" + MODULE_DATA_FILE, "r", encoding="utf-8"))
 
