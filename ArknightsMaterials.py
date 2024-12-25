@@ -43,6 +43,7 @@ GUI(window)
 window.report_callback_exception=exceptHook
 
 loadscreen.destroy()
+window.attributes('-topmost', 'false')
 window.wm_state("normal")
 
 window.mainloop()
