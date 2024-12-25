@@ -4,7 +4,7 @@ from collections import Counter
 from PIL import Image, ImageTk, ImageColor
 
 from utilImport import *
-from gameDataReader import getOperatorCosts, getModuleImagePath, getOperatorImagePath, downloadMaterialImage, getMaterialImagePath
+from gameDataReader import getOperatorCosts, getModuleImagePath, getOperatorImagePath, downloadMaterialData, getMaterialImagePath
 
 UPGRADE_SCALE = 0.75
 MAX_MODULE_IMAGE_DIMENSIONS = (70, 60)
@@ -132,12 +132,12 @@ class Operator(ScalableImage):
         return getModuleImagePath(self.subclassId, moduleType)
 
 class Material(ScalableImage):
-    def __init__(self, name, canonicalName, tier, internalId, recipe = None):
-        downloadMaterialImage(internalId)
+    def __init__(self, name, canonicalName, internalId, position, recipe = None):
+        self.tier = downloadMaterialData(internalId)
 
         self.internalId = internalId
         self.canonicalName = canonicalName
-        self.tier = tier
+        self.position = position
         self.recipe = recipe
 
         super().__init__(name, MATERIALS, getMaterialImagePath(internalId))
@@ -150,64 +150,7 @@ class Material(ScalableImage):
             return toMaterials(self.recipe)
 
     def getPosition(self):
-        page2 = 12
-        x = 5 - self.tier
-        if self.name.startswith("fluid") or self.name.startswith("gel") or \
-            self.name.startswith("solvent") or self.name.startswith("manganese") or \
-            self.name.startswith("grindstone") or self.name.startswith("carbon"):
-            x += 2
-
-        if self.name.startswith("keton") or self.name.startswith("polymer"):
-            return x, 0
-        elif self.name.startswith("oriron"):
-            return x, 1
-        elif self.name.startswith("rock"):
-            return x, 2
-        elif self.name.startswith("plastic"):
-            return x, 3
-        elif self.name.startswith("sugar"):
-            return x, 4
-        elif self.name.startswith("device") or self.name.startswith("nanoflake"):
-            return x, 5
-        elif self.name.startswith("kohl") or self.name.startswith("grindstone"):
-            return x, 6
-        elif self.name.startswith("rma") or self.name.startswith("manganese") or self.name.startswith("steel"):
-            return x, 7
-        elif self.name.startswith("crystal") or self.name.startswith("gel"):
-            return x, 8
-        elif self.name.startswith("incandescent") or self.name.startswith("solvent"):
-            return x, 9
-        elif self.name.startswith("salt") or self.name.startswith("fluid"):
-            return x, 10
-        elif self.name.startswith("fiber") or self.name.startswith("carbon"):
-            return x, 11
-
-        elif self.name.startswith("exp"):
-            return x+1, page2
-        elif self.name.startswith("skill"):
-            return x+1, page2 + 1
-        elif self.name.startswith("money"):
-            return 1, page2 + 1
-        elif self.name.startswith("module"):
-            return 5-int(self.name[self.name.find("-")+1:]), page2 + 2
-        elif self.name.startswith("chip-catalyst"):
-            return 1, page2 + 2
-        elif self.name.startswith("chip-vanguard"):
-            return x+2, page2 + 3
-        elif self.name.startswith("chip-guard"):
-            return x+2, page2 + 4
-        elif self.name.startswith("chip-defender"):
-            return x+2, page2 + 5
-        elif self.name.startswith("chip-sniper"):
-            return x+2, page2 + 6
-        elif self.name.startswith("chip-caster"):
-            return x+2, page2 + 7
-        elif self.name.startswith("chip-healer"):
-            return x+2, page2 + 8
-        elif self.name.startswith("chip-supporter"):
-            return x+2, page2 + 9
-        elif self.name.startswith("chip-specialist"):
-            return x+2, page2 + 10
+        return tuple(self.position)
 
     def renderImage(self, **flags):
         border = loadImage("img/border/T" + str(self.tier) + ".png")
@@ -286,25 +229,16 @@ Upgrade("MOD-D-3", "Module D Stage 3", "img_stg3.png", overlay = "mod-d", mainDi
 Upgrade("MOD-D-X", "Module D Full", "img_stgX.png", overlay = "mod-d", mainDimension=1, moduleType="D", cumulativeUpgrades=["MOD-D-1", "MOD-D-2", "MOD-D-3"])
 
 
-DEPOT_ORDER = ["exp-4", "exp-3", "exp-2", "exp-1", "skill-3", "skill-2", "skill-1", "module-1", "module-3", "module-2",
-               "salt-5", "crystal-5", "steel-5", "nanoflake-5", "polymer-5",
-               "carbon-4", "carbon-3", "fiber-4", "fiber-3", "salt-4", "salt-3", "fluid-4", "fluid-3", "solvent-4", "solvent-3", "crystal-4", "crystal-3",
-               "incandescent-4", "incandescent-3", "gel-4", "gel-3",
-               "kohl-4", "kohl-3", "manganese-4", "manganese-3", "grindstone-4", "grindstone-3", "rma-4", "rma-3",
-               "rock-4", "rock-3", "rock-2", "rock-1", "device-4", "device-3", "device-2", "device-1",
-               "plastic-4", "plastic-3", "plastic-2", "plastic-1", "sugar-4", "sugar-3", "sugar-2", "sugar-1",
-               "oriron-4", "oriron-3", "oriron-2", "oriron-1", "keton-4", "keton-3", "keton-2", "keton-1",
-               "chip-catalyst",
-               "chip-vanguard-3", "chip-guard-3", "chip-defender-3", "chip-sniper-3", "chip-caster-3", "chip-healer-3", "chip-supporter-3", "chip-specialist-3",
-               "chip-vanguard-2", "chip-guard-2", "chip-defender-2", "chip-sniper-2", "chip-caster-2", "chip-healer-2", "chip-supporter-2", "chip-specialist-2",
-               "chip-vanguard-1", "chip-guard-1", "chip-defender-1", "chip-sniper-1", "chip-caster-1", "chip-healer-1", "chip-supporter-1", "chip-specialist-1",
-]
+DEPOT_ORDER = None
 
 def loadMaterials(progressCallback):
+    global DEPOT_ORDER
     rawMaterials = json.load(open("materials.json", "r"))
     for i, m in enumerate(rawMaterials["materials"]):
         progressCallback(i, len(rawMaterials["materials"]))
         Material(**m)
+
+    DEPOT_ORDER = rawMaterials["depotOrder"]
 
 def loadOperators(progressCallback):
     rawOperators = json.load(open("operators.json", "r"))

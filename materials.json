@@ -1,125 +1,139 @@
 {
   "pageSize": 12,
   "materials": [
-    { "name": "money", "canonicalName": "LMD", "tier": 4, "internalId": "4001" },
+    { "position": [1,13], "name": "money", "canonicalName": "LMD", "internalId": "4001" },
 
-    { "name": "keton-1", "canonicalName": "Diketon", "tier": 1, "internalId": "30051" },
-    { "name": "keton-2", "canonicalName": "Polyketon", "tier": 2, "internalId": "30052", "recipe": {"keton-1": 3} },
-    { "name": "keton-3", "canonicalName": "Aketon", "tier": 3, "internalId": "30053", "recipe": {"keton-2": 4} },
-    { "name": "keton-4", "canonicalName": "Keton Colloid", "tier": 4, "internalId": "30054", "recipe": {"keton-3": 2, "sugar-3": 1, "manganese-3": 1} },
+    { "position": [4,0], "name": "keton-1", "canonicalName": "Diketon", "internalId": "30051" },
+    { "position": [3,0], "name": "keton-2", "canonicalName": "Polyketon", "internalId": "30052", "recipe": {"keton-1": 3} },
+    { "position": [2,0], "name": "keton-3", "canonicalName": "Aketon", "internalId": "30053", "recipe": {"keton-2": 4} },
+    { "position": [1,0], "name": "keton-4", "canonicalName": "Keton Colloid", "internalId": "30054", "recipe": {"keton-3": 2, "sugar-3": 1, "manganese-3": 1} },
+
+    { "position": [4,1], "name": "oriron-1", "canonicalName": "Oriron Shard", "internalId": "30041" },
+    { "position": [3,1], "name": "oriron-2", "canonicalName": "Oriron", "internalId": "30042", "recipe": {"oriron-1": 3} },
+    { "position": [2,1], "name": "oriron-3", "canonicalName": "Oriron Cluster", "internalId": "30043", "recipe": {"oriron-2": 4} },
+    { "position": [1,1], "name": "oriron-4", "canonicalName": "Oriron Block", "internalId": "30044", "recipe": {"oriron-3": 2, "device-3": 1, "plastic-3": 1} },
+
+    { "position": [4,2], "name": "rock-1", "canonicalName": "Orirock", "internalId": "30011" },
+    { "position": [3,2], "name": "rock-2", "canonicalName": "Orirock Cube", "internalId": "30012", "recipe": {"rock-1": 3} },
+    { "position": [2,2], "name": "rock-3", "canonicalName": "Orirock Cluster", "internalId": "30013", "recipe": {"rock-2": 5} },
+    { "position": [1,2], "name": "rock-4", "canonicalName": "Orirock Concentration", "internalId": "30014", "recipe": {"rock-3": 4} },
+
+    { "position": [4,3], "name": "plastic-1", "canonicalName": "Ester", "internalId": "30031" },
+    { "position": [3,3], "name": "plastic-2", "canonicalName": "Polyester", "internalId": "30032", "recipe": {"plastic-1": 3} },
+    { "position": [2,3], "name": "plastic-3", "canonicalName": "Polyester Pack", "internalId": "30033", "recipe": {"plastic-2": 4} },
+    { "position": [1,3], "name": "plastic-4", "canonicalName": "Polyester Lump", "internalId": "30034", "recipe": {"plastic-3": 2, "keton-3": 1, "kohl-3": 1} },
+
+    { "position": [4,4], "name": "sugar-1", "canonicalName": "Sugar Substitute", "internalId": "30021" },
+    { "position": [3,4], "name": "sugar-2", "canonicalName": "Sugar", "internalId": "30022", "recipe": {"sugar-1": 3} },
+    { "position": [2,4], "name": "sugar-3", "canonicalName": "Sugar Pack", "internalId": "30023", "recipe": {"sugar-2": 4} },
+    { "position": [1,4], "name": "sugar-4", "canonicalName": "Sugar Lump", "internalId": "30024", "recipe": {"sugar-3": 2, "oriron-3": 1, "manganese-3": 1} },
+
+    { "position": [4,5], "name": "device-1", "canonicalName": "Damaged Device", "internalId": "30061" },
+    { "position": [3,5], "name": "device-2", "canonicalName": "Device", "internalId": "30062", "recipe": {"device-1": 3} },
+    { "position": [2,5], "name": "device-3", "canonicalName": "Integrated Device", "internalId": "30063", "recipe": {"device-2": 4} },
+    { "position": [1,5], "name": "device-4", "canonicalName": "Optimized Device", "internalId": "30064", "recipe": {"device-3": 1, "rock-3": 2, "grindstone-3": 1} },
+
+    { "position": [4,6], "name": "grindstone-3", "canonicalName": "Grindstone", "internalId": "30093" },
+    { "position": [3,6], "name": "grindstone-4", "canonicalName": "Grindstone Pentahydrate", "internalId": "30094", "recipe": {"grindstone-3": 1, "oriron-3": 1, "device-3": 1} },
+
+    { "position": [2,6], "name": "kohl-3", "canonicalName": "Loxic Kohl", "internalId": "30073" },
+    { "position": [1,6], "name": "kohl-4", "canonicalName": "White Horse Kohl", "internalId": "30074", "recipe": {"kohl-3": 1, "sugar-3": 1, "rma-3": 1} },
+
+    { "position": [4,7], "name": "manganese-3", "canonicalName": "Manganese Ore", "internalId": "30083" },
+    { "position": [3,7], "name": "manganese-4", "canonicalName": "Manganese Trihydrate", "internalId": "30084", "recipe": {"manganese-3": 2, "plastic-3": 1, "kohl-3": 1} },
+
+    { "position": [2,7], "name": "rma-3", "canonicalName": "RMA70-12", "internalId": "30103" },
+    { "position": [1,7], "name": "rma-4", "canonicalName": "RMA70-24", "internalId": "30104", "recipe": {"rma-3": 1, "rock-3": 2, "keton-3": 1} },
+
+    { "position": [4,8], "name": "gel-3", "canonicalName": "Coagulating Gel", "internalId": "31013" },
+    { "position": [3,8], "name": "gel-4", "canonicalName": "Polymerized Gel", "internalId": "31014", "recipe": {"oriron-3": 1, "gel-3": 1, "incandescent-3": 1} },
+
+    { "position": [2,8], "name": "crystal-3", "canonicalName": "Crystalline Component", "internalId": "31033" },
+    { "position": [1,8], "name": "crystal-4", "canonicalName": "Crystalline Circuit", "internalId": "31034", "recipe": {"crystal-3": 2, "gel-3": 1, "incandescent-3": 1} },
+    { "position": [0,8], "name": "crystal-5", "canonicalName": "Crystalline Electronic Unit", "internalId": "30145", "recipe": {"crystal-4": 1, "gel-4": 2, "incandescent-4": 1} },
+
+    { "position": [4,9], "name": "solvent-3", "canonicalName": "Semi-Synthetic Solvent", "internalId": "31043" },
+    { "position": [3,9], "name": "solvent-4", "canonicalName": "Refined Solvent", "internalId": "31044", "recipe": {"solvent-3": 1, "fluid-3": 1, "gel-3": 1} },
+
+    { "position": [2,9], "name": "incandescent-3", "canonicalName": "Incandescent Alloy", "internalId": "31023" },
+    { "position": [1,9], "name": "incandescent-4", "canonicalName": "Incandescent Alloy Block", "internalId": "31024", "recipe": {"device-3": 1, "grindstone-3": 1,"incandescent-3": 1} },
+
     
-    { "name": "rock-1", "canonicalName": "Orirock", "tier": 1, "internalId": "30011" },
-    { "name": "rock-2", "canonicalName": "Orirock Cube", "tier": 2, "internalId": "30012", "recipe": {"rock-1": 3} },
-    { "name": "rock-3", "canonicalName": "Orirock Cluster", "tier": 3, "internalId": "30013", "recipe": {"rock-2": 5} },
-    { "name": "rock-4", "canonicalName": "Orirock Concentration", "tier": 4, "internalId": "30014", "recipe": {"rock-3": 4} },
+    { "position": [4,10], "name": "fluid-3", "canonicalName": "Compound Cutting Fluid", "internalId": "31053" },
+    { "position": [3,10], "name": "fluid-4", "canonicalName": "Cutting Fluid Solution", "internalId": "31054", "recipe": {"fluid-3": 1, "crystal-3": 1, "rma-3": 1} },
     
-    { "name": "sugar-1", "canonicalName": "Sugar Substitute", "tier": 1, "internalId": "30021" },
-    { "name": "sugar-2", "canonicalName": "Sugar", "tier": 2, "internalId": "30022", "recipe": {"sugar-1": 3} },
-    { "name": "sugar-3", "canonicalName": "Sugar Pack", "tier": 3, "internalId": "30023", "recipe": {"sugar-2": 4} },
-    { "name": "sugar-4", "canonicalName": "Sugar Lump", "tier": 4, "internalId": "30024", "recipe": {"sugar-3": 2, "oriron-3": 1, "manganese-3": 1} },
+    { "position": [2,10], "name": "salt-3", "canonicalName": "Transmuted Salt", "internalId": "31063" },
+    { "position": [1,10], "name": "salt-4", "canonicalName": "Transmuted Salt Agglomerate", "internalId": "31064", "recipe": {"salt-3": 2, "solvent-3": 1, "sugar-3": 1} },
+    { "position": [0,10], "name": "salt-5", "canonicalName": "Nucleic Crystal Sinter", "internalId": "30155", "recipe": {"salt-4": 1, "fluid-4": 1, "solvent-4": 2} },
+
+    { "position": [4,11], "name": "carbon-3", "canonicalName": "Aggregate Cyclicene", "internalId": "31083" },
+    { "position": [3,11], "name": "carbon-4", "canonicalName": "Cyclicene Prefab", "internalId": "31084", "recipe": {"carbon-3": 1, "fiber-3": 1, "salt-3": 1} },
+
+    { "position": [2,11], "name": "fiber-3", "canonicalName": "Fuscous Fiber", "internalId": "31073" },
+    { "position": [1,11], "name": "fiber-4", "canonicalName": "Solidified Fiber Board", "internalId": "31074", "recipe": {"fiber-3": 1, "plastic-3": 2, "rock-3": 1} },
+
+    { "position": [0,7], "name": "steel-5", "canonicalName": "D32 Steel", "internalId": "30135", "recipe": {"manganese-4": 1, "grindstone-4": 1, "rma-4": 1} },
+    { "position": [0,5], "name": "nanoflake-5", "canonicalName": "Bipolar Nanoflake", "internalId": "30125", "recipe": {"device-4": 1, "kohl-4": 2} },
+    { "position": [0,0], "name": "polymer-5", "canonicalName": "Polymerization Preparation", "internalId": "30115", "recipe": {"rock-4": 1, "oriron-4": 1, "keton-4": 1} },
     
-    { "name": "plastic-1", "canonicalName": "Ester", "tier": 1, "internalId": "30031" },
-    { "name": "plastic-2", "canonicalName": "Polyester", "tier": 2, "internalId": "30032", "recipe": {"plastic-1": 3} },
-    { "name": "plastic-3", "canonicalName": "Polyester Pack", "tier": 3, "internalId": "30033", "recipe": {"plastic-2": 4} },
-    { "name": "plastic-4", "canonicalName": "Polyester Lump", "tier": 4, "internalId": "30034", "recipe": {"plastic-3": 2, "keton-3": 1, "kohl-3": 1} },
+    { "position": [4,12], "name": "exp-1", "canonicalName": "Drill Battle Record", "internalId": "2001" },
+    { "position": [3,12], "name": "exp-2", "canonicalName": "Frontline Battle Record", "internalId": "2002" },
+    { "position": [2,12], "name": "exp-3", "canonicalName": "Tactical Battle Record", "internalId": "2003" },
+    { "position": [1,12], "name": "exp-4", "canonicalName": "Strategic Battle Record", "internalId": "2004" },
     
-    { "name": "oriron-1", "canonicalName": "Oriron Shard", "tier": 1, "internalId": "30041" },
-    { "name": "oriron-2", "canonicalName": "Oriron", "tier": 2, "internalId": "30042", "recipe": {"oriron-1": 3} },
-    { "name": "oriron-3", "canonicalName": "Oriron Cluster", "tier": 3, "internalId": "30043", "recipe": {"oriron-2": 4} },
-    { "name": "oriron-4", "canonicalName": "Oriron Block", "tier": 4, "internalId": "30044", "recipe": {"oriron-3": 2, "device-3": 1, "plastic-3": 1} },
+    { "position": [4,13], "name": "skill-1", "canonicalName": "Skill Summary - 1", "internalId": "3301" },
+    { "position": [3,13], "name": "skill-2", "canonicalName": "Skill Summary - 2", "internalId": "3302", "recipe": {"skill-1": 3} },
+    { "position": [2,13], "name": "skill-3", "canonicalName": "Skill Summary - 3", "internalId": "3303", "recipe": {"skill-2": 3} },
     
-    { "name": "device-1", "canonicalName": "Damaged Device", "tier": 1, "internalId": "30061" },
-    { "name": "device-2", "canonicalName": "Device", "tier": 2, "internalId": "30062", "recipe": {"device-1": 3} },
-    { "name": "device-3", "canonicalName": "Integrated Device", "tier": 3, "internalId": "30063", "recipe": {"device-2": 4} },
-    { "name": "device-4", "canonicalName": "Optimized Device", "tier": 4, "internalId": "30064", "recipe": {"device-3": 1, "rock-3": 2, "grindstone-3": 1} },
+    { "position": [4,14], "name": "module-1", "canonicalName": "Module Data Block", "internalId": "mod_unlock_token" },
+    { "position": [3,14], "name": "module-2", "canonicalName": "Data Supplement Stick", "internalId": "mod_update_token_1" },
+    { "position": [2,14], "name": "module-3", "canonicalName": "Data Supplement Instrument", "internalId": "mod_update_token_2" },
     
-    { "name": "rma-3", "canonicalName": "RMA70-12", "tier": 3, "internalId": "30103" },
-    { "name": "rma-4", "canonicalName": "RMA70-24", "tier": 4, "internalId": "30104", "recipe": {"rma-3": 1, "rock-3": 2, "keton-3": 1} },
+    { "position": [1,14], "name": "chip-catalyst", "canonicalName": "Chip Catalyst", "internalId": "32001" },
     
-    { "name": "grindstone-3", "canonicalName": "Grindstone", "tier": 3, "internalId": "30093" },
-    { "name": "grindstone-4", "canonicalName": "Grindstone Pentahydrate", "tier": 4, "internalId": "30094", "recipe": {"grindstone-3": 1, "oriron-3": 1, "device-3": 1} },
+    { "position": [4,15], "name": "chip-vanguard-1", "canonicalName": "Vanguard Chip", "internalId": "3211" },
+    { "position": [3,15], "name": "chip-vanguard-2", "canonicalName": "Vanguard Chip Pack", "internalId": "3212" },
+    { "position": [2,15], "name": "chip-vanguard-3", "canonicalName": "Vanguard Dualchip", "internalId": "3213", "recipe": {"chip-vanguard-2": 2, "chip-catalyst": 1} },
     
-    { "name": "manganese-3", "canonicalName": "Manganese Ore", "tier": 3, "internalId": "30083" },
-    { "name": "manganese-4", "canonicalName": "Manganese Trihydrate", "tier": 4, "internalId": "30084", "recipe": {"manganese-3": 2, "plastic-3": 1, "kohl-3": 1} },
+    { "position": [4,16], "name": "chip-guard-1", "canonicalName": "Guard Chip", "internalId": "3221" },
+    { "position": [3,16], "name": "chip-guard-2", "canonicalName": "Guard Chip Pack", "internalId": "3222" },
+    { "position": [2,16], "name": "chip-guard-3", "canonicalName": "Guard Dualchip", "internalId": "3223", "recipe": {"chip-guard-2": 2, "chip-catalyst": 1} },
+
+    { "position": [4,17], "name": "chip-defender-1", "canonicalName": "Defender Chip", "internalId": "3231" },
+    { "position": [3,17], "name": "chip-defender-2", "canonicalName": "Defender Chip Pack", "internalId": "3232" },
+    { "position": [2,17], "name": "chip-defender-3", "canonicalName": "Defender Dualchip", "internalId": "3233", "recipe": {"chip-defender-2": 2, "chip-catalyst": 1} },
+
+    { "position": [4,18], "name": "chip-sniper-1", "canonicalName": "Sniper Chip", "internalId": "3241" },
+    { "position": [3,18], "name": "chip-sniper-2", "canonicalName": "Sniper Chip Pack", "internalId": "3242" },
+    { "position": [2,18], "name": "chip-sniper-3", "canonicalName": "Sniper Dualchip", "internalId": "3243", "recipe": {"chip-sniper-2": 2, "chip-catalyst": 1} },
+
+    { "position": [4,19], "name": "chip-caster-1", "canonicalName": "Caster Chip", "internalId": "3251" },
+    { "position": [3,19], "name": "chip-caster-2", "canonicalName": "Caster Chip Pack", "internalId": "3252" },
+    { "position": [2,19], "name": "chip-caster-3", "canonicalName": "Caster Dualchip", "internalId": "3253", "recipe": {"chip-caster-2": 2, "chip-catalyst": 1} },
+
+    { "position": [4,20], "name": "chip-healer-1", "canonicalName": "Medic Chip", "internalId": "3261" },
+    { "position": [3,20], "name": "chip-healer-2", "canonicalName": "Medic Chip Pack", "internalId": "3262" },
+    { "position": [2,20], "name": "chip-healer-3", "canonicalName": "Medic Dualchip", "internalId": "3263", "recipe": {"chip-healer-2": 2, "chip-catalyst": 1} },
+
+    { "position": [4,21], "name": "chip-supporter-1", "canonicalName": "Supporter Chip", "internalId": "3271" },
+    { "position": [3,21], "name": "chip-supporter-2", "canonicalName": "Supporter Chip Pack", "internalId": "3272" },
+    { "position": [2,21], "name": "chip-supporter-3", "canonicalName": "Supporter Dualchip", "internalId": "3273", "recipe": {"chip-supporter-2": 2, "chip-catalyst": 1} },
     
-    { "name": "kohl-3", "canonicalName": "Loxic Kohl", "tier": 3, "internalId": "30073" },
-    { "name": "kohl-4", "canonicalName": "White Horse Kohl", "tier": 4, "internalId": "30074", "recipe": {"kohl-3": 1, "sugar-3": 1, "rma-3": 1} },
-    
-    { "name": "incandescent-3", "canonicalName": "Incandescent Alloy", "tier": 3, "internalId": "31023" },
-    { "name": "incandescent-4", "canonicalName": "Incandescent Alloy Block", "tier": 4, "internalId": "31024", "recipe": {"device-3": 1, "grindstone-3": 1,"incandescent-3": 1} },
-    
-    { "name": "gel-3", "canonicalName": "Coagulating Gel", "tier": 3, "internalId": "31013" },
-    { "name": "gel-4", "canonicalName": "Polymerized Gel", "tier": 4, "internalId": "31014", "recipe": {"oriron-3": 1, "gel-3": 1, "incandescent-3": 1} },
-    
-    { "name": "crystal-3", "canonicalName": "Crystalline Component", "tier": 3, "internalId": "31033" },
-    { "name": "crystal-4", "canonicalName": "Crystalline Circuit", "tier": 4, "internalId": "31034", "recipe": {"crystal-3": 2, "gel-3": 1, "incandescent-3": 1} },
-    { "name": "crystal-5", "canonicalName": "Crystalline Electronic Unit", "tier": 5, "internalId": "30145", "recipe": {"crystal-4": 1, "gel-4": 2, "incandescent-4": 1} },
-    
-    { "name": "solvent-3", "canonicalName": "Semi-Synthetic Solvent", "tier": 3, "internalId": "31043" },
-    { "name": "solvent-4", "canonicalName": "Refined Solvent", "tier": 4, "internalId": "31044", "recipe": {"solvent-3": 1, "fluid-3": 1, "gel-3": 1} },
-    
-    { "name": "fluid-3", "canonicalName": "Compound Cutting Fluid", "tier": 3, "internalId": "31053" },
-    { "name": "fluid-4", "canonicalName": "Cutting Fluid Solution", "tier": 4, "internalId": "31054", "recipe": {"fluid-3": 1, "crystal-3": 1, "rma-3": 1} },
-    
-    { "name": "salt-3", "canonicalName": "Transmuted Salt", "tier": 3, "internalId": "31063" },
-    { "name": "salt-4", "canonicalName": "Transmuted Salt Agglomerate", "tier": 4, "internalId": "31064", "recipe": {"salt-3": 2, "solvent-3": 1, "sugar-3": 1} },
-    { "name": "salt-5", "canonicalName": "Nucleic Crystal Sinter", "tier": 5, "internalId": "30155", "recipe": {"salt-4": 1, "fluid-4": 1, "solvent-4": 2} },
-    
-    { "name": "fiber-3", "canonicalName": "Fuscous Fiber", "tier": 3, "internalId": "31073" },
-    { "name": "fiber-4", "canonicalName": "Solidified Fiber Board", "tier": 4, "internalId": "31074", "recipe": {"fiber-3": 1, "plastic-3": 2, "rock-3": 1} },
-    
-    { "name": "carbon-3", "canonicalName": "Aggregate Cyclicene", "tier": 3, "internalId": "31083" },
-    { "name": "carbon-4", "canonicalName": "Cyclicene Prefab", "tier": 4, "internalId": "31084", "recipe": {"carbon-3": 1, "fiber-3": 1, "salt-3": 1} },
-    
-    { "name": "steel-5", "canonicalName": "D32 Steel", "tier": 5, "internalId": "30135", "recipe": {"manganese-4": 1, "grindstone-4": 1, "rma-4": 1} },
-    { "name": "nanoflake-5", "canonicalName": "Bipolar Nanoflake", "tier": 5, "internalId": "30125", "recipe": {"device-4": 1, "kohl-4": 2} },
-    { "name": "polymer-5", "canonicalName": "Polymerization Preparation", "tier": 5, "internalId": "30115", "recipe": {"rock-4": 1, "oriron-4": 1, "keton-4": 1} },
-    
-    { "name": "exp-1", "canonicalName": "Drill Battle Record", "tier": 2, "internalId": "2001" },
-    { "name": "exp-2", "canonicalName": "Frontline Battle Record", "tier": 3, "internalId": "2002" },
-    { "name": "exp-3", "canonicalName": "Tactical Battle Record", "tier": 4, "internalId": "2003" },
-    { "name": "exp-4", "canonicalName": "Strategic Battle Record", "tier": 5, "internalId": "2004" },
-    
-    { "name": "skill-1", "canonicalName": "Skill Summary - 1", "tier": 2, "internalId": "3301" },
-    { "name": "skill-2", "canonicalName": "Skill Summary - 2", "tier": 3, "internalId": "3302", "recipe": {"skill-1": 3} },
-    { "name": "skill-3", "canonicalName": "Skill Summary - 3", "tier": 4, "internalId": "3303", "recipe": {"skill-2": 3} },
-    
-    { "name": "module-1", "canonicalName": "Module Data Block", "tier": 5, "internalId": "mod_unlock_token" },
-    { "name": "module-2", "canonicalName": "Data Supplement Stick", "tier": 4, "internalId": "mod_update_token_1" },
-    { "name": "module-3", "canonicalName": "Data Supplement Instrument", "tier": 5, "internalId": "mod_update_token_2" },
-    
-    { "name": "chip-catalyst", "canonicalName": "Chip Catalyst", "tier": 4, "internalId": "32001" },
-    
-    { "name": "chip-vanguard-1", "canonicalName": "Vanguard Chip", "tier": 3, "internalId": "3211" },
-    { "name": "chip-vanguard-2", "canonicalName": "Vanguard Chip Pack", "tier": 4, "internalId": "3212" },
-    { "name": "chip-vanguard-3", "canonicalName": "Vanguard Dualchip", "tier": 5, "internalId": "3213", "recipe": {"chip-vanguard-2": 2, "chip-catalyst": 1} },
-    
-    { "name": "chip-guard-1", "canonicalName": "Guard Chip", "tier": 3, "internalId": "3221" },
-    { "name": "chip-guard-2", "canonicalName": "Guard Chip Pack", "tier": 4, "internalId": "3222" },
-    { "name": "chip-guard-3", "canonicalName": "Guard Dualchip", "tier": 5, "internalId": "3223", "recipe": {"chip-guard-2": 2, "chip-catalyst": 1} },
-    
-    { "name": "chip-caster-1", "canonicalName": "Caster Chip", "tier": 3, "internalId": "3251" },
-    { "name": "chip-caster-2", "canonicalName": "Caster Chip Pack", "tier": 4, "internalId": "3252" },
-    { "name": "chip-caster-3", "canonicalName": "Caster Dualchip", "tier": 5, "internalId": "3253", "recipe": {"chip-caster-2": 2, "chip-catalyst": 1} },
-    
-    { "name": "chip-sniper-1", "canonicalName": "Sniper Chip", "tier": 3, "internalId": "3241" },
-    { "name": "chip-sniper-2", "canonicalName": "Sniper Chip Pack", "tier": 4, "internalId": "3242" },
-    { "name": "chip-sniper-3", "canonicalName": "Sniper Dualchip", "tier": 5, "internalId": "3243", "recipe": {"chip-sniper-2": 2, "chip-catalyst": 1} },
-    
-    { "name": "chip-defender-1", "canonicalName": "Defender Chip", "tier": 3, "internalId": "3231" },
-    { "name": "chip-defender-2", "canonicalName": "Defender Chip Pack", "tier": 4, "internalId": "3232" },
-    { "name": "chip-defender-3", "canonicalName": "Defender Dualchip", "tier": 5, "internalId": "3233", "recipe": {"chip-defender-2": 2, "chip-catalyst": 1} },
-    
-    { "name": "chip-healer-1", "canonicalName": "Medic Chip", "tier": 3, "internalId": "3261" },
-    { "name": "chip-healer-2", "canonicalName": "Medic Chip Pack", "tier": 4, "internalId": "3262" },
-    { "name": "chip-healer-3", "canonicalName": "Medic Dualchip", "tier": 5, "internalId": "3263", "recipe": {"chip-healer-2": 2, "chip-catalyst": 1} },
-    
-    { "name": "chip-supporter-1", "canonicalName": "Supporter Chip", "tier": 3, "internalId": "3271" },
-    { "name": "chip-supporter-2", "canonicalName": "Supporter Chip Pack", "tier": 4, "internalId": "3272" },
-    { "name": "chip-supporter-3", "canonicalName": "Supporter Dualchip", "tier": 5, "internalId": "3273", "recipe": {"chip-supporter-2": 2, "chip-catalyst": 1} },
-    
-    { "name": "chip-specialist-1", "canonicalName": "Specialist Chip", "tier": 3, "internalId": "3281" },
-    { "name": "chip-specialist-2", "canonicalName": "Specialist Chip Pack", "tier": 4, "internalId": "3282" },
-    { "name": "chip-specialist-3", "canonicalName": "Specialist Dualchip", "tier": 5, "internalId": "3283", "recipe": {"chip-specialist-2": 2, "chip-catalyst": 1}}
+    { "position": [4,22], "name": "chip-specialist-1", "canonicalName": "Specialist Chip", "internalId": "3281" },
+    { "position": [3,22], "name": "chip-specialist-2", "canonicalName": "Specialist Chip Pack", "internalId": "3282" },
+    { "position": [2,22], "name": "chip-specialist-3", "canonicalName": "Specialist Dualchip", "internalId": "3283", "recipe": {"chip-specialist-2": 2, "chip-catalyst": 1}}
+  ],
+  "depotOrder": ["exp-4", "exp-3", "exp-2", "exp-1", "skill-3", "skill-2", "skill-1", "module-1", "module-3", "module-2",
+                 "salt-5", "crystal-5", "steel-5", "nanoflake-5", "polymer-5",
+                 "carbon-4", "carbon-3", "fiber-4", "fiber-3", "salt-4", "salt-3", "fluid-4", "fluid-3", "solvent-4", "solvent-3", "crystal-4", "crystal-3",
+                 "incandescent-4", "incandescent-3", "gel-4", "gel-3",
+                 "kohl-4", "kohl-3", "manganese-4", "manganese-3", "grindstone-4", "grindstone-3", "rma-4", "rma-3",
+                 "rock-4", "rock-3", "rock-2", "rock-1", "device-4", "device-3", "device-2", "device-1",
+                 "plastic-4", "plastic-3", "plastic-2", "plastic-1", "sugar-4", "sugar-3", "sugar-2", "sugar-1",
+                 "oriron-4", "oriron-3", "oriron-2", "oriron-1", "keton-4", "keton-3", "keton-2", "keton-1",
+                 "chip-catalyst",
+                 "chip-vanguard-3", "chip-guard-3", "chip-defender-3", "chip-sniper-3", "chip-caster-3", "chip-healer-3", "chip-supporter-3", "chip-specialist-3",
+                 "chip-vanguard-2", "chip-guard-2", "chip-defender-2", "chip-sniper-2", "chip-caster-2", "chip-healer-2", "chip-supporter-2", "chip-specialist-2",
+                 "chip-vanguard-1", "chip-guard-1", "chip-defender-1", "chip-sniper-1", "chip-caster-1", "chip-healer-1", "chip-supporter-1", "chip-specialist-1"
   ]
 }

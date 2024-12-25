@@ -156,9 +156,13 @@ def getOperatorCosts(internalId):
 
     return costs, subclassId
 
-def downloadMaterialImage(internalId):
-    imageId = RAW_MATERIALS["items"][internalId]["iconId"]
+def downloadMaterialData(internalId):
+    data = RAW_MATERIALS["items"][internalId]
+    imageId = data["iconId"]
+    tier = int(data["rarity"][-1])
     downloadFileFromWeb(IMAGE_REPOSITORY_BASE_URL + MATERIAL_IMAGE_SUB_URL + imageId + ".png", getMaterialImagePath(internalId))
+
+    return tier
 
 def downloadOperatorData(progressCallback = None):
     global RAW_MATERIALS
