@@ -11,7 +11,7 @@ MODULE_IMAGE_PATH = "data/moduleTypeImages/"
 OPERATOR_IMAGE_PATH = "data/operatorImages/"
 
 DATA_REPOSITORY = CONFIG.dataRepository
-DATA_REPOSITORY_FOLDER = "json/gamedata/ArknightsGameData/zh_CN/gamedata/excel/"
+DATA_REPOSITORY_FOLDER = CONFIG.dataRepositoryExcelPath
 OPERATOR_DATA_FILE = "character_table.json"
 ADDITIONAL_OPERATOR_DATA_FILE = "char_patch_table.json"
 MODULE_DATA_FILE = "uniequip_table.json"
@@ -37,15 +37,15 @@ def getRequest(url):
 
 def getMostRecentCommitTimestamp(repo, remotePath):
     response = json.loads(getRequest(f"https://api.github.com/repos/{repo}/commits?path={remotePath}").read())
-    return response[0]["commit"]["author"]["date"]
+    return datetime.datetime.fromisoformat(response[0]["commit"]["author"]["date"]).timestamp()
 
 def tryDownloadNewerFileFromGithub(repo, remotePath, localPath):
-    fullUrl = f"https://raw.githubusercontent.com/{repo}/refs/heads/main/{remotePath}"
+    fullUrl = f"https://raw.githubusercontent.com/{repo}/HEAD/{remotePath}"
     if not os.path.exists(localPath):
         downloadFileFromWeb(fullUrl, localPath)
     else:
         localTimestamp = os.path.getmtime(localPath)
-        remoteTimestamp = datetime.datetime.fromisoformat(getMostRecentCommitTimestamp(repo, remotePath)).timestamp()
+        remoteTimestamp = getMostRecentCommitTimestamp(repo, remotePath)
 
         if localTimestamp < remoteTimestamp:
             downloadFileFromWeb(fullUrl, localPath, replace=True)
@@ -53,9 +53,11 @@ def tryDownloadNewerFileFromGithub(repo, remotePath, localPath):
 def downloadFileFromWeb(url, localPath, replace=False):
     if replace or not os.path.exists(localPath):
         LOGGER.debug("Updating from Web: %s", localPath)
-        f = safeOpen(localPath, mode="wb+")
-        f.write(getRequest(url).read())
-        f.close()
+        file = getRequest(url).read()
+        if file is not None:
+            f = safeOpen(localPath, mode="wb+")
+            f.write(file)
+            f.close()
 
 def getModuleImagePath(subclassId, moduleType):
     return MODULE_IMAGE_PATH + f"{subclassId}-{moduleType}.png"
