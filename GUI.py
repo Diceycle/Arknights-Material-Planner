@@ -9,14 +9,14 @@ from GlobalOverlays import MaterialSelection, OperatorSelection, UpgradeSelectio
 from Depot import Depot, ParseDepotOverlay
 
 class GUI:
-    def __init__(self):
+    def __init__(self, window):
 
         self.scale = CONFIG.uiScale
         self.width = 16 * self.scale
         self.height = 12 * self.scale
         self.setSpacing = self.scale // 10
 
-        self.window = Tk()
+        self.window = window
         self.window.geometry(str(self.width) + "x" + str(self.height))
         self.window.title("Arknights Materials")
         self.window.protocol("WM_DELETE_WINDOW", self.destroy)

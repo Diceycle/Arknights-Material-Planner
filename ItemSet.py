@@ -26,7 +26,6 @@ class ItemSet(LockableCanvas):
 
         self.upgradeImage = self.create_image(self.scale // 2, self.scale // 2, anchor=CENTER)
 
-        self.loadingImage = self.create_image(self.scale + self.scale // 2, 0, image=UI_ELEMENTS["loading"].getPhotoImage(self.scale, transparency=0.75), anchor = NW, state="hidden")
         self.notAvailable = self.create_image(self.scale + self.scale // 2, 0, image=UI_ELEMENTS["n-a"].getPhotoImage(self.scale, transparency=0.75), anchor = NW, state="hidden")
 
         self.enabled = enabled
@@ -42,11 +41,7 @@ class ItemSet(LockableCanvas):
             i.delete()
 
         self.itemIndicators = []
-
-        operator = self.operator
-        if not self.operator.hasCache():
-            operator = None
-        self.itemconfigure(self.upgradeImage, image=self.upgrade.getPhotoImage(self.scale, operator=operator))
+        self.itemconfigure(self.upgradeImage, image=self.upgrade.getPhotoImage(self.scale, operator=self.operator))
 
         materials = self.getMaterials()
         c = 0
@@ -56,15 +51,10 @@ class ItemSet(LockableCanvas):
                                                      IntVar(value=materials[m]), editable=False))
             c += 1
 
-        if len(materials) == 0 and self.operator.hasCache():
+        if len(materials) == 0:
             self.itemconfigure(self.notAvailable, state="normal")
         else:
             self.itemconfigure(self.notAvailable, state="hidden")
-
-        if not self.operator.hasCache():
-            self.itemconfigure(self.loadingImage, state="normal")
-        else:
-            self.itemconfigure(self.loadingImage, state="hidden")
 
         self.resize(height=self.getHeight())
 
@@ -73,10 +63,7 @@ class ItemSet(LockableCanvas):
         self.updateCallback()
 
     def getMaterials(self):
-        if not self.operator.hasCache():
-            return {}
-
-        mats = self.upgrade.calculateCosts(self.operator.getCosts())
+        mats = self.upgrade.calculateCosts(self.operator.costs)
         if not self.naturalOrder:
             matsSorted = {}
             order = list(mats.keys())
@@ -119,9 +106,6 @@ class UpgradeSet(LockableCanvas):
 
         self.dragHandle = self.create_image(0, self.scale // 2, image=UI_ELEMENTS["drag"].getPhotoImage(self.uiIconScale), anchor=W)
 
-        self.refreshCostsButton = self.create_image(self.getLeftOffset() + self.scale // 2, self.scale, image=UI_ELEMENTS["resetCache"].getPhotoImage(self.uiIconScale), anchor=N)
-        self.tag_bind(self.refreshCostsButton, "<Button-1>", lambda e: self.researchMaterials(ignoreCache=True))
-
         self.addUpgradeButton = self.create_image(0, 0, image=UI_ELEMENTS["add"].getPhotoImage(self.uiIconScale), anchor=S)
         self.tag_bind(self.addUpgradeButton, "<Button-1>", lambda e: self.addUpgrade())
 
@@ -157,7 +141,7 @@ class UpgradeSet(LockableCanvas):
         self.operator = operator
         for s in self.itemSets:
             s.operator = operator
-        self.researchMaterials()
+        self.draw()
 
     def changeUpgrade(self, upgradeSet):
         OVERLAYS["UpgradeSelection"].registerCallback(self, posX = self.getLeftOffset() + self.scale, posY = self.scale + upgradeSet.winfo_y(),
@@ -166,17 +150,6 @@ class UpgradeSet(LockableCanvas):
     def changeUpgradeInternal(self, upgrade, itemSet):
         itemSet.upgrade = upgrade
         self.draw()
-
-    def researchMaterials(self, ignoreCache = False):
-        if self.operator.hasCache() and not ignoreCache:
-            self.researching = False
-            self.draw()
-        else:
-            if not self.researching:
-                self.researching = True
-                self.operator.downloadDataAsync(ignoreCache)
-                self.draw()
-            self.after(1, self.researchMaterials)
 
     def addUpgrade(self):
         OVERLAYS["UpgradeSelection"].registerCallback(self, posX = self.getLeftOffset() + self.scale, posY = self.getHeight(),

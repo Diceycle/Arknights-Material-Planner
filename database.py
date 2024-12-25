@@ -1,19 +1,18 @@
 import json
-import threading
 from collections import Counter
 
 from PIL import Image, ImageTk, ImageColor
 
 from utilImport import *
-from crawler import getModuleImagePath, downloadCosts
+from costParser import getOperatorCosts, getModuleImagePath, getOperatorImagePath
 
 UPGRADE_SCALE = 0.75
 MAX_MODULE_IMAGE_DIMENSIONS = (70, 60)
 
 class ScalableImage:
-    def __init__(self, name, collection, imagePath, image, mainDimension = 1):
+    def __init__(self, name, collection, imagePath, mainDimension = 1):
         self.name = name
-        self.image = loadImage(imagePath, image)
+        self.image = loadImage(imagePath)
         self.mainDimension = mainDimension
 
         self.imageReferences = {}
@@ -41,14 +40,14 @@ class ScalableImage:
 
 class UIElement(ScalableImage):
     def __init__(self, name, image, **kwargs):
-        super().__init__(name, UI_ELEMENTS, "img/ui", image, **kwargs)
+        super().__init__(name, UI_ELEMENTS, "img/ui/" + image, **kwargs)
 
     def renderImage(self, **flags):
         return colorize(self.image.copy(), ImageColor.getcolor(CONFIG.highlightColor, "RGB"))
 
 class Upgrade(ScalableImage):
     def __init__(self, name, canonicalName, image, overlay = None, cumulativeUpgrades = None, moduleType = None, **kwargs):
-        super().__init__(name, UPGRADES, "img/misc", image, **kwargs)
+        super().__init__(name, UPGRADES, "img/misc/" + image, **kwargs)
         self.canonicalName = canonicalName
         self.overlay = overlay
         self.moduleType = moduleType
@@ -83,7 +82,7 @@ class Upgrade(ScalableImage):
 
             orig.thumbnail(size = ((im.height - MAX_MODULE_IMAGE_DIMENSIONS[1]) * 2,
                                    (im.height - MAX_MODULE_IMAGE_DIMENSIONS[1]) * 2))
-            typeImage = loadImage("img/misc", self.overlay + "-small.png")
+            typeImage = loadImage("img/misc/" + self.overlay + "-small.png")
             typeImage.thumbnail(size = (moduleImage.height // 2, moduleImage.height // 2))
 
             im.alpha_composite(orig, dest=(im.width - orig.width, 0))
@@ -91,7 +90,7 @@ class Upgrade(ScalableImage):
             im.alpha_composite(typeImage, dest=(moduleImage.width - typeImage.width // 2, im.height - typeImage.height))
 
         elif self.overlay is not None:
-            im.alpha_composite(loadImage("img/misc", self.overlay + ".png"))
+            im.alpha_composite(loadImage("img/misc/" + self.overlay + ".png"))
 
         if CONFIG.highlightUpgrades:
             im = colorize(im, ImageColor.getcolor(CONFIG.highlightColor, "RGB"))
@@ -109,6 +108,7 @@ class Upgrade(ScalableImage):
                 str(not int(self.name.startswith("SK"))) +
                 str(not int(self.name == "E2") and not int(self.name == "Base E2")) +
                 str(not int(self.name.startswith("S"))) +
+                str(int(self.name.startswith("MOD-D"))) +
                 str(not int(self.name.startswith("MOD"))) +
                 self.name)
 
@@ -119,37 +119,18 @@ class Upgrade(ScalableImage):
         return self.__str__()
 
 class Operator(ScalableImage):
-    def __init__(self, name, image, externalName = None):
-        super().__init__(name, OPERATORS, "img/operator", image)
+    def __init__(self, name, internalId):
+        self.internalId = internalId
+        self.costs, self.subclassId = getOperatorCosts(internalId)
 
-        self.costs = None
-        self.meta = None
-
-        self.externalName = externalName
-        if self.externalName is None:
-            self.externalName = name.lower().replace(" ", "-")
-
-    def getCosts(self):
-        return self.costs
+        super().__init__(name, OPERATORS, getOperatorImagePath(internalId))
 
     def getModuleImagePath(self, moduleType):
-        return getModuleImagePath(self.meta, moduleType)
-
-    def hasCache(self):
-        return self.costs is not None
-
-    def downloadDataAsync(self, ignoreCache = False):
-        if ignoreCache:
-            self.costs = None
-            self.meta = None
-        threading.Thread(target=lambda: self.downloadData(ignoreCache)).start()
-
-    def downloadData(self, ignoreCache = False):
-        self.costs, self.meta = downloadCosts(self, ignoreCache)
+        return getModuleImagePath(self.subclassId, moduleType)
 
 class Material(ScalableImage):
     def __init__(self, name, canonicalName, tier, image, externalId = None, externalFileName = None, recipe = None):
-        super().__init__(name, MATERIALS, "img/material", image)
+        super().__init__(name, MATERIALS, "img/material/" + image)
         self.canonicalName = canonicalName
         self.tier = tier
 
@@ -225,7 +206,7 @@ class Material(ScalableImage):
             return x+2, page2 + 10
 
     def renderImage(self, **flags):
-        border = loadImage("img/border", "T" + str(self.tier) + ".png")
+        border = loadImage("img/border/T" + str(self.tier) + ".png")
         border.alpha_composite(self.image, ((border.width - self.image.width) // 2, (border.height - self.image.height) // 2))
         return border
 
@@ -295,145 +276,131 @@ Upgrade("MOD-Y-1", "Module Y Stage 1", "img_stg1.png", overlay = "mod-y", mainDi
 Upgrade("MOD-Y-2", "Module Y Stage 2", "img_stg2.png", overlay = "mod-y", mainDimension=1, moduleType="Y")
 Upgrade("MOD-Y-3", "Module Y Stage 3", "img_stg3.png", overlay = "mod-y", mainDimension=1, moduleType="Y")
 Upgrade("MOD-Y-X", "Module Y Full", "img_stgX.png", overlay = "mod-y", mainDimension=1, moduleType="Y", cumulativeUpgrades=["MOD-Y-1", "MOD-Y-2", "MOD-Y-3"])
-Upgrade("MOD-Z-1", "Module Z Stage 1", "img_stg1.png", overlay = "mod-z", mainDimension=1, moduleType="Z")
-Upgrade("MOD-Z-2", "Module Z Stage 2", "img_stg2.png", overlay = "mod-z", mainDimension=1, moduleType="Z")
-Upgrade("MOD-Z-3", "Module Z Stage 3", "img_stg3.png", overlay = "mod-z", mainDimension=1, moduleType="Z")
-Upgrade("MOD-Z-X", "Module Z Full", "img_stgX.png", overlay = "mod-z", mainDimension=1, moduleType="Z", cumulativeUpgrades=["MOD-Z-1", "MOD-Z-2", "MOD-Z-3"])
+Upgrade("MOD-D-1", "Module D Stage 1", "img_stg1.png", overlay = "mod-d", mainDimension=1, moduleType="D")
+Upgrade("MOD-D-2", "Module D Stage 2", "img_stg2.png", overlay = "mod-d", mainDimension=1, moduleType="D")
+Upgrade("MOD-D-3", "Module D Stage 3", "img_stg3.png", overlay = "mod-d", mainDimension=1, moduleType="D")
+Upgrade("MOD-D-X", "Module D Full", "img_stgX.png", overlay = "mod-d", mainDimension=1, moduleType="D", cumulativeUpgrades=["MOD-D-1", "MOD-D-2", "MOD-D-3"])
 
-Material("money", "LMD", 4, "lmd.png", externalFileName="GOLD")
+Material("money", "LMD", 4, "lmd.png", externalId="4001")
 
 Material("keton-1", "Diketon", 1, "keton-1.png", externalId="30051")
 Material("keton-2", "Polyketon", 2, "keton-2.png", externalId="30052", recipe={"keton-1": 3})
-Material("keton-3", "Aketon", 3, "keton-3.png", externalId="30053", externalFileName="MTL_SL_KETONE3", recipe={"keton-2": 4})
-Material("keton-4", "Keton Colloid", 4, "keton-4.png", externalId="30054", externalFileName="MTL_SL_KETONE4", recipe={"keton-3": 2, "sugar-3": 1, "manganese-3": 1})
+Material("keton-3", "Aketon", 3, "keton-3.png", externalId="30053", recipe={"keton-2": 4})
+Material("keton-4", "Keton Colloid", 4, "keton-4.png", externalId="30054", recipe={"keton-3": 2, "sugar-3": 1, "manganese-3": 1})
 
 Material("rock-1", "Orirock", 1, "rock-1.png", externalId="30011")
 Material("rock-2", "Orirock Cube", 2, "rock-2.png", externalId="30012", recipe={"rock-1": 3})
-Material("rock-3", "Orirock Cluster", 3, "rock-3.png", externalId="30013", externalFileName="MTL_SL_G3", recipe={"rock-2": 5})
-Material("rock-4", "Orirock Concentration", 4, "rock-4.png", externalId="30014", externalFileName="MTL_SL_G4", recipe={"rock-3": 4})
+Material("rock-3", "Orirock Cluster", 3, "rock-3.png", externalId="30013", recipe={"rock-2": 5})
+Material("rock-4", "Orirock Concentration", 4, "rock-4.png", externalId="30014", recipe={"rock-3": 4})
 
 Material("sugar-1", "Sugar Substitute", 1, "sugar-1.png", externalId="30021")
 Material("sugar-2", "Sugar", 2, "sugar-2.png", externalId="30022", recipe={"sugar-1": 3})
-Material("sugar-3", "Sugar Pack", 3, "sugar-3.png", externalId="30023", externalFileName="MTL_SL_STRG3", recipe={"sugar-2": 4})
-Material("sugar-4", "Sugar Lump", 4, "sugar-4.png", externalId="30024", externalFileName="MTL_SL_STRG4", recipe={"sugar-3": 2, "oriron-3": 1, "manganese-3": 1})
+Material("sugar-3", "Sugar Pack", 3, "sugar-3.png", externalId="30023", recipe={"sugar-2": 4})
+Material("sugar-4", "Sugar Lump", 4, "sugar-4.png", externalId="30024", recipe={"sugar-3": 2, "oriron-3": 1, "manganese-3": 1})
 
 Material("plastic-1", "Ester", 1, "plastic-1.png", externalId="30031")
 Material("plastic-2", "Polyester", 2, "plastic-2.png", externalId="30032", recipe={"plastic-1": 3})
-Material("plastic-3", "Polyester Pack", 3, "plastic-3.png", externalId="30033", externalFileName="MTL_SL_RUSH3", recipe={"plastic-2": 4})
-Material("plastic-4", "Polyester Lump", 4, "plastic-4.png", externalId="30034", externalFileName="MTL_SL_RUSH4", recipe={"plastic-3": 2, "keton-3": 1, "kohl-3": 1})
+Material("plastic-3", "Polyester Pack", 3, "plastic-3.png", externalId="30033", recipe={"plastic-2": 4})
+Material("plastic-4", "Polyester Lump", 4, "plastic-4.png", externalId="30034", recipe={"plastic-3": 2, "keton-3": 1, "kohl-3": 1})
 
 Material("oriron-1", "Oriron Shard", 1, "oriron-1.png", externalId="30041")
 Material("oriron-2", "Oriron", 2, "oriron-2.png", externalId="30042", recipe={"oriron-1": 3})
-Material("oriron-3", "Oriron Cluster", 3, "oriron-3.png", externalId="30043", externalFileName="MTL_SL_IRON3", recipe={"oriron-2": 4})
-Material("oriron-4", "Oriron Block", 4, "oriron-4.png", externalId="30044", externalFileName="MTL_SL_IRON4", recipe={"oriron-3": 2, "device-3": 1, "plastic-3": 1})
+Material("oriron-3", "Oriron Cluster", 3, "oriron-3.png", externalId="30043", recipe={"oriron-2": 4})
+Material("oriron-4", "Oriron Block", 4, "oriron-4.png", externalId="30044", recipe={"oriron-3": 2, "device-3": 1, "plastic-3": 1})
 
 Material("device-1", "Damaged Device", 1, "device-1.png", externalId="30061")
 Material("device-2", "Device", 2, "device-2.png", externalId="30062", recipe={"device-1": 3})
-Material("device-3", "Integrated Device", 3, "device-3.png", externalId="30063", externalFileName="MTL_SL_BOSS3", recipe={"device-2": 4})
-Material("device-4", "Optimized Device", 4, "device-4.png", externalId="30064", externalFileName="MTL_SL_BOSS4", recipe={"device-3": 1, "rock-3": 2, "grindstone-3": 1})
+Material("device-3", "Integrated Device", 3, "device-3.png", externalId="30063", recipe={"device-2": 4})
+Material("device-4", "Optimized Device", 4, "device-4.png", externalId="30064", recipe={"device-3": 1, "rock-3": 2, "grindstone-3": 1})
 
-Material("rma-3", "RMA70-12", 3, "rma-3.png", externalId="30103", externalFileName="MTL_SL_RMA7012")
-Material("rma-4", "RMA70-24", 4, "rma-4.png", externalId="30104", externalFileName="MTL_SL_RMA7024", recipe={"rma-3": 1, "rock-3": 2, "keton-3": 1})
+Material("rma-3", "RMA70-12", 3, "rma-3.png", externalId="30103")
+Material("rma-4", "RMA70-24", 4, "rma-4.png", externalId="30104", recipe={"rma-3": 1, "rock-3": 2, "keton-3": 1})
 
-Material("grindstone-3", "Grindstone", 3, "grindstone-3.png", externalId="30093", externalFileName="MTL_SL_PG1")
-Material("grindstone-4", "Grindstone Pentahydrate", 4, "grindstone-4.png", externalId="30094", externalFileName="MTL_SL_PG2", recipe={"grindstone-3": 1, "oriron-3": 1, "device-3": 1})
+Material("grindstone-3", "Grindstone", 3, "grindstone-3.png", externalId="30093")
+Material("grindstone-4", "Grindstone Pentahydrate", 4, "grindstone-4.png", externalId="30094", recipe={"grindstone-3": 1, "oriron-3": 1, "device-3": 1})
 
-Material("manganese-3", "Manganese Ore", 3, "manganese-3.png", externalId="30083", externalFileName="MTL_SL_MANGANESE1")
-Material("manganese-4", "Manganese Trihydrate", 4, "manganese-4.png", externalId="30084", externalFileName="MTL_SL_MANGANESE2", recipe={"manganese-3": 2, "plastic-3": 1, "kohl-3": 1})
+Material("manganese-3", "Manganese Ore", 3, "manganese-3.png", externalId="30083")
+Material("manganese-4", "Manganese Trihydrate", 4, "manganese-4.png", externalId="30084", recipe={"manganese-3": 2, "plastic-3": 1, "kohl-3": 1})
 
-Material("kohl-3", "Loxic Kohl", 3, "kohl-3.png", externalId="30073", externalFileName="MTL_SL_ALCOHOL1")
-Material("kohl-4", "White Horse Kohl", 4, "kohl-4.png", externalId="30074", externalFileName="MTL_SL_ALCOHOL2", recipe={"kohl-3": 1, "sugar-3": 1, "rma-3": 1})
+Material("kohl-3", "Loxic Kohl", 3, "kohl-3.png", externalId="30073")
+Material("kohl-4", "White Horse Kohl", 4, "kohl-4.png", externalId="30074", recipe={"kohl-3": 1, "sugar-3": 1, "rma-3": 1})
 
-Material("incandescent-3", "Incandescent Alloy", 3, "incandescent-3.png", externalId="31023", externalFileName="MTL_SL_IAM3")
-Material("incandescent-4", "Incandescent Alloy Block", 4, "incandescent-4.png", externalId="31024", externalFileName="MTL_SL_IAM4", recipe={"device-3": 1, "grindstone-3": 1,"incandescent-3": 1})
+Material("incandescent-3", "Incandescent Alloy", 3, "incandescent-3.png", externalId="31023")
+Material("incandescent-4", "Incandescent Alloy Block", 4, "incandescent-4.png", externalId="31024", recipe={"device-3": 1, "grindstone-3": 1,"incandescent-3": 1})
 
-Material("gel-3", "Coagulating Gel", 3, "gel-3.png", externalId="31013", externalFileName="MTL_SL_PGEL3")
-Material("gel-4", "Polymerized Gel", 4, "gel-4.png", externalId="31014", externalFileName="MTL_SL_PGEL4", recipe={"oriron-3": 1, "gel-3": 1, "incandescent-3": 1})
+Material("gel-3", "Coagulating Gel", 3, "gel-3.png", externalId="31013")
+Material("gel-4", "Polymerized Gel", 4, "gel-4.png", externalId="31014", recipe={"oriron-3": 1, "gel-3": 1, "incandescent-3": 1})
 
-Material("crystal-3", "Crystalline Component", 3, "crystal-3.png", externalId="31033", externalFileName="MTL_SL_OC3")
-Material("crystal-4", "Crystalline Circuit", 4, "crystal-4.png", externalId="31034", externalFileName="MTL_SL_OC4", recipe={"crystal-3": 2, "gel-3": 1, "incandescent-3": 1})
-Material("crystal-5", "Crystalline Electronic Unit", 5, "crystal-5.png", externalId="30145", externalFileName="MTL_SL_OEU", recipe={"crystal-4": 1, "gel-4": 2, "incandescent-4": 1})
+Material("crystal-3", "Crystalline Component", 3, "crystal-3.png", externalId="31033")
+Material("crystal-4", "Crystalline Circuit", 4, "crystal-4.png", externalId="31034", recipe={"crystal-3": 2, "gel-3": 1, "incandescent-3": 1})
+Material("crystal-5", "Crystalline Electronic Unit", 5, "crystal-5.png", externalId="30145", recipe={"crystal-4": 1, "gel-4": 2, "incandescent-4": 1})
 
-Material("solvent-3", "Semi-Synthetic Solvent", 3, "solvent-3.png", externalId="31043", externalFileName="MTL_SL_SS")
-Material("solvent-4", "Refined Solvent", 4, "solvent-4.png", externalId="31044", externalFileName="MTL_SL_RS", recipe={"solvent-3": 1, "fluid-3": 1, "gel-3": 1})
+Material("solvent-3", "Semi-Synthetic Solvent", 3, "solvent-3.png", externalId="31043")
+Material("solvent-4", "Refined Solvent", 4, "solvent-4.png", externalId="31044", recipe={"solvent-3": 1, "fluid-3": 1, "gel-3": 1})
 
-Material("fluid-3", "Compound Cutting Fluid", 3, "fluid-3.png", externalId="31053", externalFileName="MTL_SL_CCF")
-Material("fluid-4", "Cutting Fluid Solution", 4, "fluid-4.png", externalId="31054", externalFileName="MTL_SL_PLCF", recipe={"fluid-3": 1, "crystal-3": 1, "rma-3": 1})
+Material("fluid-3", "Compound Cutting Fluid", 3, "fluid-3.png", externalId="31053")
+Material("fluid-4", "Cutting Fluid Solution", 4, "fluid-4.png", externalId="31054", recipe={"fluid-3": 1, "crystal-3": 1, "rma-3": 1})
 
-Material("salt-3", "Transmuted Salt", 3, "salt-3.png", externalId="31063",
-         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E8%BD%AC%E8%B4%A8%E7%9B%90%E7%BB%84")
-Material("salt-4", "Transmuted Salt Agglomerate", 4, "salt-4.png", externalId="31064",
-         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E8%BD%AC%E8%B4%A8%E7%9B%90%E8%81%9A%E5%9D%97",
-         recipe={"salt-3": 2, "solvent-3": 1, "sugar-3": 1})
-Material("salt-5", "Nucleic Crystal Sinter", 5, "salt-5.png", externalId="30155",
-         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E7%83%A7%E7%BB%93%E6%A0%B8%E5%87%9D%E6%99%B6",
-         recipe={"salt-4": 1, "fluid-4": 1, "solvent-4": 2})
+Material("salt-3", "Transmuted Salt", 3, "salt-3.png", externalId="31063")
+Material("salt-4", "Transmuted Salt Agglomerate", 4, "salt-4.png", externalId="31064", recipe={"salt-3": 2, "solvent-3": 1, "sugar-3": 1})
+Material("salt-5", "Nucleic Crystal Sinter", 5, "salt-5.png", externalId="30155", recipe={"salt-4": 1, "fluid-4": 1, "solvent-4": 2})
 
-Material("fiber-3", "Fuscous Fiber", 3, "fiber-3.png", externalId="31073",
-         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E8%A4%90%E7%B4%A0%E7%BA%A4%E7%BB%B4")
-Material("fiber-4", "Solidified Fiber Board", 4, "fiber-4.png", externalId="31074",
-         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E5%9B%BA%E5%8C%96%E7%BA%A4%E7%BB%B4%E6%9D%BF",
-         recipe={"fiber-3": 1, "plastic-3": 2, "rock-3": 1})
+Material("fiber-3", "Fuscous Fiber", 3, "fiber-3.png", externalId="31073")
+Material("fiber-4", "Solidified Fiber Board", 4, "fiber-4.png", externalId="31074", recipe={"fiber-3": 1, "plastic-3": 2, "rock-3": 1})
 
-Material("carbon-3", "Aggregate Cyclicene", 3, "carbon-3.png", externalId="31083",
-         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E7%8E%AF%E7%83%83%E8%81%9A%E8%B4%A8")
-Material("carbon-4", "Cyclicene Prefab", 4, "carbon-4.png", externalId="31084",
-         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E7%8E%AF%E7%83%83%E9%A2%84%E5%88%B6%E4%BD%93",
-         recipe={"carbon-3": 1, "fiber-3": 1, "salt-3": 1})
+Material("carbon-3", "Aggregate Cyclicene", 3, "carbon-3.png", externalId="31083")
+Material("carbon-4", "Cyclicene Prefab", 4, "carbon-4.png", externalId="31084", recipe={"carbon-3": 1, "fiber-3": 1, "salt-3": 1})
 
-Material("steel-5", "D32 Steel", 5, "steel-5.png", externalId="30135", externalFileName="MTL_SL_DS", recipe={"manganese-4": 1, "grindstone-4": 1, "rma-4": 1})
-Material("nanoflake-5", "Bipolar Nanoflake", 5, "nanoflake-5.png", externalId="30125", externalFileName="MTL_SL_BN", recipe={"device-4": 1, "kohl-4": 2})
-Material("polymer-5", "Polymerization Preparation", 5, "polymer-5.png", externalId="30115", externalFileName="MTL_SL_PP", recipe={"rock-4": 1, "oriron-4": 1, "keton-4": 1})
+Material("steel-5", "D32 Steel", 5, "steel-5.png", externalId="30135", recipe={"manganese-4": 1, "grindstone-4": 1, "rma-4": 1})
+Material("nanoflake-5", "Bipolar Nanoflake", 5, "nanoflake-5.png", externalId="30125", recipe={"device-4": 1, "kohl-4": 2})
+Material("polymer-5", "Polymerization Preparation", 5, "polymer-5.png", externalId="30115", recipe={"rock-4": 1, "oriron-4": 1, "keton-4": 1})
 
 Material("exp-1", "Drill Battle Record", 2, "exp-1.png")
 Material("exp-2", "Frontline Battle Record", 3, "exp-2.png")
 Material("exp-3", "Tactical Battle Record", 4, "exp-3.png")
 Material("exp-4", "Strategic Battle Record", 5, "exp-4.png")
 
-Material("skill-1", "Skill Summary - 1", 2, "skill-1.png")
-Material("skill-2", "Skill Summary - 2", 3, "skill-2.png", recipe={"skill-1": 3})
-Material("skill-3", "Skill Summary - 3", 4, "skill-3.png", recipe={"skill-2": 3})
+Material("skill-1", "Skill Summary - 1", 2, "skill-1.png", externalId="3301")
+Material("skill-2", "Skill Summary - 2", 3, "skill-2.png", externalId="3302", recipe={"skill-1": 3})
+Material("skill-3", "Skill Summary - 3", 4, "skill-3.png", externalId="3303", recipe={"skill-2": 3})
 
-Material("module-1", "Module Data Block", 5, "module-1.png",
-         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E6%A8%A1%E7%BB%84%E6%95%B0%E6%8D%AE%E5%9D%97")
-Material("module-2", "Data Supplement Stick", 4, "module-2.png",
-         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E6%95%B0%E6%8D%AE%E5%A2%9E%E8%A1%A5%E6%9D%A1")
-Material("module-3", "Data Supplement Instrument", 5, "module-3.png",
-         externalFileName="%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E6%95%B0%E6%8D%AE%E5%A2%9E%E8%A1%A5%E4%BB%AA")
+Material("module-1", "Module Data Block", 5, "module-1.png", externalId="mod_unlock_token")
+Material("module-2", "Data Supplement Stick", 4, "module-2.png", externalId="mod_update_token_1")
+Material("module-3", "Data Supplement Instrument", 5, "module-3.png", externalId="mod_update_token_2")
 
 Material("chip-catalyst", "Chip Catalyst", 4, "chip-catalyst.png")
 
-Material("chip-vanguard-1", "Vanguard Chip", 3, "chip-vanguard-1.png")
-Material("chip-vanguard-2", "Vanguard Chip Pack", 4, "chip-vanguard-2.png")
-Material("chip-vanguard-3", "Vanguard Dualchip", 5, "chip-vanguard-3.png", recipe={"chip-vanguard-2": 2, "chip-catalyst": 1})
+Material("chip-vanguard-1", "Vanguard Chip", 3, "chip-vanguard-1.png", externalId="3211")
+Material("chip-vanguard-2", "Vanguard Chip Pack", 4, "chip-vanguard-2.png", externalId="3212")
+Material("chip-vanguard-3", "Vanguard Dualchip", 5, "chip-vanguard-3.png", externalId="3213", recipe={"chip-vanguard-2": 2, "chip-catalyst": 1})
 
-Material("chip-guard-1", "Guard Chip", 3, "chip-guard-1.png")
-Material("chip-guard-2", "Guard Chip Pack", 4, "chip-guard-2.png")
-Material("chip-guard-3", "Guard Dualchip", 5, "chip-guard-3.png", recipe={"chip-guard-2": 2, "chip-catalyst": 1})
+Material("chip-guard-1", "Guard Chip", 3, "chip-guard-1.png", externalId="3221")
+Material("chip-guard-2", "Guard Chip Pack", 4, "chip-guard-2.png", externalId="3222")
+Material("chip-guard-3", "Guard Dualchip", 5, "chip-guard-3.png", externalId="3223", recipe={"chip-guard-2": 2, "chip-catalyst": 1})
 
-Material("chip-caster-1", "Caster Chip", 3, "chip-caster-1.png")
-Material("chip-caster-2", "Caster Chip Pack", 4, "chip-caster-2.png")
-Material("chip-caster-3", "Caster Dualchip", 5, "chip-caster-3.png", recipe={"chip-caster-2": 2, "chip-catalyst": 1})
+Material("chip-caster-1", "Caster Chip", 3, "chip-caster-1.png", externalId="3251")
+Material("chip-caster-2", "Caster Chip Pack", 4, "chip-caster-2.png", externalId="3252")
+Material("chip-caster-3", "Caster Dualchip", 5, "chip-caster-3.png", externalId="3253", recipe={"chip-caster-2": 2, "chip-catalyst": 1})
 
-Material("chip-sniper-1", "Sniper Chip", 3, "chip-sniper-1.png")
-Material("chip-sniper-2", "Sniper Chip Pack", 4, "chip-sniper-2.png")
-Material("chip-sniper-3", "Sniper Dualchip", 5, "chip-sniper-3.png", recipe={"chip-sniper-2": 2, "chip-catalyst": 1})
+Material("chip-sniper-1", "Sniper Chip", 3, "chip-sniper-1.png", externalId="3241")
+Material("chip-sniper-2", "Sniper Chip Pack", 4, "chip-sniper-2.png", externalId="3242")
+Material("chip-sniper-3", "Sniper Dualchip", 5, "chip-sniper-3.png", externalId="3243", recipe={"chip-sniper-2": 2, "chip-catalyst": 1})
 
-Material("chip-defender-1", "Defender Chip", 3, "chip-defender-1.png")
-Material("chip-defender-2", "Defender Chip Pack", 4, "chip-defender-2.png")
-Material("chip-defender-3", "Defender Dualchip", 5, "chip-defender-3.png", recipe={"chip-defender-2": 2, "chip-catalyst": 1})
+Material("chip-defender-1", "Defender Chip", 3, "chip-defender-1.png", externalId="3231")
+Material("chip-defender-2", "Defender Chip Pack", 4, "chip-defender-2.png", externalId="3232")
+Material("chip-defender-3", "Defender Dualchip", 5, "chip-defender-3.png", externalId="3233", recipe={"chip-defender-2": 2, "chip-catalyst": 1})
 
-Material("chip-healer-1", "Medic Chip", 3, "chip-healer-1.png")
-Material("chip-healer-2", "Medic Chip Pack", 4, "chip-healer-2.png")
-Material("chip-healer-3", "Medic Dualchip", 5, "chip-healer-3.png", recipe={"chip-healer-2": 2, "chip-catalyst": 1})
+Material("chip-healer-1", "Medic Chip", 3, "chip-healer-1.png", externalId="3261")
+Material("chip-healer-2", "Medic Chip Pack", 4, "chip-healer-2.png", externalId="3262")
+Material("chip-healer-3", "Medic Dualchip", 5, "chip-healer-3.png", externalId="3263", recipe={"chip-healer-2": 2, "chip-catalyst": 1})
 
-Material("chip-supporter-1", "Supporter Chip", 3, "chip-supporter-1.png")
-Material("chip-supporter-2", "Supporter Chip Pack", 4, "chip-supporter-2.png")
-Material("chip-supporter-3", "Supporter Dualchip", 5, "chip-supporter-3.png", recipe={"chip-supporter-2": 2, "chip-catalyst": 1})
+Material("chip-supporter-1", "Supporter Chip", 3, "chip-supporter-1.png", externalId="3271")
+Material("chip-supporter-2", "Supporter Chip Pack", 4, "chip-supporter-2.png", externalId="3272")
+Material("chip-supporter-3", "Supporter Dualchip", 5, "chip-supporter-3.png", externalId="3273", recipe={"chip-supporter-2": 2, "chip-catalyst": 1})
 
-Material("chip-specialist-1", "Specialist Chip", 3, "chip-specialist-1.png")
-Material("chip-specialist-2", "Specialist Chip Pack", 4, "chip-specialist-2.png")
-Material("chip-specialist-3", "Specialist Dualchip", 5, "chip-specialist-3.png", recipe={"chip-specialist-2": 2, "chip-catalyst": 1})
+Material("chip-specialist-1", "Specialist Chip", 3, "chip-specialist-1.png", externalId="3281")
+Material("chip-specialist-2", "Specialist Chip Pack", 4, "chip-specialist-2.png", externalId="3282")
+Material("chip-specialist-3", "Specialist Dualchip", 5, "chip-specialist-3.png", externalId="3283", recipe={"chip-specialist-2": 2, "chip-catalyst": 1})
 
 
 DEPOT_ORDER = ["exp-4", "exp-3", "exp-2", "exp-1", "skill-3", "skill-2", "skill-1", "module-1", "module-3", "module-2",
@@ -450,6 +417,8 @@ DEPOT_ORDER = ["exp-4", "exp-3", "exp-2", "exp-1", "skill-3", "skill-2", "skill-
                "chip-vanguard-1", "chip-guard-1", "chip-defender-1", "chip-sniper-1", "chip-caster-1", "chip-healer-1", "chip-supporter-1", "chip-specialist-1",
 ]
 
-rawOperators = json.load(open("operators.json", "r"))
-for o in rawOperators:
-    Operator(**o)
+def loadOperators(progressCallback):
+    rawOperators = json.load(open("operators.json", "r"))
+    for i, o in enumerate(rawOperators):
+        progressCallback(i, len(rawOperators))
+        Operator(**o)

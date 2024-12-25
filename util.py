@@ -26,7 +26,8 @@ class Config:
                  depotColorSufficientFont = "black",
                  depotColorInsufficient = "red",
                  depotColorInsufficientFont ="white",
-                 gamepressUrl ="https://ak.gamepress.gg/operator/",
+                 dataRepositoryBaseUrl ="https://raw.githubusercontent.com/PuppiizSunniiz/AN-EN-Tags/refs/heads/main/json/gamedata/ArknightsGameData/zh_CN/gamedata/excel/",
+                 imageRepositoryBaseUrl ="https://raw.githubusercontent.com/PuppiizSunniiz/Arknight-Images/refs/heads/main/",
                  depotParsingEnabled = True,
                  arknightsContainer = "BlueStacks",
                  arknightsWindowName = None,
@@ -59,7 +60,8 @@ class Config:
         self.depotColorSufficientFont = depotColorSufficientFont
         self.depotColorInsufficient = depotColorInsufficient
         self.depotColorInsufficientFont = depotColorInsufficientFont
-        self.gamepressUrl = gamepressUrl
+        self.dataRepositoryBaseUrl = dataRepositoryBaseUrl
+        self.imageRepositoryBaseUrl = imageRepositoryBaseUrl
         self.depotParsingEnabled = depotParsingEnabled
         self.arknightsContainer = arknightsContainer
         self.arknightsWindowName = arknightsWindowName
@@ -109,11 +111,8 @@ def safeSave(image, filename):
     createDirsIfNeeded(filename)
     image.save(filename)
 
-def hasExtension(filename, extensions):
-    return filename.lower().endswith(extensions)
-
-def loadImage(path, name):
-    return Image.open(path + "/" + name).convert("RGBA")
+def loadImage(path):
+    return Image.open(path).convert("RGBA")
 
 def colorize(image, color):
     floatColor = [c / 255 for c in color]
@@ -194,7 +193,7 @@ def save(upgradeSets, depotContents):
             "upgrades": [{ "name": itemSet.upgrade.name, "enabled": itemSet.enabled } for itemSet in s.itemSets]
         })
 
-    data["version"] = "1.1"
+    data["version"] = "1.4"
     data["sets"] = sets
     data["depot"] = toExternal(depotContents)
 
@@ -212,6 +211,9 @@ def load():
 
         if version is None:
             rawData = migrateToVersion_1_1(rawData)
+
+        if version == "1.1":
+            rawData = migrateToVersion_1_4(rawData)
 
         for rawSet in rawData["sets"]:
             data["sets"].append({
@@ -235,6 +237,11 @@ def migrateToVersion_1_1(rawData):
     return { "sets": [{ "operator": op, "upgrades": operators[op] } for op in operators.keys()],
              "depot": rawData["depot"],
              "version": "1.1" }
+
+def migrateToVersion_1_4(rawData):
+    return { "sets": [{ "operator": s["operator"], "upgrades": [{ "name": up["name"].replace("Z", "D"), "enabled": up["enabled"]} for up in s["upgrades"]] } for s in rawData["sets"]],
+             "depot": rawData["depot"],
+             "version": "1.4" }
 
 LOGGER = logging.getLogger("ArknightsMaterials")
 LOGGER.setLevel(logging.DEBUG)

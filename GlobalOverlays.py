@@ -75,19 +75,15 @@ class UpgradeSelection(GlobalSelection):
         for up in self.upgrades:
             self.delete(up)
 
-        upgrades = None
-        if operator.hasCache():
-            upgrades = operator.getCosts()
-
         x = 0
-        if upgrades is None or UPGRADES["E1"] in upgrades:
+        if UPGRADES["E1"] in operator.costs:
             self.placeImage(x, 0, UPGRADES["E1"])
-            if upgrades is None or UPGRADES["E2"] in upgrades:
+            if UPGRADES["E2"] in operator.costs:
                 self.placeImage(x, 1, UPGRADES["E2"])
                 self.placeImage(x, 3, UPGRADES["Base E2"])
             x += 1
 
-        if upgrades is None or UPGRADES["SK2"] in upgrades:
+        if UPGRADES["SK2"] in operator.costs:
             self.placeImage(x, 0, UPGRADES["SK2"])
             self.placeImage(x, 1, UPGRADES["SK3"])
             self.placeImage(x, 2, UPGRADES["SK4"])
@@ -99,45 +95,45 @@ class UpgradeSelection(GlobalSelection):
             self.placeImage(x, 3, UPGRADES["SK4-7"])
             x += 1
 
-        if upgrades is None or UPGRADES["S1M1"] in upgrades:
+        if UPGRADES["S1M1"] in operator.costs:
             self.placeImage(x, 0, UPGRADES["S1M1"])
             self.placeImage(x, 1, UPGRADES["S1M2"])
             self.placeImage(x, 2, UPGRADES["S1M3"])
             self.placeImage(x, 3, UPGRADES["S1MX"])
             x += 1
 
-        if upgrades is None or UPGRADES["S2M1"] in upgrades:
+        if UPGRADES["S2M1"] in operator.costs:
             self.placeImage(x, 0, UPGRADES["S2M1"])
             self.placeImage(x, 1, UPGRADES["S2M2"])
             self.placeImage(x, 2, UPGRADES["S2M3"])
             self.placeImage(x, 3, UPGRADES["S2MX"])
             x += 1
-        if upgrades is None or UPGRADES["S3M1"] in upgrades:
+        if UPGRADES["S3M1"] in operator.costs:
             self.placeImage(x, 0, UPGRADES["S3M1"])
             self.placeImage(x, 1, UPGRADES["S3M2"])
             self.placeImage(x, 2, UPGRADES["S3M3"])
             self.placeImage(x, 3, UPGRADES["S3MX"])
             x += 1
 
-        if upgrades is None or UPGRADES["MOD-X-1"] in upgrades:
+        if UPGRADES["MOD-X-1"] in operator.costs:
             self.placeImage(x, 0, UPGRADES["MOD-X-1"], operator)
             self.placeImage(x, 1, UPGRADES["MOD-X-2"], operator)
             self.placeImage(x, 2, UPGRADES["MOD-X-3"], operator)
             self.placeImage(x, 3, UPGRADES["MOD-X-X"], operator)
             x += 1
 
-        if upgrades is None or UPGRADES["MOD-Y-1"] in upgrades:
+        if UPGRADES["MOD-Y-1"] in operator.costs:
             self.placeImage(x, 0, UPGRADES["MOD-Y-1"], operator)
             self.placeImage(x, 1, UPGRADES["MOD-Y-2"], operator)
             self.placeImage(x, 2, UPGRADES["MOD-Y-3"], operator)
             self.placeImage(x, 3, UPGRADES["MOD-Y-X"], operator)
             x += 1
 
-        if upgrades is None or UPGRADES["MOD-Z-1"] in upgrades:
-            self.placeImage(x, 0, UPGRADES["MOD-Z-1"], operator)
-            self.placeImage(x, 1, UPGRADES["MOD-Z-2"], operator)
-            self.placeImage(x, 2, UPGRADES["MOD-Z-3"], operator)
-            self.placeImage(x, 3, UPGRADES["MOD-Z-X"], operator)
+        if UPGRADES["MOD-D-1"] in operator.costs:
+            self.placeImage(x, 0, UPGRADES["MOD-D-1"], operator)
+            self.placeImage(x, 1, UPGRADES["MOD-D-2"], operator)
+            self.placeImage(x, 2, UPGRADES["MOD-D-3"], operator)
+            self.placeImage(x, 3, UPGRADES["MOD-D-X"], operator)
             x += 1
 
         self.config(width = self.scale * x)
