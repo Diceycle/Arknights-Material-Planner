@@ -24,14 +24,16 @@ loadscreen.update()
 from GUI import GUI
 from util import exceptHook
 
-from costParser import downloadOperatorData
-from database import loadOperators
+from gameDataReader import downloadOperatorData
+from database import loadOperators, loadMaterials
 
 def progressCallback(text, current, goal):
     l.config(text=f"{text}... ({current}/{goal})")
     loadscreen.update()
 
 downloadOperatorData(lambda current, goal: progressCallback("Downloading Operator Data", current, goal))
+
+loadMaterials(lambda current, goal: progressCallback("Downloading Material Images", current, goal))
 
 loadOperators(lambda current, goal: progressCallback("Downloading Operator Images", current, goal))
 

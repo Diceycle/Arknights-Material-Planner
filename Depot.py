@@ -211,8 +211,8 @@ class Depot(LockableCanvas):
         result = {}
         items = []
         for m in MATERIALS.values():
-            if m.externalId is not None:
-                items.append({ "id": m.externalId, "have": self.contents[m].get(), "need": self.trueRequirements[m] })
+            if m.internalId is not None:
+                items.append({ "id": m.internalId, "have": self.contents[m].get(), "need": self.trueRequirements[m] })
         result["items"] = items
         result["@type"] = "@penguin-statistics/planner/config"
 

@@ -7,22 +7,26 @@ import urllib.parse
 
 from utilImport import *
 
-MODULE_IMAGE_PATH = "data/moduleTypeImages/"
+MATERIAL_IMAGE_PATH = "data/materialImages/"
 OPERATOR_IMAGE_PATH = "data/operatorImages/"
+MODULE_IMAGE_PATH = "data/moduleTypeImages/"
 
 DATA_REPOSITORY = CONFIG.dataRepository
 DATA_REPOSITORY_FOLDER = CONFIG.dataRepositoryExcelPath
+MATERIAL_DATA_FILE = "item_table.json"
 OPERATOR_DATA_FILE = "character_table.json"
 ADDITIONAL_OPERATOR_DATA_FILE = "char_patch_table.json"
 MODULE_DATA_FILE = "uniequip_table.json"
 
 IMAGE_REPOSITORY_BASE_URL = CONFIG.imageRepositoryBaseUrl
-MODULE_IMAGE_SUB_URL = "equip/type/"
+MATERIAL_IMAGE_SUB_URL = "items/"
 OPERATOR_IMAGE_SUB_URL = "avatars/"
+MODULE_IMAGE_SUB_URL = "equip/type/"
 
 userAgent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
 headers = {'User-Agent': userAgent, }
 
+RAW_MATERIALS = None
 RAW_OPERATORS = None
 RAW_MODULES = None
 
@@ -65,11 +69,14 @@ def getModuleImagePath(subclassId, moduleType):
 def getOperatorImagePath(internalId):
     return OPERATOR_IMAGE_PATH + internalId + ".png"
 
-def getMaterial(externalId):
+def getMaterialImagePath(internalId):
+    return MATERIAL_IMAGE_PATH + internalId + ".png"
+
+def getMaterial(internalId):
     for m in MATERIALS.values():
-        if m.externalId == externalId:
+        if m.internalId == internalId:
             return m
-    LOGGER.warning("Unrecognized Material: %s", externalId)
+    LOGGER.warning("Unrecognized Material: %s", internalId)
 
 def getOperator(internalId):
     for o in OPERATORS.values():
@@ -149,16 +156,22 @@ def getOperatorCosts(internalId):
 
     return costs, subclassId
 
+def downloadMaterialImage(internalId):
+    imageId = RAW_MATERIALS["items"][internalId]["iconId"]
+    downloadFileFromWeb(IMAGE_REPOSITORY_BASE_URL + MATERIAL_IMAGE_SUB_URL + imageId + ".png", getMaterialImagePath(internalId))
+
 def downloadOperatorData(progressCallback = None):
+    global RAW_MATERIALS
     global RAW_OPERATORS
     global RAW_MODULES
 
-    files = [OPERATOR_DATA_FILE, ADDITIONAL_OPERATOR_DATA_FILE, MODULE_DATA_FILE]
+    files = [MATERIAL_DATA_FILE, OPERATOR_DATA_FILE, ADDITIONAL_OPERATOR_DATA_FILE, MODULE_DATA_FILE]
     for i, f in enumerate(files):
         if progressCallback is not None:
             progressCallback(i, len(files))
         tryDownloadNewerFileFromGithub(DATA_REPOSITORY, DATA_REPOSITORY_FOLDER + f, "data/" + f)
 
+    RAW_MATERIALS = json.load(open("data/" + MATERIAL_DATA_FILE, "r", encoding="utf-8"))
     RAW_OPERATORS = json.load(open("data/" + OPERATOR_DATA_FILE, "r", encoding="utf-8"))
     RAW_MODULES = json.load(open("data/" + MODULE_DATA_FILE, "r", encoding="utf-8"))
 
