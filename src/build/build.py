@@ -10,26 +10,27 @@ windowHandlerName = "FindArknightsWindow"
 distFolder = "_dist/"
 workFolder = "_build/"
 
-mainCommand = ['ArknightsMaterials.py',
+# Paths in args are relative to the workFolder (except runtime hook)
+mainCommand = ['src/main/ArknightsMaterials.py',
                '--name', name,
-               '--icon', '../rock.ico',
+               '--icon', '../src/main/rock.ico',
                '--contents-directory', '.',
                '--distpath', distFolder,
                '--workpath', workFolder,
-               '--add-data', '../img;img',
-               '--add-data', '../config-defaults.json;.',
-               '--add-data', '../operators.json;.',
-               '--add-data', '../materials.json;.',
-               '--add-data', '../rock.ico;.',
+               '--add-data', '../src/main/img;img',
+               '--add-data', '../src/build/config-defaults.json;.',
+               '--add-data', '../src/main/operators.json;.',
+               '--add-data', '../src/main/materials.json;.',
+               '--add-data', '../src/main/rock.ico;.',
                '--add-data', '../README.md;.',
-               '--runtime-hook', 'addLib.py',
+               '--runtime-hook', 'src/build/addLib.py',
                '--specpath', workFolder,
                '--noconfirm']
 
 if not console:
     mainCommand.append('--noconsole')
 
-windowHandlerCommand = ['WindowHandler.py',
+windowHandlerCommand = ['src/main/WindowHandler.py',
                         '--name', windowHandlerName,
                         '--distpath', distFolder,
                         '--workpath', workFolder,

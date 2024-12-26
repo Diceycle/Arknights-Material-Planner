@@ -1,6 +1,6 @@
 # Arknights Material Planner
 
-![A full screenshot of the application](/img/readme/full-screenshot.jpg)
+![A full screenshot of the application](/src/main/img/readme/full-screenshot.jpg)
 
 Streamline your Arknights planning with this all-in-one solution. Simply select the operator and the upgrade and let the
 tool do the rest.
@@ -35,34 +35,34 @@ one button and sit back as **image and text recognition** tells you exactly **wh
 
 ### Planning
 
-![An example of a planned upgrade](/img/readme/planning.png)
+![An example of a planned upgrade](/src/readme/img/planning.png)
 
 * Start by adding a operator and the type of Upgrade you want. Material requirements are then automatically downloaded from
   Gamepress.
   * Material requirements are cached locally to not spam Gamepress. In case a module releases for an Operator, you can
-    force a refresh on the material requirements ![The button to refresh material requirements](/img/ui/resetCache.png) 
+    force a refresh on the material requirements ![The button to refresh material requirements](/src/main/img/ui/resetCache.png) 
 * Multiple Upgrades can be selected per Operator. The individual Upgrades per Operator will be sorted automatically.
-* Include ![The enable/disable checkbox in on state](/img/ui/check-on.png) or
-  exclude ![The enable/disable checkbox in off state](/img/ui/check-off.png)
+* Include ![The enable/disable checkbox in on state](/src/main/img/ui/check-on.png) or
+  exclude ![The enable/disable checkbox in off state](/src/main/img/ui/check-off.png)
   the material list from the total requirements
-* Delete ![The delete button](/img/ui/close.png) or reorder ![The Button to drag a set of materials](/img/ui/drag.png)
+* Delete ![The delete button](/src/main/img/ui/close.png) or reorder ![The Button to drag a set of materials](/src/main/img/ui/drag.png)
   the different upgrades to your liking.
 * Choose from regular or cumulative upgrade types to set up your to-do list in fewer clicks.
 
 ### Depot Overview
 
-![An excerpt from a depot](/img/readme/depot-full.png) ![An excerpt from a filtered depot](/img/readme/depot-filtered.png)
+![An excerpt from a depot](/src/readme/img/depot-full.png) ![An excerpt from a filtered depot](/src/readme/img/depot-filtered.png)
 
-* See all of your materials at one glance ![The depot switch in full state](/img/ui/visibility-full.png).
-* Focus on only the materials needed in your selected upgrades ![The depot switch in partial state](/img/ui/visibility-partial.png)
-  or only on those you are still missing ![The depot switch in the lowest state](/img/ui/visibility-low.png).
+* See all of your materials at one glance ![The depot switch in full state](/src/main/img/ui/visibility-full.png).
+* Focus on only the materials needed in your selected upgrades ![The depot switch in partial state](/src/main/img/ui/visibility-partial.png)
+  or only on those you are still missing ![The depot switch in the lowest state](/src/main/img/ui/visibility-low.png).
 * See indicators of how many materials you need of each type in
     * Green if you already have enough or can craft enough of the material,
     * Red if you don't have enough of the material.
     * The Colors and text colors are **fully customizable**, see the configuration reference below.
-* Indicators can be switched between displaying the full amount that is needed ![The Indicator toggle in full state](/img/ui/total.png)
-  and the amount that is still missing after subtracting current stock and crafting ![The Indicator toggle in missing state](/img/ui/missing.png).
-* A second page ![The button to toggle between the pages](/img/ui/arrow-down.png) is available for skill books, module
+* Indicators can be switched between displaying the full amount that is needed ![The Indicator toggle in full state](/src/main/img/ui/total.png)
+  and the amount that is still missing after subtracting current stock and crafting ![The Indicator toggle in missing state](/src/main/img/ui/missing.png).
+* A second page ![The button to toggle between the pages](/src/main/img/ui/arrow-down.png) is available for skill books, module
   components and experience cards and chips and LMD.
 * **Hint**: There are `+` and `-` buttons, but you can also adjust the amount with the mouse wheel while hovering over a
   material.
@@ -70,13 +70,13 @@ one button and sit back as **image and text recognition** tells you exactly **wh
 ### Penguin Stats Export
 
 Use https://penguin-stats.io/planner to plan your long-term farming strategy. Click the export
-button ![The export button](/img/ui/export.png) and get all the information in the depot copied to your clipboard.
+button ![The export button](/src/main/img/ui/export.png) and get all the information in the depot copied to your clipboard.
 You can then paste and import that directly on Penguin Stats.
 
 ### Depot Scanning
 
 If you play Arknights on PC you can make use of the image- and text recognition feature to scan and import
-![The button to start scanning the depot](/img/ui/research-button.png) the contents of your depot list into
+![The button to start scanning the depot](/src/main/img/ui/research-button.png) the contents of your depot list into
 the tool automatically.
 
 * **This is unfortunately only 99% accurate. It can happen that the tool will miss certain digits or add digits that
@@ -100,7 +100,7 @@ the tool automatically.
 
 ### Recipe Display
 
-![A Recipe being display in the depot](/img/readme/recipe.png)
+![A Recipe being display in the depot](/src/readme/img/recipe.png)
 
 Click on any Material in the depot to display its recipe if it has one.
 
@@ -108,7 +108,7 @@ Click on any Material in the depot to display its recipe if it has one.
 
 ### Color Settings
 
-![A example of a potential light mode](/img/readme/colors.png)
+![A example of a potential light mode](/src/readme/img/colors.png)
 
 Not a fan of the default color scheme? Simply adjust the configuration parameters `color`, `colorDark` and
 `highlightColor`, that control the primary, secondary, and line/icon color respectively. For bright colors it is also

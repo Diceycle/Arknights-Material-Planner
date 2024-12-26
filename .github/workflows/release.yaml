@@ -27,7 +27,7 @@ jobs:
 
       - name: Build Binaries
         run: |
-          python build.py
+          python src/build/build.py
 
       - name: Zip Binaries
         uses: thedoctor0/zip-release@0.7.1

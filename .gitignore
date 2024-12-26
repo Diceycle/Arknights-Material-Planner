@@ -1,10 +1,12 @@
 __pycache__
-tests*
+
+tests/
 data/
+debug/
+
 *.materials
 *.log
 config.json
 
 _build
 _dist
-debug
