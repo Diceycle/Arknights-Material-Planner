@@ -11,6 +11,9 @@ MATERIAL_IMAGE_PATH = "data/materialImages/"
 OPERATOR_IMAGE_PATH = "data/operatorImages/"
 MODULE_IMAGE_PATH = "data/moduleTypeImages/"
 
+DOWNLOAD_METADATA_FILE = "data/downloadMetadata.json"
+DOWNLOAD_METADATA = None
+
 DATA_REPOSITORY = CONFIG.dataRepository
 DATA_REPOSITORY_FOLDER = CONFIG.dataRepositoryExcelPath
 MATERIAL_DATA_FILE = "item_table.json"
@@ -32,6 +35,8 @@ RAW_RECIPES = None
 RAW_OPERATORS = None
 RAW_MODULES = None
 
+LAST_COMMIT_TIMESTAMPS = {}
+
 def getRequest(url):
     try:
         return urllib.request.urlopen(urllib.request.Request(url, None, headers))
@@ -41,20 +46,32 @@ def getRequest(url):
             line = line.decode("utf-8")
             LOGGER.debug(line.replace("\n", ""))
 
-def getMostRecentCommitTimestamp(repo, remotePath):
-    response = json.loads(getRequest(f"https://api.github.com/repos/{repo}/commits?path={remotePath}").read())
+def getMostRecentCommitTimestamp(repo, remotePath=None):
+    url = f"https://api.github.com/repos/{repo}/commits"
+    if remotePath is not None:
+        url += "?path=" + remotePath
+
+    response = json.loads(getRequest(url).read())
     return datetime.datetime.fromisoformat(response[0]["commit"]["author"]["date"]).timestamp()
 
 def tryDownloadNewerFileFromGithub(repo, remotePath, localPath):
-    fullUrl = f"https://raw.githubusercontent.com/{repo}/HEAD/{remotePath}"
-    if not os.path.exists(localPath):
-        downloadFileFromWeb(fullUrl, localPath)
-    else:
-        localTimestamp = os.path.getmtime(localPath)
-        remoteTimestamp = getMostRecentCommitTimestamp(repo, remotePath)
+    global DOWNLOAD_METADATA
 
-        if localTimestamp < remoteTimestamp:
-            downloadFileFromWeb(fullUrl, localPath, replace=True)
+    if not repo in LAST_COMMIT_TIMESTAMPS:
+        LAST_COMMIT_TIMESTAMPS[repo] = getMostRecentCommitTimestamp(repo)
+
+    fullUrl = f"https://raw.githubusercontent.com/{repo}/HEAD/{remotePath}"
+    if not os.path.exists(localPath) or not localPath in DOWNLOAD_METADATA:
+        downloadFileFromWeb(fullUrl, localPath, replace=True)
+    else:
+        lastDownloadAttempt = DOWNLOAD_METADATA[localPath]
+        if lastDownloadAttempt < LAST_COMMIT_TIMESTAMPS[repo]:
+            remoteTimestamp = getMostRecentCommitTimestamp(repo, remotePath)
+            if lastDownloadAttempt < remoteTimestamp:
+                downloadFileFromWeb(fullUrl, localPath, replace=True)
+
+    DOWNLOAD_METADATA[localPath] = LAST_COMMIT_TIMESTAMPS[repo]
+    writeDownloadMetadata(DOWNLOAD_METADATA)
 
 def downloadFileFromWeb(url, localPath, replace=False):
     if replace or not os.path.exists(localPath):
@@ -64,6 +81,11 @@ def downloadFileFromWeb(url, localPath, replace=False):
             f = safeOpen(localPath, mode="wb+")
             f.write(file)
             f.close()
+
+def writeDownloadMetadata(metadata):
+    f = open(DOWNLOAD_METADATA_FILE, "w+")
+    json.dump(metadata, f, indent=4)
+    f.close()
 
 def getModuleImagePath(subclassId, moduleType):
     return MODULE_IMAGE_PATH + f"{subclassId}-{moduleType}.png"
@@ -178,6 +200,12 @@ def downloadOperatorData(progressCallback = None):
     global RAW_RECIPES
     global RAW_OPERATORS
     global RAW_MODULES
+
+    global DOWNLOAD_METADATA
+
+    if not os.path.isfile(DOWNLOAD_METADATA_FILE):
+        writeDownloadMetadata({})
+    DOWNLOAD_METADATA = json.load(open(DOWNLOAD_METADATA_FILE, "r"))
 
     files = [MATERIAL_DATA_FILE, RECIPE_DATA_FILE, OPERATOR_DATA_FILE, ADDITIONAL_OPERATOR_DATA_FILE, MODULE_DATA_FILE]
     for i, f in enumerate(files):
