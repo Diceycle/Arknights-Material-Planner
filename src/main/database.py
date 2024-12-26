@@ -232,7 +232,7 @@ DEPOT_ORDER = None
 
 def loadMaterials(progressCallback):
     global DEPOT_ORDER
-    rawMaterials = json.load(open("materials.json", "r"))
+    rawMaterials = json.load(open("data/materials.json", "r"))
     for i, m in enumerate(rawMaterials["materials"]):
         progressCallback(i, len(rawMaterials["materials"]))
         Material(**m)
@@ -242,7 +242,7 @@ def loadMaterials(progressCallback):
     return rawMaterials["pageSize"]
 
 def loadOperators(progressCallback):
-    rawOperators = json.load(open("operators.json", "r"))
+    rawOperators = json.load(open("data/operators.json", "r"))
     for i, o in enumerate(rawOperators):
         progressCallback(i, len(rawOperators))
         Operator(**o)
