@@ -83,7 +83,7 @@ def downloadFileFromWeb(url, localPath, replace=False):
             f.close()
 
 def writeDownloadMetadata(metadata):
-    f = open(DOWNLOAD_METADATA_FILE, "w+")
+    f = safeOpen(DOWNLOAD_METADATA_FILE, "w+")
     json.dump(metadata, f, indent=4)
     f.close()
 

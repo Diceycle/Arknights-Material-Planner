@@ -19,6 +19,7 @@ mainCommand = ['ArknightsMaterials.py',
                '--add-data', '../img;img',
                '--add-data', '../config-defaults.json;.',
                '--add-data', '../operators.json;.',
+               '--add-data', '../materials.json;.',
                '--add-data', '../rock.ico;.',
                '--add-data', '../README.md;.',
                '--runtime-hook', 'addLib.py',
@@ -48,11 +49,12 @@ doNotMove = [
     "base_library.zip",
     "libopenblas64__v0.3.21-gcc_10_3_0.dll",
     "python3.dll",
-    "python310.dll",
+    "python313.dll",
 
     "rock.ico",
     "config-defaults.json",
     "operators.json",
+    "materials.json",
     "README.md"
 ]
 

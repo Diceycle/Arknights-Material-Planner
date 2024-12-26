@@ -31,7 +31,7 @@ def progressCallback(text, current, goal):
     l.config(text=f"{text}... ({current}/{goal})")
     loadscreen.update()
 
-downloadOperatorData(lambda current, goal: progressCallback("Downloading Operator Data", current, goal))
+downloadOperatorData(lambda current, goal: progressCallback("Downloading Gamedata", current, goal))
 
 materialPageSize = loadMaterials(lambda current, goal: progressCallback("Downloading Material Images", current, goal))
 
