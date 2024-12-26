@@ -24,14 +24,16 @@ loadscreen.update()
 from GUI import GUI
 from util import exceptHook
 
-from gameDataReader import downloadOperatorData
+from gameDataReader import downloadGamedata, downloadEntityLists
 from database import loadOperators, loadMaterials
 
 def progressCallback(text, current, goal):
     l.config(text=f"{text}... ({current}/{goal})")
     loadscreen.update()
 
-downloadOperatorData(lambda current, goal: progressCallback("Downloading Gamedata", current, goal))
+downloadGamedata(lambda current, goal: progressCallback("Downloading Gamedata", current, goal))
+
+downloadEntityLists(lambda current, goal: progressCallback("Downloading Entity Lists", current, goal))
 
 materialPageSize = loadMaterials(lambda current, goal: progressCallback("Downloading Material Images", current, goal))
 

@@ -14,6 +14,11 @@ MODULE_IMAGE_PATH = "data/moduleTypeImages/"
 DOWNLOAD_METADATA_FILE = "data/downloadMetadata.json"
 DOWNLOAD_METADATA = None
 
+ENTITY_LIST_REPOSITORY = "Diceycle/Arknights-Material-Planner"
+ENTITY_LIST_REPOSITORY_FOLDER = "entityLists/"
+MATERIAL_LIST_FILE = "materials.json"
+OPERATOR_LIST_FILE = "operators.json"
+
 DATA_REPOSITORY = CONFIG.dataRepository
 DATA_REPOSITORY_FOLDER = CONFIG.dataRepositoryExcelPath
 MATERIAL_DATA_FILE = "item_table.json"
@@ -195,17 +200,11 @@ def readMaterialData(internalId):
 
     return tier, recipe
 
-def downloadOperatorData(progressCallback = None):
+def downloadGamedata(progressCallback = None):
     global RAW_MATERIALS
     global RAW_RECIPES
     global RAW_OPERATORS
     global RAW_MODULES
-
-    global DOWNLOAD_METADATA
-
-    if not os.path.isfile(DOWNLOAD_METADATA_FILE):
-        writeDownloadMetadata({})
-    DOWNLOAD_METADATA = json.load(open(DOWNLOAD_METADATA_FILE, "r"))
 
     files = [MATERIAL_DATA_FILE, RECIPE_DATA_FILE, OPERATOR_DATA_FILE, ADDITIONAL_OPERATOR_DATA_FILE, MODULE_DATA_FILE]
     for i, f in enumerate(files):
@@ -222,9 +221,21 @@ def downloadOperatorData(progressCallback = None):
     for k, v in rawCharacterAdditions["patchChars"].items():
         RAW_OPERATORS[k] = v
 
+def downloadEntityLists(progressCallback):
+    files = [MATERIAL_LIST_FILE, OPERATOR_LIST_FILE]
+    for i, f in enumerate(files):
+        if progressCallback is not None:
+            progressCallback(i, len(files))
+        tryDownloadNewerFileFromGithub(ENTITY_LIST_REPOSITORY, ENTITY_LIST_REPOSITORY_FOLDER + f, "data/" + f)
+
+
+if not os.path.isfile(DOWNLOAD_METADATA_FILE):
+    writeDownloadMetadata({})
+DOWNLOAD_METADATA = json.load(open(DOWNLOAD_METADATA_FILE, "r"))
+
 if __name__ == "__main__":
-    knownOperatorIds = [op["internalId"] for op in json.load(open("operators.json", "r"))]
-    downloadOperatorData()
+    knownOperatorIds = [op["internalId"] for op in json.load(open("../../entityList/operators.json", "r"))]
+    downloadGamedata()
     for operatorId, op in RAW_OPERATORS.items():
         if operatorId.startswith("char") and not op["isNotObtainable"] and not operatorId in knownOperatorIds:
             print(operatorId)

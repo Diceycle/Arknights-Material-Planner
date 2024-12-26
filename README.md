@@ -1,6 +1,6 @@
 # Arknights Material Planner
 
-![A full screenshot of the application](/src/main/img/readme/full-screenshot.jpg)
+![A full screenshot of the application](/src/readme/img/full-screenshot.jpg)
 
 Streamline your Arknights planning with this all-in-one solution. Simply select the operator and the upgrade and let the
 tool do the rest.
