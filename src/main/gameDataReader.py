@@ -234,7 +234,7 @@ if not os.path.isfile(DOWNLOAD_METADATA_FILE):
 DOWNLOAD_METADATA = json.load(open(DOWNLOAD_METADATA_FILE, "r"))
 
 if __name__ == "__main__":
-    knownOperatorIds = [op["internalId"] for op in json.load(open("../../entityList/operators.json", "r"))]
+    knownOperatorIds = [op["internalId"] for op in json.load(open("../../entityLists/operators.json", "r"))]
     downloadGamedata()
     for operatorId, op in RAW_OPERATORS.items():
         if operatorId.startswith("char") and not op["isNotObtainable"] and not operatorId in knownOperatorIds:
