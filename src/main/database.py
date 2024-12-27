@@ -230,7 +230,7 @@ Upgrade("MOD-D-3", "Module D Stage 3", "img_stg3.png", overlay = "mod-d", mainDi
 Upgrade("MOD-D-X", "Module D Full", "img_stgX.png", overlay = "mod-d", mainDimension=1, moduleType="D", cumulativeUpgrades=["MOD-D-1", "MOD-D-2", "MOD-D-3"])
 
 
-DEPOT_ORDER = None
+DEPOT_ORDER = []
 def loadMaterials(progressCallback):
     global DEPOT_ORDER
     rawMaterials = json.load(open("data/materials.json", "r"))
@@ -241,7 +241,7 @@ def loadMaterials(progressCallback):
         for i, future in enumerate(as_completed(futures)):
             progressCallback(i, len(rawMaterials["materials"]))
 
-    DEPOT_ORDER = rawMaterials["depotOrder"]
+    DEPOT_ORDER += rawMaterials["depotOrder"]
 
     return rawMaterials["pageSize"]
 
