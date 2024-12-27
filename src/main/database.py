@@ -1,5 +1,6 @@
 import json
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from PIL import Image, ImageTk, ImageColor
 
@@ -47,11 +48,12 @@ class UIElement(ScalableImage):
 
 class Upgrade(ScalableImage):
     def __init__(self, name, canonicalName, image, overlay = None, cumulativeUpgrades = None, moduleType = None, **kwargs):
-        super().__init__(name, UPGRADES, "img/misc/" + image, **kwargs)
         self.canonicalName = canonicalName
         self.overlay = overlay
         self.moduleType = moduleType
         self.cumulativeUpgrades = [UPGRADES[up] for up in cumulativeUpgrades] if cumulativeUpgrades is not None else None
+
+        super().__init__(name, UPGRADES, "img/misc/" + image, **kwargs)
 
     def calculateCosts(self, costs):
         if self.cumulativeUpgrades is None:
@@ -229,13 +231,15 @@ Upgrade("MOD-D-X", "Module D Full", "img_stgX.png", overlay = "mod-d", mainDimen
 
 
 DEPOT_ORDER = None
-
 def loadMaterials(progressCallback):
     global DEPOT_ORDER
     rawMaterials = json.load(open("data/materials.json", "r"))
-    for i, m in enumerate(rawMaterials["materials"]):
-        progressCallback(i, len(rawMaterials["materials"]))
-        Material(**m)
+    
+    with ThreadPoolExecutor(max_workers=10) as pool:
+        futures = [ pool.submit(lambda args: Material(**args), m) for m in rawMaterials["materials"] ]
+
+        for i, future in enumerate(as_completed(futures)):
+            progressCallback(i, len(rawMaterials["materials"]))
 
     DEPOT_ORDER = rawMaterials["depotOrder"]
 
@@ -243,6 +247,9 @@ def loadMaterials(progressCallback):
 
 def loadOperators(progressCallback):
     rawOperators = json.load(open("data/operators.json", "r"))
-    for i, o in enumerate(rawOperators):
-        progressCallback(i, len(rawOperators))
-        Operator(**o)
+
+    with ThreadPoolExecutor(max_workers=10) as pool:
+        futures = [ pool.submit(lambda args: Operator(**args), m) for m in rawOperators ]
+
+        for i, future in enumerate(as_completed(futures)):
+            progressCallback(i, len(rawOperators))
