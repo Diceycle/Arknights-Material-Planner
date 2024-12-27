@@ -14,13 +14,13 @@ MODULE_IMAGE_PATH = "data/moduleTypeImages/"
 DOWNLOAD_METADATA_FILE = "data/downloadMetadata.json"
 DOWNLOAD_METADATA = None
 
-ENTITY_LIST_REPOSITORY = "Diceycle/Arknights-Material-Planner"
+ENTITY_LIST_REPOSITORY = CONFIG.entityListRepository
 ENTITY_LIST_REPOSITORY_FOLDER = "entityLists/"
 MATERIAL_LIST_FILE = "materials.json"
 OPERATOR_LIST_FILE = "operators.json"
 
 DATA_REPOSITORY = CONFIG.dataRepository
-DATA_REPOSITORY_FOLDER = CONFIG.dataRepositoryExcelPath
+DATA_REPOSITORY_FOLDER = CONFIG.dataRepositoryGameDataPath
 MATERIAL_DATA_FILE = "item_table.json"
 RECIPE_DATA_FILE = "building_data.json"
 OPERATOR_DATA_FILE = "character_table.json"

@@ -26,8 +26,9 @@ class Config:
                  depotColorSufficientFont = "black",
                  depotColorInsufficient = "red",
                  depotColorInsufficientFont ="white",
-                 dataRepository ="Kengxxiao/ArknightsGameData",
-                 dataRepositoryExcelPath ="zh_CN/gamedata/excel/",
+                 entityListRepository = "Diceycle/Arknights-Material-Planner",
+                 dataRepository = "Kengxxiao/ArknightsGameData",
+                 dataRepositoryGameDataPath ="zh_CN/gamedata/excel/",
                  imageRepositoryBaseUrl ="https://raw.githubusercontent.com/PuppiizSunniiz/Arknight-Images/refs/heads/main/",
                  depotParsingEnabled = True,
                  arknightsContainer = "BlueStacks",
@@ -61,8 +62,9 @@ class Config:
         self.depotColorSufficientFont = depotColorSufficientFont
         self.depotColorInsufficient = depotColorInsufficient
         self.depotColorInsufficientFont = depotColorInsufficientFont
+        self.entityListRepository = entityListRepository
         self.dataRepository = dataRepository
-        self.dataRepositoryExcelPath = dataRepositoryExcelPath
+        self.dataRepositoryGameDataPath = dataRepositoryGameDataPath
         self.imageRepositoryBaseUrl = imageRepositoryBaseUrl
         self.depotParsingEnabled = depotParsingEnabled
         self.arknightsContainer = arknightsContainer
