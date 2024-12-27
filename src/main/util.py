@@ -8,7 +8,7 @@ from PIL import Image
 
 class Config:
     def __init__(self,
-                 uiScale = 100,
+                 uiScale = 80,
                  scrollSpeed = 30,
                  saveFile = "default.materials",
                  maintainNaturalOrder = False,
@@ -25,11 +25,11 @@ class Config:
                  depotColorSufficient = "#00CC00",
                  depotColorSufficientFont = "black",
                  depotColorInsufficient = "red",
-                 depotColorInsufficientFont ="white",
+                 depotColorInsufficientFont = "white",
                  entityListRepository = "Diceycle/Arknights-Material-Planner",
                  dataRepository = "Kengxxiao/ArknightsGameData",
-                 dataRepositoryGameDataPath ="zh_CN/gamedata/excel/",
-                 imageRepositoryBaseUrl ="https://raw.githubusercontent.com/PuppiizSunniiz/Arknight-Images/refs/heads/main/",
+                 dataRepositoryGameDataPath = "zh_CN/gamedata/excel/",
+                 imageRepository = "PuppiizSunniiz/Arknight-Images",
                  depotParsingEnabled = True,
                  arknightsContainer = "BlueStacks",
                  arknightsWindowName = None,
@@ -65,7 +65,7 @@ class Config:
         self.entityListRepository = entityListRepository
         self.dataRepository = dataRepository
         self.dataRepositoryGameDataPath = dataRepositoryGameDataPath
-        self.imageRepositoryBaseUrl = imageRepositoryBaseUrl
+        self.imageRepository = imageRepository
         self.depotParsingEnabled = depotParsingEnabled
         self.arknightsContainer = arknightsContainer
         self.arknightsWindowName = arknightsWindowName
