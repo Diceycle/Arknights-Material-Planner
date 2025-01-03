@@ -35,12 +35,11 @@ class Config:
                  arknightsWindowName = None,
                  arknightsInputWindowClass = None,
                  arknightsWindowBorder = None,
-                 depotScanScrollDelay = 2,
+                 depotScanScrollDelay = 5,
                  depotScanScrollOffset = 25,
                  displayScale = 1,
                  colorLeniency = 3,
                  imageRecognitionThreshold = 0.8,
-                 tesseractExeLocation = None,
                  debug = True,
                  **kwargs):
 
@@ -76,7 +75,6 @@ class Config:
         self.displayScale = displayScale
         self.colorLeniency = colorLeniency
         self.imageRecognitionThreshold = imageRecognitionThreshold
-        self.tesseractExeLocation = tesseractExeLocation
         self.debug = debug
 
         if self.usesBlueStacks():
@@ -88,7 +86,7 @@ class Config:
             if self.arknightsWindowName is None:
                 self.arknightsWindowName = "LDPlayer"
             if self.arknightsWindowBorder is None:
-                self.arknightsWindowBorder = (1, 34, 41, 2)
+                self.arknightsWindowBorder = (0, 34, 39, 0)
         else:
             if self.arknightsWindowBorder is None:
                 self.arknightsWindowBorder = (0, 0, 0, 0)

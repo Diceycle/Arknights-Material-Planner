@@ -1,6 +1,5 @@
 pillow >= 9.4.0
 numpy >= 1.23.3
-pytesseract == 0.3.4
 pywin32 >= 305
 pywin32-ctypes >= 0.2.0
 opencv-python > 4.5

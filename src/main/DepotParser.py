@@ -8,7 +8,7 @@ from utilImport import *
 from database import DEPOT_ORDER
 from WindowHandler import resolveHandler
 from imageRecognizing import matchMasked
-from ocr import readImage, prepareImage
+from numberRecognizing import readImage, prepareImage
 
 SCREENSHOT_SIZE = (1641, 923)
 WINDOW_BORDER = CONFIG.arknightsWindowBorder
@@ -54,7 +54,7 @@ DEPOT_END_CHECKS = [
     (1560, 330)
 ]
 
-AMOUNT_CROP_BOX = (118, 157, 181, 192)
+AMOUNT_CROP_BOX = (116, 157, 181, 192)
 AMOUNT_CROP_BOX_SLIM = (123, 163, 176, 188)
 
 def matchesColor(c1, c2, leniency = 3):
@@ -174,11 +174,6 @@ class DepotParser:
     def startParsing(self, statusCallback, materialCallback, finishCallback):
         if self.image is None and not self.handler.ready:
             statusCallback("Arknights is not running or cannot be found. Check your Arknights Window configuration.", error = True)
-            finishCallback(False)
-            return
-
-        if CONFIG.tesseractExeLocation is None:
-            statusCallback("Tesseract Exe needs to be configured", error = True)
             finishCallback(False)
             return
 
