@@ -26,6 +26,8 @@ class Config:
                  depotColorSufficientFont = "black",
                  depotColorInsufficient = "red",
                  depotColorInsufficientFont = "white",
+                 offlineMode = False,
+                 webRequestTimeout = 1,
                  entityListRepository = "Diceycle/Arknights-Material-Planner",
                  dataRepository = "Kengxxiao/ArknightsGameData",
                  dataRepositoryGameDataPath = "zh_CN/gamedata/excel/",
@@ -61,6 +63,8 @@ class Config:
         self.depotColorSufficientFont = depotColorSufficientFont
         self.depotColorInsufficient = depotColorInsufficient
         self.depotColorInsufficientFont = depotColorInsufficientFont
+        self.offlineMode = offlineMode
+        self.webRequestTimeout = webRequestTimeout
         self.entityListRepository = entityListRepository
         self.dataRepository = dataRepository
         self.dataRepositoryGameDataPath = dataRepositoryGameDataPath
@@ -94,6 +98,9 @@ class Config:
         if len(kwargs) > 0:
             LOGGER.warning("Unrecognized Config Parameters: %s", kwargs)
 
+        if self.offlineMode:
+            LOGGER.info("Starting in Offline Mode. No Web-Requests will be made but some data or images might be missing as a result.")
+
     def usesBlueStacks(self):
         return self.arknightsContainer.lower() == "BlueStacks".lower()
 
@@ -113,7 +120,10 @@ def safeSave(image, filename):
     createDirsIfNeeded(filename)
     image.save(filename)
 
-def loadImage(path):
+def loadImage(path, tolerateMissing=False):
+    if tolerateMissing and not os.path.isfile(path):
+        LOGGER.warning(f"Missing Image({path}) detected. This is likely due to internet connectivity issues or offline mode. Restart the tool with internet access to attempt another download")
+        path = "img/ui/naSquare.png"
     return Image.open(path).convert("RGBA")
 
 def colorize(image, color):

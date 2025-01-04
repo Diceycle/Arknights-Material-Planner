@@ -44,12 +44,15 @@ LAST_COMMIT_TIMESTAMPS = {}
 
 def getRequest(url):
     try:
-        return urllib.request.urlopen(urllib.request.Request(url, None, headers))
+        if not CONFIG.offlineMode:
+            return urllib.request.urlopen(urllib.request.Request(url, None, headers), timeout=CONFIG.webRequestTimeout).read()
     except urllib.error.HTTPError as response:
         LOGGER.error("Error(%s) reading url: %s", response.code, url)
         for line in response.readlines()[:10]:
             line = line.decode("utf-8")
             LOGGER.debug(line.replace("\n", ""))
+    except urllib.error.URLError as error:
+        LOGGER.error("Error reading %s: %s", url, error.reason)
 
 def buildGithubDownloadUrl(repo, remotePath):
     return f"https://raw.githubusercontent.com/{repo}/HEAD/{remotePath}"
@@ -59,14 +62,20 @@ def getMostRecentCommitTimestamp(repo, remotePath=None):
     if remotePath is not None:
         url += "?path=" + remotePath
 
-    response = json.loads(getRequest(url).read())
-    return datetime.datetime.fromisoformat(response[0]["commit"]["author"]["date"]).timestamp()
+    response = getRequest(url)
+    if response is not None:
+        responseJson = json.loads(response)
+        return datetime.datetime.fromisoformat(responseJson[0]["commit"]["author"]["date"]).timestamp()
 
 def tryDownloadNewerFileFromGithub(repo, remotePath, localPath):
     global DOWNLOAD_METADATA
 
     if not repo in LAST_COMMIT_TIMESTAMPS:
-        LAST_COMMIT_TIMESTAMPS[repo] = getMostRecentCommitTimestamp(repo)
+        commitTimestamp = getMostRecentCommitTimestamp(repo)
+        if commitTimestamp is not None:
+            LAST_COMMIT_TIMESTAMPS[repo] = commitTimestamp
+        else:
+            LAST_COMMIT_TIMESTAMPS[repo] = DOWNLOAD_METADATA.get(localPath, 0)
 
     if not os.path.exists(localPath) or not localPath in DOWNLOAD_METADATA:
         downloadFileFromWeb(buildGithubDownloadUrl(repo, remotePath), localPath, replace=True)
@@ -81,13 +90,16 @@ def tryDownloadNewerFileFromGithub(repo, remotePath, localPath):
     writeDownloadMetadata(DOWNLOAD_METADATA)
 
 def downloadFileFromWeb(url, localPath, replace=False):
-    if replace or not os.path.exists(localPath):
+    if replace or not os.path.exists(localPath) and not CONFIG.offlineMode:
         LOGGER.debug("Updating from Web: %s", localPath)
-        file = getRequest(url).read()
+        file = getRequest(url)
         if file is not None:
             f = safeOpen(localPath, mode="wb+")
             f.write(file)
             f.close()
+            return True
+        else:
+            return False
 
 def writeDownloadMetadata(metadata):
     f = safeOpen(DOWNLOAD_METADATA_FILE, "w+")

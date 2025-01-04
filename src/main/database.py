@@ -11,9 +11,9 @@ UPGRADE_SCALE = 0.75
 MAX_MODULE_IMAGE_DIMENSIONS = (70, 60)
 
 class ScalableImage:
-    def __init__(self, name, collection, imagePath, mainDimension = 1):
+    def __init__(self, name, collection, imagePath, tolerateMissingImage = False, mainDimension = 1):
         self.name = name
-        self.image = loadImage(imagePath)
+        self.image = loadImage(imagePath, tolerateMissing=tolerateMissingImage)
         self.mainDimension = mainDimension
 
         self.imageReferences = {}
@@ -128,7 +128,7 @@ class Operator(ScalableImage):
         self.internalId = internalId
         self.costs, self.subclassId = readOperatorCosts(internalId)
 
-        super().__init__(name, OPERATORS, getOperatorImagePath(internalId))
+        super().__init__(name, OPERATORS, getOperatorImagePath(internalId), tolerateMissingImage=True)
 
     def getModuleImagePath(self, moduleType):
         return getModuleImagePath(self.subclassId, moduleType)
@@ -141,7 +141,7 @@ class Material(ScalableImage):
         self.canonicalName = canonicalName
         self.position = position
 
-        super().__init__(name, MATERIALS, getMaterialImagePath(internalId))
+        super().__init__(name, MATERIALS, getMaterialImagePath(internalId), tolerateMissingImage=True)
 
     def isCraftable(self):
         return self.recipe is not None
@@ -240,6 +240,8 @@ def loadMaterials(progressCallback):
 
         for i, future in enumerate(as_completed(futures)):
             progressCallback(i, len(rawMaterials["materials"]))
+            # Retrieve the result to make sure exceptions are thrown
+            future.result()
 
     DEPOT_ORDER += rawMaterials["depotOrder"]
 
@@ -253,3 +255,5 @@ def loadOperators(progressCallback):
 
         for i, future in enumerate(as_completed(futures)):
             progressCallback(i, len(rawOperators))
+            # Retrieve the result to make sure exceptions are thrown
+            future.result()
