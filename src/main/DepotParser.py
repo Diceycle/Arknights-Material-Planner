@@ -57,6 +57,12 @@ DEPOT_END_CHECKS = [
 AMOUNT_CROP_BOX = (116, 157, 181, 192)
 AMOUNT_CROP_BOX_SLIM = (123, 163, 176, 188)
 
+def convertCoords(coords, handler):
+    height = handler.findWindowDimensions(includeBorder=False)[3] - WINDOW_BORDER[1] - WINDOW_BORDER[3]
+
+    factor = height / SCREENSHOT_SIZE[1]
+    return int(coords[0] * factor), int(coords[1] * factor)
+
 def matchesColor(c1, c2, leniency = 3):
     return (abs(c1[0] - c2[0]) <= leniency and
             abs(c1[1] - c2[1]) <= leniency and
@@ -68,19 +74,27 @@ def resizeArknights(windowHandler):
 
 def takeScreenshot(windowHandler):
     windowHandler.activate()
-    resizeArknights(windowHandler)
+    if CONFIG.resizeArknights:
+        resizeArknights(windowHandler)
 
-    screenshot = windowHandler.takeScreenshot().crop((
+    rawScreenshot = windowHandler.takeScreenshot()
+    screenshot = rawScreenshot.crop((
         int(round(WINDOW_BORDER[0] * CONFIG.displayScale)),
         int(round(WINDOW_BORDER[1] * CONFIG.displayScale)),
-        SCREENSHOT_SIZE[0] + int(round(WINDOW_BORDER[0] * CONFIG.displayScale)),
-        SCREENSHOT_SIZE[1] + int(round(WINDOW_BORDER[1] * CONFIG.displayScale))))
+        rawScreenshot.width - int(round(WINDOW_BORDER[2] * CONFIG.displayScale)),
+        rawScreenshot.height - int(round(WINDOW_BORDER[3] * CONFIG.displayScale))))
+    scaleFactor = SCREENSHOT_SIZE[1] / screenshot.height
+    screenshot = screenshot.resize((int(screenshot.width * scaleFactor), int(screenshot.height * scaleFactor)), Image.BICUBIC)
     return screenshot.convert("RGB")
 
-def scrollArknights(windowHandler):
-    windowHandler.dragLine(SCROLL_LINE_START, SCROLL_LINE_END, CONFIG.depotScanScrollDelay)
+def scrollArknights(windowHandler, interruptCheckCallback):
+    windowHandler.dragLine(convertCoords(SCROLL_LINE_START, windowHandler), convertCoords(SCROLL_LINE_END, windowHandler), CONFIG.depotScanScrollDelay,
+                           interruptCheckCallback)
     # Give Arknights time to snap back in case of overscroll
     time.sleep(0.5)
+
+def clickArknights(windowHandler, coords, delay):
+    windowHandler.click(convertCoords(coords, windowHandler), delay=delay)
 
 def checkEndOfDepot(image):
     for p in DEPOT_END_CHECKS:
@@ -124,8 +138,8 @@ def validateMenu(handler):
             break
 
     if filterPreselected:
-        handler.click((DEPOT_CHECKS[0][0][0] - DEPOT_BUTTON_SIZE, DEPOT_CHECKS[0][0][1]), delay=0.5)
-        handler.click(DEPOT_CHECKS[0][0], delay=0.5)
+        clickArknights(handler, (DEPOT_CHECKS[0][0][0] - DEPOT_BUTTON_SIZE, DEPOT_CHECKS[0][0][1]), delay=0.5)
+        clickArknights(handler, DEPOT_CHECKS[0][0], delay=0.5)
         LOGGER.debug("Scan: I'm in the depot with the Growth Material filter is preselected")
         return takeScreenshot(handler)
 
@@ -136,8 +150,8 @@ def validateMenu(handler):
             break
 
     if mainMenu:
-        handler.click(MAIN_MENU_DEPOT_BUTTON, delay=1)
-        handler.click(DEPOT_CHECKS[0][0], delay=0.5)
+        clickArknights(handler, MAIN_MENU_DEPOT_BUTTON, delay=1)
+        clickArknights(handler, DEPOT_CHECKS[0][0], delay=0.5)
         LOGGER.debug("Scan: I'm in the main menu")
         return takeScreenshot(handler)
 
@@ -149,7 +163,7 @@ def validateMenu(handler):
             break
 
     if inDepot:
-        handler.click(DEPOT_CHECKS[0][0], delay=0.5)
+        clickArknights(handler, DEPOT_CHECKS[0][0], delay=0.5)
         LOGGER.debug("Scan: I'm in the depot")
         return takeScreenshot(handler)
 
@@ -169,6 +183,7 @@ class DepotParser:
         self.debug = debug
         self.confidenceThreshold = confidenceThreshold
         self.scrollThread = None
+        self.parseThread = None
 
 
     def startParsing(self, statusCallback, materialCallback, finishCallback):
@@ -195,7 +210,8 @@ class DepotParser:
             return
 
         self.loadNextPage(screenshot, firstPage=True)
-        threading.Thread(target=lambda : self.parse(statusCallback, materialCallback, finishCallback)).start()
+        self.parseThread = threading.Thread(target=lambda : self.parse(statusCallback, materialCallback, finishCallback))
+        self.parseThread.start()
 
 
     def loadNextPage(self, screenshot, firstPage = False):
@@ -209,7 +225,7 @@ class DepotParser:
         else:
             self.boxes = splitScreenshot(screenshot, FIRST_MATERIAL_CENTER)
             self.boxIndex = 0
-            self.scrollThread = threading.Thread(target=lambda : scrollArknights(self.handler))
+            self.scrollThread = threading.Thread(target=lambda : scrollArknights(self.handler, lambda : self.interrupted))
             self.scrollThread.start()
         self.lastTopRow = [None for i in range(BOXES_ON_SCREEN[0])]
 
@@ -289,5 +305,10 @@ class DepotParser:
         self.interrupted = True
 
     def destroy(self):
+        # Make sure all threads finish gracefully before destroying the handler
+        if self.parseThread is not None:
+            self.parseThread.join()
+        if self.scrollThread is not None:
+            self.scrollThread.join()
         if self.handler is not None:
             self.handler.cleanup()

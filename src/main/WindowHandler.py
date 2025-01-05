@@ -83,9 +83,9 @@ class WindowHandler:
             # GetWindowRect = Window + Border
             left, top, right, bot = win32gui.GetWindowRect(self.hwnd)
         else:
-            ## GetClientRect = WindowContent - Top-Left is always (0,0)
+            # GetClientRect = WindowContent - Top-Left is always (0,0)
             left, top, right, bot = win32gui.GetClientRect(self.hwnd)
-            
+
         return left, top, right - left, bot - top
 
     def updateBitmapBuffer(self):
@@ -120,12 +120,14 @@ class WindowHandler:
 
         time.sleep(delay)
 
-    def dragLine(self, start, end, delayScale):
+    def dragLine(self, start, end, delayScale, interruptCheckCallback=None):
         def dragLineInternal(start, end, delayScale, mouseDown, drag, mouseUp):
             mouseDown(start)
 
             points = 50
             for i in range(points):
+                if interruptCheckCallback is not None and interruptCheckCallback():
+                    break
                 time.sleep(.01 * delayScale)
                 pos = (start[0] + int((end[0] - start[0]) / points * (i + 1)),
                        start[1] + int((end[1] - start[1]) / points * (i + 1)))

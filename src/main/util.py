@@ -33,6 +33,7 @@ class Config:
                  dataRepositoryGameDataPath = "zh_CN/gamedata/excel/",
                  imageRepository = "PuppiizSunniiz/Arknight-Images",
                  depotParsingEnabled = True,
+                 resizeArknights = False,
                  arknightsContainer = "BlueStacks",
                  arknightsWindowName = None,
                  arknightsInputWindowClass = None,
@@ -70,6 +71,7 @@ class Config:
         self.dataRepositoryGameDataPath = dataRepositoryGameDataPath
         self.imageRepository = imageRepository
         self.depotParsingEnabled = depotParsingEnabled
+        self.resizeArknights = resizeArknights
         self.arknightsContainer = arknightsContainer
         self.arknightsWindowName = arknightsWindowName
         self.arknightsInputWindowClass = arknightsInputWindowClass
