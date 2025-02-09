@@ -172,7 +172,7 @@ def readOperatorCosts(internalId):
 
     if internalId in RAW_MODULES["charEquip"]:
         for assignment in RAW_MODULES["charEquip"][internalId]:
-            if not "001" in assignment and not RAW_MODULES["equipDict"][assignment]["typeName1"].lower() == "ISW".lower():
+            if not "001" in assignment and not RAW_MODULES["equipDict"][assignment]["isSpecialEquip"]:
                 module = RAW_MODULES["equipDict"][assignment]
                 subclassId = module["typeName1"]
                 moduleType = module["typeName2"]
