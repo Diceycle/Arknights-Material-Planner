@@ -82,7 +82,11 @@ class ItemSet(LockableCanvas):
                 (c // self.maxItems) * self.scale)
 
     def getHeight(self):
-        return max(int(math.ceil(len(self.getMaterials()) / self.maxItems)) * self.scale, self.scale)
+        numMaterials = len(self.upgrade.calculateCosts(self.operator.costs))
+        if numMaterials < self.maxItems:
+            return self.scale
+
+        return int(math.ceil(numMaterials / self.maxItems)) * self.scale
 
 class UpgradeSet(LockableCanvas):
     def __init__(self, parent, operator, upgrades, scale, updateCallback = None, maxItems = 4,

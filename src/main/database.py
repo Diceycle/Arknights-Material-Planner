@@ -1,5 +1,4 @@
 import json
-from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from PIL import Image, ImageTk, ImageColor
@@ -56,19 +55,10 @@ class Upgrade(ScalableImage):
         super().__init__(name, UPGRADES, "img/misc/" + image, **kwargs)
 
     def calculateCosts(self, costs):
-        if self.cumulativeUpgrades is None:
-            if self in costs:
-                return costs[self]
-            else:
-                return {}
+        if self in costs:
+            return costs[self]
         else:
-            result = Counter()
-            for up in self.cumulativeUpgrades:
-                if up in costs:
-                    result += Counter(costs[up])
-                else:
-                    return {}
-            return result
+            return {}
 
     def getPhotoImage(self, size, **renderFlags):
         return super().getPhotoImage(size * UPGRADE_SCALE, **renderFlags)
@@ -78,7 +68,7 @@ class Upgrade(ScalableImage):
 
         if (operator is not None and
             self.moduleType is not None and
-            (self in operator.costs or self.cumulativeUpgrades is not None and self.cumulativeUpgrades[0] in operator.costs)):
+            self in operator.costs):
 
             orig = im
             moduleImage = self.centerModuleImage(Image.open(operator.getModuleImagePath(self.moduleType), "r").convert("RGBA"))

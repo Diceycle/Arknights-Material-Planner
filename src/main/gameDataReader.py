@@ -4,6 +4,7 @@ import os.path
 import urllib.error
 import urllib.request
 import urllib.parse
+from collections import Counter
 
 from utilImport import *
 
@@ -184,6 +185,13 @@ def readOperatorCosts(internalId):
                     moduleKey = toModuleUpgradeKey(moduleType, stage)
                     for mat in module["itemCost"][stage]:
                         addCosts(costs, moduleKey, getMaterialByInternalId(mat["id"]), mat["count"])
+
+    for up in UPGRADES.values():
+        if up.cumulativeUpgrades is not None and all(u in costs for u in up.cumulativeUpgrades):
+            result = Counter()
+            for u in up.cumulativeUpgrades:
+                result += Counter(costs[u])
+            costs[up] = result
 
     return costs, subclassId
 
