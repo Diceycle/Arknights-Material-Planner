@@ -32,7 +32,7 @@ class GUI:
 
         self.setCanvas = ItemSetDisplay(self.window, self.scale, self.height, self.scale // 10,
                                         scrollSpeed=int(CONFIG.scrollSpeed / 100 * self.scale),
-                                        totalsUpdateCallback=self.updateItemTotals)
+                                        totalsUpdateCallback=None) # Don't set callback yet, only activate when initializing is done
         self.setCanvas.pack(side=LEFT)
 
         saveData = load()
@@ -50,15 +50,13 @@ class GUI:
         self.background.pack(side=RIGHT)
         self.depot.controlCanvas.place(relx=1, y=0, anchor=NE)
 
-        self.initialising = True
         for savedSet in saveData["sets"]:
             self.setCanvas.addSetInternal(savedSet["operator"], savedSet["upgrades"])
-        self.initialising = False
+        self.setCanvas.totalsUpdateCallback = self.updateItemTotals
         self.updateItemTotals(self.setCanvas.getItemTotals())
 
     def updateItemTotals(self, totals):
-        if not self.initialising:
-            self.depot.updateItemRequirements(totals)
+        self.depot.updateItemRequirements(totals)
 
     def disable(self, notifyCallback = None):
         self.depot.disable(notifyCallback)

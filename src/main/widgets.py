@@ -44,6 +44,9 @@ class LockableCanvas(Canvas):
         if height is None:
             height = self.overlayImage.height
 
+        if width == self.overlayImage.width and height == self.overlayImage.height:
+            return
+
         self.config(width = width, height = height)
 
         self.overlayImage = self.overlayImage.resize(size=(width, height))

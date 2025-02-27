@@ -28,6 +28,7 @@ class ItemSet(LockableCanvas):
 
         self.notAvailable = self.create_image(self.scale + self.scale // 2, 0, image=UI_ELEMENTS["n-a"].getPhotoImage(self.scale, transparency=0.75), anchor = NW, state="hidden")
 
+        self.initializing = True
         self.enabled = enabled
         self.enableButton = ImageCheckbutton(self, self.width, self.scale, anchor = SE, callback=self.toggle,
                                              images=(UI_ELEMENTS["check-off"].getPhotoImage(self.uiIconScale),
@@ -35,6 +36,7 @@ class ItemSet(LockableCanvas):
         self.enableButton.setState(self.enabled)
 
         self.deleteButton = self.create_image(self.width, 0, image=UI_ELEMENTS["close"].getPhotoImage(self.uiIconScale), anchor=NE)
+        self.initializing = False
 
     def draw(self):
         for i in self.itemIndicators:
@@ -60,7 +62,8 @@ class ItemSet(LockableCanvas):
 
     def toggle(self, state):
         self.enabled = state
-        self.updateCallback()
+        if not self.initializing:
+            self.updateCallback()
 
     def getMaterials(self):
         mats = self.upgrade.calculateCosts(self.operator.costs)
@@ -109,13 +112,19 @@ class UpgradeSet(LockableCanvas):
         self.addUpgradeButton = self.create_image(0, 0, image=UI_ELEMENTS["add"].getPhotoImage(self.uiIconScale), anchor=S)
         self.tag_bind(self.addUpgradeButton, "<Button-1>", lambda e: self.addUpgrade())
 
+        self.initializing = True
         self.itemSets = []
         for u in upgrades:
             self.addUpgradeInternal(u["upgrade"], u["enabled"])
 
         self.changeOperatorInternal(self.operator)
+        self.initializing = False
+        self.draw()
 
     def draw(self):
+        if self.initializing:
+            return
+
         self.itemconfigure(self.operatorImage, image=self.operator.getPhotoImage(self.scale))
 
         yPos = 0

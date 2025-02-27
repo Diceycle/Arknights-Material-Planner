@@ -143,6 +143,8 @@ class Material(ScalableImage):
 
         super().__init__(name, MATERIALS, getMaterialImagePath(internalId), tolerateMissingImage=True)
 
+        self.sortKey = self.calculateSortKey()
+
     def isCraftable(self):
         return self.recipe is not None
 
@@ -158,12 +160,15 @@ class Material(ScalableImage):
         border.alpha_composite(self.image, ((border.width - self.image.width) // 2, (border.height - self.image.height) // 2))
         return border
 
-    def getSortKey(self):
+    def calculateSortKey(self):
         return (str(int(self.canonicalName != "LMD")) +
                 str(int(not self.name.startswith("chip") and not self.name.startswith("exp"))) +
                 str(int(not self.name.startswith("module") and not self.name.startswith("skill"))) +
                 str(5 - self.tier) +
                 self.name)
+
+    def getSortKey(self):
+        return self.sortKey
 
     def __str__(self):
         return self.canonicalName
