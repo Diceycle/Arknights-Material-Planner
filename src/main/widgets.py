@@ -93,6 +93,7 @@ class CanvasLabel:
                                             font=(fontFamily, self.fontSize), justify="center")
         self.var.trace("w", lambda *args: self.updateText())
 
+        self.hidden = False
         self.updateText()
 
     def updateText(self):
@@ -117,6 +118,9 @@ class CanvasLabel:
         self.setHidden(False)
 
     def setHidden(self, hidden):
+        if hidden == self.hidden:
+            return
+
         if hidden:
             self.parent.itemconfigure(self.text, state="hidden")
             self.parent.itemconfigure(self.background, state="hidden")
@@ -124,6 +128,7 @@ class CanvasLabel:
             self.parent.itemconfigure(self.text, state="normal")
             self.parent.itemconfigure(self.background, state="normal")
             self.updateText()
+        self.hidden = hidden
 
 
     def raiseWidgets(self):

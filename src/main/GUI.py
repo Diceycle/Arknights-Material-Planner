@@ -53,7 +53,7 @@ class GUI:
         for savedSet in saveData["sets"]:
             self.setCanvas.addSetInternal(savedSet["operator"], savedSet["upgrades"])
         self.setCanvas.totalsUpdateCallback = self.updateItemTotals
-        self.updateItemTotals(self.setCanvas.getItemTotals())
+        self.setCanvas.updateItemTotals()
 
     def updateItemTotals(self, totals):
         self.depot.updateItemRequirements(totals)

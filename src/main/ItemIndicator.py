@@ -41,8 +41,6 @@ class ItemIndicator:
         if scrollable:
             self.bind("<Enter>", lambda e: self.activateMouseWheelBinding())
             self.bind("<Leave>", lambda e: self.deactivateMouseWheelBinding())
-        self.show()
-
 
     def showIncrementors(self):
         if not self.hidden:
