@@ -7,12 +7,15 @@ class LockableCanvas(Canvas):
     def __init__(self, *args, width, height, **kwargs):
         super().__init__(*args, width = width, height = height, **kwargs)
 
-        self.overlayImage = Image.new(size=(width, height), mode ="RGBA", color = (0, 0, 0, 0))
+        self.overlayImage = self.createOverlayImage(width, height)
         self.overlayPhotoImage = ImageTk.PhotoImage(self.overlayImage)
         self.inputLock = self.create_image(0, 0, anchor = NW, state = "hidden", image = self.overlayPhotoImage)
         self.tag_bind(self.inputLock, "<Button-1>", lambda e: self.notifyLockClicked())
         self.lockableChildren = []
         self.notifyCallback = None
+
+    def createOverlayImage(self, width, height):
+        return Image.new(size=(width, height), mode="RGBA", color=(0, 0, 0, 0))
 
     def addChildCanvas(self, child):
         self.lockableChildren.append(child)
@@ -49,7 +52,7 @@ class LockableCanvas(Canvas):
 
         self.config(width = width, height = height)
 
-        self.overlayImage = self.overlayImage.resize(size=(width, height))
+        self.overlayImage = self.createOverlayImage(width, height)
         self.overlayPhotoImage = ImageTk.PhotoImage(self.overlayImage)
         self.itemconfigure(self.inputLock, image = self.overlayPhotoImage)
 
