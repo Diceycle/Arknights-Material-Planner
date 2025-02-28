@@ -61,6 +61,8 @@ class Upgrade(ScalableImage):
             return {}
 
     def getPhotoImage(self, size, **renderFlags):
+        if self.moduleType is None:
+            renderFlags["operator"] = None
         return super().getPhotoImage(size * UPGRADE_SCALE, **renderFlags)
 
     def renderImage(self, operator = None, **flags):

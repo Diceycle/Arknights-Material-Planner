@@ -2,20 +2,25 @@ from tkinter import *
 
 from PIL import Image, ImageTk
 
+OVERLAY_PHOTO_IMAGES = {}
 
 class LockableCanvas(Canvas):
     def __init__(self, *args, width, height, **kwargs):
         super().__init__(*args, width = width, height = height, **kwargs)
 
-        self.overlayImage = self.createOverlayImage(width, height)
-        self.overlayPhotoImage = ImageTk.PhotoImage(self.overlayImage)
+        self.createOverlayImage(width, height)
         self.inputLock = self.create_image(0, 0, anchor = NW, state = "hidden", image = self.overlayPhotoImage)
         self.tag_bind(self.inputLock, "<Button-1>", lambda e: self.notifyLockClicked())
         self.lockableChildren = []
         self.notifyCallback = None
 
     def createOverlayImage(self, width, height):
-        return Image.new(size=(width, height), mode="RGBA", color=(0, 0, 0, 0))
+        global OVERLAY_PHOTO_IMAGES
+        if (width, height) not in OVERLAY_PHOTO_IMAGES:
+            image = Image.new(size=(width, height), mode="RGBA", color=(0, 0, 0, 0))
+            OVERLAY_PHOTO_IMAGES[(width, height)] = ImageTk.PhotoImage(image)
+
+        self.overlayPhotoImage = OVERLAY_PHOTO_IMAGES[(width, height)]
 
     def addChildCanvas(self, child):
         self.lockableChildren.append(child)
@@ -43,17 +48,16 @@ class LockableCanvas(Canvas):
 
     def resize(self, width = None, height = None):
         if width is None:
-            width = self.overlayImage.width
+            width = self.overlayPhotoImage.width()
         if height is None:
-            height = self.overlayImage.height
+            height = self.overlayPhotoImage.height()
 
-        if width == self.overlayImage.width and height == self.overlayImage.height:
+        if width == self.overlayPhotoImage.width() and height == self.overlayPhotoImage.height():
             return
 
         self.config(width = width, height = height)
 
-        self.overlayImage = self.createOverlayImage(width, height)
-        self.overlayPhotoImage = ImageTk.PhotoImage(self.overlayImage)
+        self.createOverlayImage(width, height)
         self.itemconfigure(self.inputLock, image = self.overlayPhotoImage)
 
 
