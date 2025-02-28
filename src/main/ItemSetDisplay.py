@@ -80,7 +80,7 @@ class ItemSetDisplay(LockableCanvas):
     def updateItemTotals(self):
         if self.totalsUpdateCallback is not None:
             self.totalsUpdateCallback(self.getItemTotals())
-        self.draw()
+            self.draw()
 
     def getItemTotals(self):
         return sum([Counter(s.getEnabledMaterials()) for s in self.upgradeSets], Counter())
