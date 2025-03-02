@@ -1,47 +1,80 @@
 from tkinter import *
 
+from Splashscreen import Splashscreen
+from concurrent.futures import ThreadPoolExecutor
+from time import sleep
+
 window = Tk()
 window.wm_state("withdrawn")
 window.iconbitmap("rock.ico")
 
-loadscreenWidth = 400
-loadscreenHeight = 300
-offsetX = window.winfo_screenwidth() // 2 - loadscreenWidth // 2
-offsetY = window.winfo_screenheight() // 2 - loadscreenHeight // 2
+loadscreen = Splashscreen(window)
+loadScreenText = None
+def awaitResult(function):
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        future = pool.submit(function)
 
-loadscreen = Toplevel()
-loadscreen.geometry(f"{loadscreenWidth}x{loadscreenHeight}+{offsetX}+{offsetY}")
-loadscreen.configure(background="#444444")
-loadscreen.overrideredirect(True)
-loadscreen.attributes('-topmost', 'true')
-
-l = Label(loadscreen, background="#444444", foreground="white", font=("Arial", 15))
-l.pack(anchor=S, side=BOTTOM)
-
-l.config(text="Loading Libraries...")
-loadscreen.update()
-
-from GUI import GUI
-from util import exceptHook
-
-from gameDataReader import downloadGamedata, downloadEntityLists
-from database import loadOperators, loadMaterials
+        while not future.done():
+            loadscreen.updateAnimation()
+            if loadScreenText is not None:
+                loadscreen.updateLabel(loadScreenText)
+            sleep(0.01)
+        return future.result()
 
 def progressCallback(text, current, goal):
-    l.config(text=f"{text}... ({current}/{goal})")
-    loadscreen.update()
+    global loadScreenText
+    loadScreenText = f"{text}... ({current}/{goal})"
 
-downloadGamedata(lambda current, goal: progressCallback("Downloading Gamedata", current, goal))
+loadscreen.updateLabel("Loading Libraries...")
 
-downloadEntityLists(lambda current, goal: progressCallback("Downloading Entity Lists", current, goal))
 
-materialPageSize = loadMaterials(lambda current, goal: progressCallback("Downloading Material Images", current, goal))
+GUI = None
+exceptHook = CONFIG = MATERIALS = None
+downloadGamedata = downloadEntityLists = None
+loadOperators = loadMaterials = None
+def doImports():
+    global GUI
+    global exceptHook, CONFIG, MATERIALS
+    global downloadGamedata, downloadEntityLists
+    global loadOperators, loadMaterials
+    from GUI import GUI
+    from util import exceptHook, CONFIG, MATERIALS
+    from gameDataReader import downloadGamedata, downloadEntityLists
+    from database import loadOperators, loadMaterials
+awaitResult(lambda: doImports())
 
-loadOperators(lambda current, goal: progressCallback("Downloading Operator Images", current, goal))
+awaitResult(lambda: downloadGamedata(lambda current, goal: progressCallback("Downloading Gamedata", current, goal)))
+awaitResult(lambda: downloadEntityLists(lambda current, goal: progressCallback("Downloading Entity Lists", current, goal)))
 
-l.config(text="Preprocessing Images...")
-loadscreen.update()
-GUI(window, materialPageSize)
+materialPageSize = awaitResult(lambda: loadMaterials(lambda current, goal: progressCallback("Downloading Material Images", current, goal)))
+
+awaitResult(lambda: loadOperators(lambda current, goal: progressCallback("Downloading Operator Images", current, goal)))
+
+loadscreen.updateLabel("Preprocessing Images...")
+
+for m in MATERIALS.values():
+    m.getPhotoImage(CONFIG.uiScale)
+    m.getPhotoImage(CONFIG.uiScale, transparency=0.5)
+    loadscreen.updateAnimation()
+
+backgroundImage = None
+if CONFIG.backgroundImage is not None:
+    from PIL import Image, ImageTk
+    i = Image.open(CONFIG.backgroundImage)
+    loadscreen.updateAnimation()
+    i.thumbnail((CONFIG.uiScale*materialPageSize, CONFIG.uiScale*materialPageSize))
+    loadscreen.updateAnimation()
+    backgroundImage = ImageTk.PhotoImage(i)
+    loadscreen.updateAnimation()
+
+loadscreen.updateLabel("Rendering Interface...")
+
+def update():
+    loadscreen.updateAnimation()
+    loadscreen.after(1, update)
+update()
+
+GUI(window, materialPageSize, backgroundImage)
 window.report_callback_exception=exceptHook
 
 loadscreen.destroy()

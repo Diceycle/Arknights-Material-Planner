@@ -137,6 +137,9 @@ class Material(ScalableImage):
 
         self.sortKey = self.calculateSortKey()
 
+        self.renderedImage = None
+        self.renderImage()
+
     def isCraftable(self):
         return self.recipe is not None
 
@@ -148,9 +151,11 @@ class Material(ScalableImage):
         return tuple(self.position)
 
     def renderImage(self, **flags):
-        border = loadImage("img/border/T" + str(self.tier) + ".png")
-        border.alpha_composite(self.image, ((border.width - self.image.width) // 2, (border.height - self.image.height) // 2))
-        return border
+        if self.renderedImage is None:
+            border = loadImage("img/border/T" + str(self.tier) + ".png")
+            border.alpha_composite(self.image, ((border.width - self.image.width) // 2, (border.height - self.image.height) // 2))
+            self.renderedImage = border
+        return self.renderedImage.copy()
 
     def calculateSortKey(self):
         return (str(int(self.canonicalName != "LMD")) +

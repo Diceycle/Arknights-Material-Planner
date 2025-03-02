@@ -5,11 +5,11 @@ from PIL import Image, ImageTk
 from utilImport import *
 from widgets import LockableCanvas
 from ItemSetDisplay import ItemSetDisplay
-from GlobalOverlays import MaterialSelection, OperatorSelection, UpgradeSelection, RecipeDisplay
+from GlobalOverlays import OperatorSelection, UpgradeSelection, RecipeDisplay
 from Depot import Depot, ParseDepotOverlay
 
 class GUI:
-    def __init__(self, window, materialPageSize):
+    def __init__(self, window, materialPageSize, backgroundImage):
 
         self.materialPageSize = materialPageSize
         self.scale = CONFIG.uiScale
@@ -24,12 +24,6 @@ class GUI:
         self.window.configure(background=CONFIG.backgroundColor)
         self.window.resizable(width=False, height=False)
 
-        MaterialSelection(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
-        OperatorSelection(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
-        UpgradeSelection(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
-        RecipeDisplay(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
-        ParseDepotOverlay(self.window, self.scale, self.materialPageSize, disableCallback = self.disable, enableCallback = self.enable)
-
         self.setCanvas = ItemSetDisplay(self.window, self.scale, self.height, self.scale // 10,
                                         scrollSpeed=int(CONFIG.scrollSpeed / 100 * self.scale),
                                         totalsUpdateCallback=None) # Don't set callback yet, only activate when initializing is done
@@ -38,22 +32,28 @@ class GUI:
         saveData = load()
 
         self.background = LockableCanvas(self.window, bg=CONFIG.backgroundColor, highlightthickness=0, width=self.height, height=self.height)
-
-        if CONFIG.backgroundImage is not None:
-            image = Image.open(CONFIG.backgroundImage)
-            image.thumbnail((self.height, self.height))
-            self.backgroundImage = ImageTk.PhotoImage(image)
+        if backgroundImage is not None:
+            self.backgroundImage = backgroundImage
             self.background.create_image(CONFIG.backgroundImageOffset, self.height // 2, anchor=CENTER, image=self.backgroundImage)
+        self.window.update()
 
         self.depot = Depot(self.window, self.materialPageSize, self.scale, initialContents=saveData["depot"], controlCanvasParent=self.background)
+        self.window.update()
         self.depot.pack(side=RIGHT)
         self.background.pack(side=RIGHT)
         self.depot.controlCanvas.place(relx=1, y=0, anchor=NE)
 
         for savedSet in saveData["sets"]:
             self.setCanvas.addSetInternal(savedSet["operator"], savedSet["upgrades"])
+            self.window.update()
         self.setCanvas.totalsUpdateCallback = self.updateItemTotals
         self.setCanvas.updateItemTotals()
+        self.window.update()
+
+        OperatorSelection(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
+        UpgradeSelection(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
+        RecipeDisplay(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
+        ParseDepotOverlay(self.window, self.scale, self.materialPageSize, disableCallback = self.disable, enableCallback = self.enable)
 
     def updateItemTotals(self, totals):
         self.depot.updateItemRequirements(totals)
