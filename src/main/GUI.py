@@ -13,7 +13,7 @@ class GUI:
 
         self.materialPageSize = materialPageSize
         self.scale = CONFIG.uiScale
-        self.width = 16 * self.scale
+        self.width = 17 * self.scale
         self.height = self.materialPageSize * self.scale
         self.setSpacing = self.scale // 10
 
@@ -34,13 +34,15 @@ class GUI:
         self.background = LockableCanvas(self.window, bg=CONFIG.backgroundColor, highlightthickness=0, width=self.height, height=self.height)
         if backgroundImage is not None:
             self.backgroundImage = backgroundImage
-            self.background.create_image(CONFIG.backgroundImageOffset, self.height // 2, anchor=CENTER, image=self.backgroundImage)
+            self.backgroundImageCanvas = LockableCanvas(self.background, bg=CONFIG.backgroundColor, highlightthickness=0, width=self.height, height=self.height)
+            self.backgroundImageCanvas.create_image(self.height // 2, self.height // 2, anchor=CENTER, image=self.backgroundImage)
+            self.backgroundImageCanvas.place(relx=0.5, y=0, anchor=N)
         self.window.update()
 
         self.depot = Depot(self.window, self.materialPageSize, self.scale, initialContents=saveData["depot"], controlCanvasParent=self.background)
         self.window.update()
         self.depot.pack(side=RIGHT)
-        self.background.pack(side=RIGHT)
+        self.background.pack(side=RIGHT, expand=True)
         self.depot.controlCanvas.place(relx=1, y=0, anchor=NE)
 
         for savedSet in saveData["sets"]:

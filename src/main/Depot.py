@@ -17,7 +17,7 @@ class Depot(LockableCanvas):
         self.materialPageSize = materialPageSize
         self.pageHeight = materialPageSize * scale
         self.totalHeight = self.pageHeight * 2
-        self.width = 5 * scale
+        self.width = 7 * scale
 
         self.controlCanvasParent = controlCanvasParent
         if self.controlCanvasParent is None:
@@ -222,8 +222,8 @@ class Depot(LockableCanvas):
 class ParseDepotOverlay(GlobalSelection):
     def __init__(self, parent, scale, materialPageSize, **kwargs):
         self.materialPageSize = materialPageSize
-        width = self.materialPageSize * scale
-        height = 10 * scale
+        width = 15 * scale
+        height = 8 * scale
         super().__init__(parent, "ParsedDepotContents", width=width, height=height, **kwargs)
 
         self.parent = parent
@@ -248,9 +248,6 @@ class ParseDepotOverlay(GlobalSelection):
 
     def placeIndicator(self, material):
         y, x = material.getPosition()
-        if x >= self.materialPageSize:
-            x -= self.materialPageSize
-            y = (4-y) + 5
         y += 1
         self.vars[material] = IntVar(value=0)
         i = ItemIndicator(self, self.scale, material, x * self.scale, y * self.scale, self.scale // 5, self.vars[material], editable=False)

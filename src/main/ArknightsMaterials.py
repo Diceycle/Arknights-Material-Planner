@@ -58,8 +58,10 @@ for m in MATERIALS.values():
 
 backgroundImage = None
 if CONFIG.backgroundImage is not None:
-    from PIL import Image, ImageTk
+    from PIL import Image, ImageTk, ImageChops
     i = Image.open(CONFIG.backgroundImage)
+    loadscreen.updateAnimation()
+    i = ImageChops.offset(i, CONFIG.backgroundImageOffset, 0)
     loadscreen.updateAnimation()
     i.thumbnail((CONFIG.uiScale*materialPageSize, CONFIG.uiScale*materialPageSize))
     loadscreen.updateAnimation()
