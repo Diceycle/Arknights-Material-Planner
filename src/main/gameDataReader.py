@@ -222,20 +222,39 @@ def readMaterialData(internalId):
 
     return tier, recipe
 
-def downloadGamedata(progressCallback = None):
+def downloadMaterialData(progressCallback = None):
     global RAW_MATERIALS
     global RAW_RECIPES
-    global RAW_OPERATORS
-    global RAW_MODULES
 
-    files = [MATERIAL_DATA_FILE, RECIPE_DATA_FILE, OPERATOR_DATA_FILE, ADDITIONAL_OPERATOR_DATA_FILE, MODULE_DATA_FILE]
+    files = [MATERIAL_DATA_FILE, RECIPE_DATA_FILE]
     for i, f in enumerate(files):
         if progressCallback is not None:
-            progressCallback(i, len(files))
+            progressCallback(i, len(files) + 1)
         tryDownloadNewerFileFromGithub(DATA_REPOSITORY, DATA_REPOSITORY_FOLDER + f, "data/" + f)
+
+    entityFile = MATERIAL_LIST_FILE
+    if progressCallback is not None:
+        progressCallback(len(files), len(files) + 1)
+    tryDownloadNewerFileFromGithub(ENTITY_LIST_REPOSITORY, ENTITY_LIST_REPOSITORY_FOLDER + entityFile, "data/" + entityFile)
 
     RAW_MATERIALS = json.load(open("data/" + MATERIAL_DATA_FILE, "r", encoding="utf-8"))
     RAW_RECIPES = json.load(open("data/" + RECIPE_DATA_FILE, "r", encoding="utf-8"))
+
+def downloadOperatorData(progressCallback = None):
+    global RAW_OPERATORS
+    global RAW_MODULES
+
+    files = [OPERATOR_DATA_FILE, ADDITIONAL_OPERATOR_DATA_FILE, MODULE_DATA_FILE]
+    for i, f in enumerate(files):
+        if progressCallback is not None:
+            progressCallback(i, len(files) + 1)
+        tryDownloadNewerFileFromGithub(DATA_REPOSITORY, DATA_REPOSITORY_FOLDER + f, "data/" + f)
+
+    entityFile = OPERATOR_LIST_FILE
+    if progressCallback is not None:
+        progressCallback(len(files), len(files) + 1)
+    tryDownloadNewerFileFromGithub(ENTITY_LIST_REPOSITORY, ENTITY_LIST_REPOSITORY_FOLDER + entityFile, "data/" + entityFile)
+
     RAW_OPERATORS = json.load(open("data/" + OPERATOR_DATA_FILE, "r", encoding="utf-8"))
     RAW_MODULES = json.load(open("data/" + MODULE_DATA_FILE, "r", encoding="utf-8"))
 
@@ -243,21 +262,13 @@ def downloadGamedata(progressCallback = None):
     for k, v in rawCharacterAdditions["patchChars"].items():
         RAW_OPERATORS[k] = v
 
-def downloadEntityLists(progressCallback):
-    files = [MATERIAL_LIST_FILE, OPERATOR_LIST_FILE]
-    for i, f in enumerate(files):
-        if progressCallback is not None:
-            progressCallback(i, len(files))
-        tryDownloadNewerFileFromGithub(ENTITY_LIST_REPOSITORY, ENTITY_LIST_REPOSITORY_FOLDER + f, "data/" + f)
-
-
 if not os.path.isfile(DOWNLOAD_METADATA_FILE):
     writeDownloadMetadata({})
 DOWNLOAD_METADATA = json.load(open(DOWNLOAD_METADATA_FILE, "r"))
 
 if __name__ == "__main__":
     knownOperatorIds = [op["internalId"] for op in json.load(open("../../entityLists/operators.json", "r"))]
-    downloadGamedata()
+    downloadOperatorData()
     for operatorId, op in RAW_OPERATORS.items():
         if operatorId.startswith("char") and not op["isNotObtainable"] and not operatorId in knownOperatorIds:
             internalName = None

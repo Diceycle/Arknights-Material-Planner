@@ -4,6 +4,8 @@ tests/
 data/
 debug/
 
+src/main/img/ui/loadscreen/layers
+
 *.materials
 *.log
 config.json

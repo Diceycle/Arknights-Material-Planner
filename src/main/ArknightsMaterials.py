@@ -30,24 +30,23 @@ loadscreen.updateLabel("Loading Libraries...")
 
 GUI = None
 exceptHook = CONFIG = MATERIALS = None
-downloadGamedata = downloadEntityLists = None
+downloadMaterialData = downloadOperatorData = None
 loadOperators = loadMaterials = None
 def doImports():
     global GUI
     global exceptHook, CONFIG, MATERIALS
-    global downloadGamedata, downloadEntityLists
+    global downloadMaterialData, downloadOperatorData
     global loadOperators, loadMaterials
     from GUI import GUI
     from util import exceptHook, CONFIG, MATERIALS
-    from gameDataReader import downloadGamedata, downloadEntityLists
+    from gameDataReader import downloadMaterialData, downloadOperatorData
     from database import loadOperators, loadMaterials
 awaitResult(lambda: doImports())
 
-awaitResult(lambda: downloadGamedata(lambda current, goal: progressCallback("Downloading Gamedata", current, goal)))
-awaitResult(lambda: downloadEntityLists(lambda current, goal: progressCallback("Downloading Entity Lists", current, goal)))
-
+awaitResult(lambda: downloadMaterialData(lambda current, goal: progressCallback("Downloading Material Data", current, goal)))
 materialPageSize = awaitResult(lambda: loadMaterials(lambda current, goal: progressCallback("Downloading Material Images", current, goal)))
 
+awaitResult(lambda: downloadOperatorData(lambda current, goal: progressCallback("Downloading Operator Data", current, goal)))
 awaitResult(lambda: loadOperators(lambda current, goal: progressCallback("Downloading Operator Images", current, goal)))
 
 loadscreen.updateLabel("Preprocessing Images...")

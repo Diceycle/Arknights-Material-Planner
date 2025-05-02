@@ -12,6 +12,8 @@ Compare the **total of your selected upgrades** against what is in your depot, *
 are missing. Since keeping track of your depot's contents manually is exhausting let the tool do that too! Simply click
 one button and sit back as **image and text recognition** tells you exactly **what materials you have on hand**.
 
+Loading animation done by the bird enthusiast and BirdKnights player Akarubasa!
+
 ## Quick Setup
 
 1. Download the zip of the latest version(`ArknightsMaterials_vX.Y.Z.zip`) of Arknights Material Planner from the 
