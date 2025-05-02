@@ -24,6 +24,11 @@ class GUI:
         self.window.configure(background=CONFIG.backgroundColor)
         self.window.resizable(width=False, height=False)
 
+        OperatorSelection(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
+        UpgradeSelection(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
+        RecipeDisplay(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
+        ParseDepotOverlay(self.window, self.scale, self.materialPageSize, disableCallback = self.disable, enableCallback = self.enable)
+
         self.setCanvas = ItemSetDisplay(self.window, self.scale, self.height, self.scale // 10,
                                         scrollSpeed=int(CONFIG.scrollSpeed / 100 * self.scale),
                                         totalsUpdateCallback=None) # Don't set callback yet, only activate when initializing is done
@@ -51,11 +56,6 @@ class GUI:
         self.setCanvas.totalsUpdateCallback = self.updateItemTotals
         self.setCanvas.updateItemTotals()
         self.window.update()
-
-        OperatorSelection(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
-        UpgradeSelection(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
-        RecipeDisplay(self.window, self.scale, disableCallback = self.disable, enableCallback = self.enable)
-        ParseDepotOverlay(self.window, self.scale, self.materialPageSize, disableCallback = self.disable, enableCallback = self.enable)
 
     def updateItemTotals(self, totals):
         self.depot.updateItemRequirements(totals)
