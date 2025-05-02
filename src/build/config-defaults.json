@@ -1,4 +1,5 @@
 {
+  "offlineMode": false,
   "uiScale": 80,
   "scrollSpeed": 30,
   "saveFile": "default.materials",
