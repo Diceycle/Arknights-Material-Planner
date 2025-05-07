@@ -1,120 +1,31 @@
 import json
-import datetime
-import os.path
-import urllib.error
-import urllib.request
-import urllib.parse
 from collections import Counter
 
 from utilImport import *
+from downloadUtil import Repos, tryDownloadFiles, tryDownloadFile, loadDownloadedJson, getDownloadedFilePath
 
-MATERIAL_IMAGE_PATH = "data/materialImages/"
-OPERATOR_IMAGE_PATH = "data/operatorImages/"
-MODULE_IMAGE_PATH = "data/moduleTypeImages/"
-
-DOWNLOAD_METADATA_FILE = "data/downloadMetadata.json"
-DOWNLOAD_METADATA = None
-
-ENTITY_LIST_REPOSITORY = CONFIG.entityListRepository
-ENTITY_LIST_REPOSITORY_FOLDER = "entityLists/"
 MATERIAL_LIST_FILE = "materials.json"
 OPERATOR_LIST_FILE = "operators.json"
 
-DATA_REPOSITORY = CONFIG.dataRepository
-DATA_REPOSITORY_FOLDER = CONFIG.dataRepositoryGameDataPath
 MATERIAL_DATA_FILE = "item_table.json"
 RECIPE_DATA_FILE = "building_data.json"
 OPERATOR_DATA_FILE = "character_table.json"
 ADDITIONAL_OPERATOR_DATA_FILE = "char_patch_table.json"
 MODULE_DATA_FILE = "uniequip_table.json"
 
-IMAGE_REPOSITORY = CONFIG.imageRepository
-IMAGE_REPOSITORY_MATERIAL_PATH = "items/"
-IMAGE_REPOSITORY_OPERATOR_PATH = "avatars/"
-IMAGE_REPOSITORY_MODULE_PATH = "equip/type/"
-
-userAgent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
-headers = {'User-Agent': userAgent, }
-
 RAW_MATERIALS = None
 RAW_RECIPES = None
 RAW_OPERATORS = None
 RAW_MODULES = None
 
-LAST_COMMIT_TIMESTAMPS = {}
-
-def getRequest(url):
-    try:
-        if not CONFIG.offlineMode:
-            return urllib.request.urlopen(urllib.request.Request(url, None, headers), timeout=CONFIG.webRequestTimeout).read()
-    except urllib.error.HTTPError as response:
-        LOGGER.error("Error(%s) reading url: %s", response.code, url)
-        for line in response.readlines()[:10]:
-            line = line.decode("utf-8")
-            LOGGER.debug(line.replace("\n", ""))
-    except urllib.error.URLError as error:
-        LOGGER.error("Error reading %s: %s", url, error.reason)
-
-def buildGithubDownloadUrl(repo, remotePath):
-    return f"https://raw.githubusercontent.com/{repo}/HEAD/{remotePath}"
-
-def getMostRecentCommitTimestamp(repo, remotePath=None):
-    url = f"https://api.github.com/repos/{repo}/commits"
-    if remotePath is not None:
-        url += "?path=" + remotePath
-
-    response = getRequest(url)
-    if response is not None:
-        responseJson = json.loads(response)
-        return datetime.datetime.fromisoformat(responseJson[0]["commit"]["author"]["date"]).timestamp()
-
-def tryDownloadNewerFileFromGithub(repo, remotePath, localPath):
-    global DOWNLOAD_METADATA
-
-    if not repo in LAST_COMMIT_TIMESTAMPS:
-        commitTimestamp = getMostRecentCommitTimestamp(repo)
-        if commitTimestamp is not None:
-            LAST_COMMIT_TIMESTAMPS[repo] = commitTimestamp
-        else:
-            LAST_COMMIT_TIMESTAMPS[repo] = DOWNLOAD_METADATA.get(localPath, 0)
-
-    if not os.path.exists(localPath) or not localPath in DOWNLOAD_METADATA:
-        downloadFileFromWeb(buildGithubDownloadUrl(repo, remotePath), localPath, replace=True)
-    else:
-        lastDownloadAttempt = DOWNLOAD_METADATA[localPath]
-        if lastDownloadAttempt < LAST_COMMIT_TIMESTAMPS[repo]:
-            remoteTimestamp = getMostRecentCommitTimestamp(repo, remotePath)
-            if lastDownloadAttempt < remoteTimestamp:
-                downloadFileFromWeb(buildGithubDownloadUrl(repo, remotePath), localPath, replace=True)
-
-    DOWNLOAD_METADATA[localPath] = LAST_COMMIT_TIMESTAMPS[repo]
-    writeDownloadMetadata(DOWNLOAD_METADATA)
-
-def downloadFileFromWeb(url, localPath, replace=False):
-    if replace or not os.path.exists(localPath) and not CONFIG.offlineMode:
-        LOGGER.debug("Updating from Web: %s", localPath)
-        file = getRequest(url)
-        if file is not None:
-            f = safeOpen(localPath, mode="wb+")
-            f.write(file)
-            f.close()
-            return True
-        else:
-            return False
-
-def writeDownloadMetadata(metadata):
-    f = safeOpen(DOWNLOAD_METADATA_FILE, "w+")
-    json.dump(metadata, f, indent=4)
-    f.close()
-
 def getModuleImagePath(subclassId, moduleType):
-    return MODULE_IMAGE_PATH + f"{subclassId}-{moduleType}.png"
+    return getDownloadedFilePath(Repos.MODULE_IMAGES, f"{subclassId}-{moduleType}.png")
 
 def getOperatorImagePath(internalId):
-    return OPERATOR_IMAGE_PATH + internalId + ".png"
+    return getDownloadedFilePath(Repos.OPERATOR_IMAGES, internalId + ".png")
 
 def getMaterialImagePath(internalId):
-    return MATERIAL_IMAGE_PATH + internalId + ".png"
+    return getDownloadedFilePath(Repos.MATERIAL_IMAGES, internalId + ".png")
 
 def toModuleUpgradeKey(moduleType, stage):
     return f"MOD-{moduleType.upper()}-{stage}"
@@ -132,7 +43,7 @@ def readOperatorCosts(internalId):
     costs = {}
     subclassId = None
 
-    downloadFileFromWeb(buildGithubDownloadUrl(IMAGE_REPOSITORY, IMAGE_REPOSITORY_OPERATOR_PATH + internalId + ".png"), getOperatorImagePath(internalId))
+    tryDownloadFile(Repos.OPERATOR_IMAGES, internalId + ".png", replaceFile=False)
 
     for i, phase in enumerate(data["phases"]):
         if phase["evolveCost"] is not None:
@@ -179,7 +90,7 @@ def readOperatorCosts(internalId):
                 moduleType = module["typeName2"]
                 imageFileName = module["typeIcon"] + ".png"
 
-                downloadFileFromWeb(buildGithubDownloadUrl(IMAGE_REPOSITORY, IMAGE_REPOSITORY_MODULE_PATH + imageFileName.lower()), getModuleImagePath(subclassId, moduleType))
+                tryDownloadFile(Repos.MODULE_IMAGES, imageFileName, replaceFile=False)
 
                 for stage in module["itemCost"]:
                     moduleKey = toModuleUpgradeKey(moduleType, stage)
@@ -200,7 +111,7 @@ def readMaterialData(internalId):
     imageId = data["iconId"]
     tier = int(data["rarity"][-1])
 
-    downloadFileFromWeb(buildGithubDownloadUrl(IMAGE_REPOSITORY, IMAGE_REPOSITORY_MATERIAL_PATH + imageId + ".png"), getMaterialImagePath(internalId))
+    tryDownloadFile(Repos.MATERIAL_IMAGES, imageId + ".png", replaceFile=False)
 
     recipe = None
     for formulaReference in data["buildingProductList"]:
@@ -226,45 +137,36 @@ def downloadMaterialData(progressCallback = None):
     global RAW_MATERIALS
     global RAW_RECIPES
 
-    files = [MATERIAL_DATA_FILE, RECIPE_DATA_FILE]
-    for i, f in enumerate(files):
-        if progressCallback is not None:
-            progressCallback(i, len(files) + 1)
-        tryDownloadNewerFileFromGithub(DATA_REPOSITORY, DATA_REPOSITORY_FOLDER + f, "data/" + f)
+    updates = [
+        (Repos.CN, MATERIAL_DATA_FILE),
+        (Repos.CN, RECIPE_DATA_FILE),
+        (Repos.ENTITIES, MATERIAL_LIST_FILE)
+    ]
 
-    entityFile = MATERIAL_LIST_FILE
-    if progressCallback is not None:
-        progressCallback(len(files), len(files) + 1)
-    tryDownloadNewerFileFromGithub(ENTITY_LIST_REPOSITORY, ENTITY_LIST_REPOSITORY_FOLDER + entityFile, "data/" + entityFile)
+    tryDownloadFiles(updates, progressCallback)
 
-    RAW_MATERIALS = json.load(open("data/" + MATERIAL_DATA_FILE, "r", encoding="utf-8"))
-    RAW_RECIPES = json.load(open("data/" + RECIPE_DATA_FILE, "r", encoding="utf-8"))
+    RAW_MATERIALS = loadDownloadedJson(Repos.CN, MATERIAL_DATA_FILE)
+    RAW_RECIPES = loadDownloadedJson(Repos.CN, RECIPE_DATA_FILE)
 
 def downloadOperatorData(progressCallback = None):
     global RAW_OPERATORS
     global RAW_MODULES
 
-    files = [OPERATOR_DATA_FILE, ADDITIONAL_OPERATOR_DATA_FILE, MODULE_DATA_FILE]
-    for i, f in enumerate(files):
-        if progressCallback is not None:
-            progressCallback(i, len(files) + 1)
-        tryDownloadNewerFileFromGithub(DATA_REPOSITORY, DATA_REPOSITORY_FOLDER + f, "data/" + f)
+    updates = [
+        (Repos.CN, OPERATOR_DATA_FILE),
+        (Repos.CN, ADDITIONAL_OPERATOR_DATA_FILE),
+        (Repos.CN, MODULE_DATA_FILE),
+        (Repos.ENTITIES, OPERATOR_LIST_FILE)
+    ]
 
-    entityFile = OPERATOR_LIST_FILE
-    if progressCallback is not None:
-        progressCallback(len(files), len(files) + 1)
-    tryDownloadNewerFileFromGithub(ENTITY_LIST_REPOSITORY, ENTITY_LIST_REPOSITORY_FOLDER + entityFile, "data/" + entityFile)
+    tryDownloadFiles(updates, progressCallback)
 
-    RAW_OPERATORS = json.load(open("data/" + OPERATOR_DATA_FILE, "r", encoding="utf-8"))
-    RAW_MODULES = json.load(open("data/" + MODULE_DATA_FILE, "r", encoding="utf-8"))
+    RAW_OPERATORS = loadDownloadedJson(Repos.CN, OPERATOR_DATA_FILE)
+    RAW_MODULES = loadDownloadedJson(Repos.CN, MODULE_DATA_FILE)
 
-    rawCharacterAdditions = json.load(open("data/" + ADDITIONAL_OPERATOR_DATA_FILE, "r", encoding="utf-8"))
+    rawCharacterAdditions = loadDownloadedJson(Repos.CN, ADDITIONAL_OPERATOR_DATA_FILE)
     for k, v in rawCharacterAdditions["patchChars"].items():
         RAW_OPERATORS[k] = v
-
-if not os.path.isfile(DOWNLOAD_METADATA_FILE):
-    writeDownloadMetadata({})
-DOWNLOAD_METADATA = json.load(open(DOWNLOAD_METADATA_FILE, "r"))
 
 if __name__ == "__main__":
     knownOperatorIds = [op["internalId"] for op in json.load(open("../../entityLists/operators.json", "r"))]
