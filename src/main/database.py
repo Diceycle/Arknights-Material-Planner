@@ -4,7 +4,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from PIL import Image, ImageTk, ImageColor
 
 from utilImport import *
-from gameDataReader import readOperatorCosts, getModuleImagePath, getOperatorImagePath, readMaterialData, getMaterialImagePath
+from downloadUtil import loadDownloadedJson, Repos
+from gameDataReader import readOperatorCosts, getModuleImagePath, getOperatorImagePath, readMaterialData, getMaterialImagePath, MATERIAL_LIST_FILE, OPERATOR_LIST_FILE
 
 UPGRADE_SCALE = 0.75
 MAX_MODULE_IMAGE_DIMENSIONS = (70, 60)
@@ -235,7 +236,7 @@ Upgrade("MOD-D-X", "Module D Full", "img_stgX.png", overlay = "mod-d", mainDimen
 DEPOT_ORDER = []
 def loadMaterials(progressCallback):
     global DEPOT_ORDER
-    rawMaterials = json.load(open("data/materials.json", "r"))
+    rawMaterials = loadDownloadedJson(Repos.ENTITIES, MATERIAL_LIST_FILE)
     
     with ThreadPoolExecutor(max_workers=10) as pool:
         futures = [ pool.submit(lambda args: Material(**args), m) for m in rawMaterials["materials"] ]
@@ -250,7 +251,7 @@ def loadMaterials(progressCallback):
     return rawMaterials["pageSize"]
 
 def loadOperators(progressCallback):
-    rawOperators = json.load(open("data/operators.json", "r"))
+    rawOperators = loadDownloadedJson(Repos.ENTITIES, OPERATOR_LIST_FILE)
 
     with ThreadPoolExecutor(max_workers=10) as pool:
         futures = [ pool.submit(lambda args: Operator(**args), m) for m in rawOperators ]
