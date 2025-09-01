@@ -170,6 +170,10 @@ adjusted if the folder structure differs in another repository.
 * **Q**: The tool keeps saying I need to navigate to the main menu or the depot even though I'm there already, what do I do?
   * **A**: Disable any hotkey overlays you might have in your player, make sure not to overlap your mouse with the player.
     If that does not work try increasing the `colorLeniency` config parameter. 
+    
+    Additionally, there is an issue with newer versions of LDPLayer(>9.1.40.0) if the `menu.png` in the `debug` folder
+    is an image of the ad shown at startup the tool will not work. The only solution here is to downgrade to an older 
+    version of LDPlayer.
 * **Q**: The tool added a digit to a number, did not recognize a number or is missing a digit. Can you fix that?
   * **A**: Text Recognition(OCR) is not a perfect technology. Mistakes can and will happen, so I doubt the depot 
     scanning feature will ever be 100% accurate. Please do not submit bug reports for every single misread.
