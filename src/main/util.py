@@ -213,7 +213,7 @@ def save(upgradeSets, depotContents):
             "upgrades": [{ "name": itemSet.upgrade.name, "enabled": itemSet.enabled } for itemSet in s.itemSets]
         })
 
-    data["version"] = "1.4"
+    data["version"] = "1.5"
     data["sets"] = sets
     data["depot"] = toExternal(depotContents)
 
@@ -234,6 +234,9 @@ def load():
 
         if version == "1.1":
             rawData = migrateToVersion_1_4(rawData)
+
+        if version == "1.4":
+            rawData = migrateToVersion_1_5(rawData)
 
         for rawSet in rawData["sets"]:
             data["sets"].append({
@@ -262,6 +265,11 @@ def migrateToVersion_1_4(rawData):
     return { "sets": [{ "operator": s["operator"], "upgrades": [{ "name": up["name"].replace("Z", "D"), "enabled": up["enabled"]} for up in s["upgrades"]] } for s in rawData["sets"]],
              "depot": rawData["depot"],
              "version": "1.4" }
+
+def migrateToVersion_1_5(rawData):
+    return { "sets": rawData["sets"],
+             "depot": { key.replace("test", "glass"): value for key, value in rawData["depot"].items() },
+             "version": "1.5" }
 
 LOGGER = logging.getLogger("ArknightsMaterials")
 LOGGER.setLevel(logging.DEBUG)

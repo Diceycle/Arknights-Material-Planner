@@ -64,9 +64,9 @@
     { "position": [6,1], "name": "solvent-3", "canonicalName": "Semi-Synthetic Solvent", "internalId": "31043" },
     { "position": [5,1], "name": "solvent-4", "canonicalName": "Refined Solvent", "internalId": "31044" },
 
-    { "position": [2,0], "name": "test-3", "canonicalName": "PLACEHOLDER", "internalId": "31093" },
-    { "position": [1,0], "name": "test-4", "canonicalName": "PLACEHOLDER", "internalId": "31094" },
-    { "position": [0,0], "name": "test-5", "canonicalName": "PLACEHOLDER", "internalId": "30165" },
+    { "position": [2,0], "name": "glass-3", "canonicalName": "Coagulative Nodule", "internalId": "31093" },
+    { "position": [1,0], "name": "glass-4", "canonicalName": "Chiral Refractor", "internalId": "31094" },
+    { "position": [0,0], "name": "glass-5", "canonicalName": "Rephasic Enantiomer", "internalId": "30165" },
 
     { "position": [4,0], "name": "carbon-3", "canonicalName": "Aggregate Cyclicene", "internalId": "31083" },
     { "position": [3,0], "name": "carbon-4", "canonicalName": "Cyclicene Prefab", "internalId": "31084" },
@@ -127,8 +127,8 @@
     { "position": [99,99], "name": "exp-4", "canonicalName": "Strategic Battle Record", "internalId": "2004" }
   ],
   "depotOrder": ["exp-4", "exp-3", "exp-2", "exp-1", "skill-3", "skill-2", "skill-1", "module-1", "module-3", "module-2",
-                 "salt-5", "crystal-5", "steel-5", "nanoflake-5", "polymer-5",
-                 "carbon-4", "carbon-3", "fiber-4", "fiber-3", "salt-4", "salt-3", "fluid-4", "fluid-3", "solvent-4", "solvent-3", "crystal-4", "crystal-3",
+                 "glass-5", "salt-5", "crystal-5", "steel-5", "nanoflake-5", "polymer-5",
+                 "glass-4", "glass-3", "carbon-4", "carbon-3", "fiber-4", "fiber-3", "salt-4", "salt-3", "fluid-4", "fluid-3", "solvent-4", "solvent-3", "crystal-4", "crystal-3",
                  "incandescent-4", "incandescent-3", "gel-4", "gel-3",
                  "kohl-4", "kohl-3", "manganese-4", "manganese-3", "grindstone-4", "grindstone-3", "rma-4", "rma-3",
                  "rock-4", "rock-3", "rock-2", "rock-1", "device-4", "device-3", "device-2", "device-1",
