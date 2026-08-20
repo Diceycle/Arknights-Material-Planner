@@ -25,7 +25,7 @@ def getOperatorImagePath(internalId):
     return getDownloadedFilePath(Repos.OPERATOR_IMAGES, internalId + ".png")
 
 def getMaterialImagePath(internalId):
-    return getDownloadedFilePath(Repos.MATERIAL_IMAGES, internalId + ".png")
+    return getDownloadedFilePath(Repos.MATERIAL_IMAGES, RAW_MATERIALS["items"][internalId]["iconId"] + ".png")
 
 def toModuleUpgradeKey(moduleType, stage):
     return f"MOD-{moduleType.upper()}-{stage}"
