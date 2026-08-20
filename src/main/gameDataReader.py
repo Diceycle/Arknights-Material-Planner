@@ -176,7 +176,6 @@ if __name__ == "__main__":
             internalName = None
             if "appellation" in op:
                 internalName = op["appellation"]
-            print(operatorId, internalName)
-
+            print(f'{{ "name": "{internalName}", "internalId": "{operatorId}" }}')
 
 

@@ -1,36 +1,36 @@
 {
   "pageSize": 10,
   "materials": [
-    { "position": [2,7], "name": "rock-1", "canonicalName": "Orirock", "internalId": "30011" },
-    { "position": [1,7], "name": "rock-2", "canonicalName": "Orirock Cube", "internalId": "30012" },
+    { "position": [2,8], "name": "rock-1", "canonicalName": "Orirock", "internalId": "30011" },
+    { "position": [1,8], "name": "rock-2", "canonicalName": "Orirock Cube", "internalId": "30012" },
     { "position": [2,4], "name": "rock-3", "canonicalName": "Orirock Cluster", "internalId": "30013" },
     { "position": [1,4], "name": "rock-4", "canonicalName": "Orirock Concentration", "internalId": "30014" },
 
-    { "position": [4,7], "name": "oriron-1", "canonicalName": "Oriron Shard", "internalId": "30041" },
-    { "position": [3,7], "name": "oriron-2", "canonicalName": "Oriron", "internalId": "30042" },
+    { "position": [4,8], "name": "oriron-1", "canonicalName": "Oriron Shard", "internalId": "30041" },
+    { "position": [3,8], "name": "oriron-2", "canonicalName": "Oriron", "internalId": "30042" },
     { "position": [4,4], "name": "oriron-3", "canonicalName": "Oriron Cluster", "internalId": "30043" },
     { "position": [3,4], "name": "oriron-4", "canonicalName": "Oriron Block", "internalId": "30044" },
 
-    { "position": [6,7], "name": "keton-1", "canonicalName": "Diketon", "internalId": "30051" },
-    { "position": [5,7], "name": "keton-2", "canonicalName": "Polyketon", "internalId": "30052" },
+    { "position": [6,8], "name": "keton-1", "canonicalName": "Diketon", "internalId": "30051" },
+    { "position": [5,8], "name": "keton-2", "canonicalName": "Polyketon", "internalId": "30052" },
     { "position": [6,4], "name": "keton-3", "canonicalName": "Aketon", "internalId": "30053" },
     { "position": [5,4], "name": "keton-4", "canonicalName": "Keton Colloid", "internalId": "30054" },
 
-    { "position": [2,8], "name": "device-1", "canonicalName": "Damaged Device", "internalId": "30061" },
-    { "position": [1,8], "name": "device-2", "canonicalName": "Device", "internalId": "30062" },
+    { "position": [2,9], "name": "device-1", "canonicalName": "Damaged Device", "internalId": "30061" },
+    { "position": [1,9], "name": "device-2", "canonicalName": "Device", "internalId": "30062" },
     { "position": [2,5], "name": "device-3", "canonicalName": "Integrated Device", "internalId": "30063" },
     { "position": [1,5], "name": "device-4", "canonicalName": "Optimized Device", "internalId": "30064" },
 
     { "position": [4,5], "name": "kohl-3", "canonicalName": "Loxic Kohl", "internalId": "30073" },
     { "position": [3,5], "name": "kohl-4", "canonicalName": "White Horse Kohl", "internalId": "30074" },
 
-    { "position": [4,8], "name": "plastic-1", "canonicalName": "Ester", "internalId": "30031" },
-    { "position": [3,8], "name": "plastic-2", "canonicalName": "Polyester", "internalId": "30032" },
+    { "position": [4,9], "name": "plastic-1", "canonicalName": "Ester", "internalId": "30031" },
+    { "position": [3,9], "name": "plastic-2", "canonicalName": "Polyester", "internalId": "30032" },
     { "position": [4,6], "name": "plastic-3", "canonicalName": "Polyester Pack", "internalId": "30033" },
     { "position": [3,6], "name": "plastic-4", "canonicalName": "Polyester Lump", "internalId": "30034" },
 
-    { "position": [6,8], "name": "sugar-1", "canonicalName": "Sugar Substitute", "internalId": "30021" },
-    { "position": [5,8], "name": "sugar-2", "canonicalName": "Sugar", "internalId": "30022" },
+    { "position": [6,9], "name": "sugar-1", "canonicalName": "Sugar Substitute", "internalId": "30021" },
+    { "position": [5,9], "name": "sugar-2", "canonicalName": "Sugar", "internalId": "30022" },
     { "position": [2,6], "name": "sugar-3", "canonicalName": "Sugar Pack", "internalId": "30023" },
     { "position": [1,6], "name": "sugar-4", "canonicalName": "Sugar Lump", "internalId": "30024" },
 
@@ -73,6 +73,12 @@
 
     { "position": [6,0], "name": "fiber-3", "canonicalName": "Fuscous Fiber", "internalId": "31073" },
     { "position": [5,0], "name": "fiber-4", "canonicalName": "Solidified Fiber Board", "internalId": "31074" },
+
+    { "position": [4,7], "name": "gas-3", "canonicalName": "Liquified High-Energy Gas", "internalId": "31103" },
+    { "position": [3,7], "name": "gas-4", "canonicalName": "Liquified Ether Absorber", "internalId": "31104" },
+
+    { "position": [2,7], "name": "power-3", "canonicalName": "Electrode Unit", "internalId": "31113" },
+    { "position": [1,7], "name": "power-4", "canonicalName": "Concentrated Power Unit", "internalId": "31114" },
 
     { "position": [0,3], "name": "steel-5", "canonicalName": "D32 Steel", "internalId": "30135" },
     { "position": [0,4], "name": "polymer-5", "canonicalName": "Polymerization Preparation", "internalId": "30115" },
